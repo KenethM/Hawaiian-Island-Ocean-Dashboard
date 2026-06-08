@@ -1,0 +1,22 @@
+# Data files
+*.csv
+*.txt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+venv/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Docker
+.docker/
+
+# OS
+.DS_Store
+Thumbs.db

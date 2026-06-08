@@ -22,6 +22,7 @@ class DiverLogCreate(BaseModel):
 
 class DiverLogRead(DiverLogCreate):
     id: int
+    user_id: int | None = None
     submitted_at: datetime
 
     model_config = {"from_attributes": True}

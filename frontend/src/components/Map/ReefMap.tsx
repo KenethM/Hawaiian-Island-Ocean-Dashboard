@@ -42,6 +42,7 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite }: Props) {
                 {site.sst_c !== null
                   ? <p>SST: {site.sst_c.toFixed(1)}°C · {site.alert.label}</p>
                   : <p>No SST data</p>}
+                {site.dhw !== null && <p>DHW: {site.dhw.toFixed(1)} °C-weeks</p>}
               </div>
             </Tooltip>
           </CircleMarker>

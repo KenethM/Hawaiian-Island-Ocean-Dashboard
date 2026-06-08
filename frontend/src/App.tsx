@@ -7,14 +7,19 @@ import { BleachingHistoryChart } from './components/Charts/BleachingHistoryChart
 import { ReportsOverTimeChart } from './components/Charts/ReportsOverTimeChart'
 import { DiverLogForm } from './components/DiverLog/DiverLogForm'
 import { DiverLogList } from './components/DiverLog/DiverLogList'
+import { AuthModal } from './components/Auth/AuthModal'
+import { PhDashboard } from './components/PhDashboard'
 import { useCurrentConditions } from './hooks/useCurrentConditions'
+import { useAuth } from './context/AuthContext'
 import { api } from './services/api'
 import type { SiteStat, DiverStatOverTime } from './types'
 
-type View = 'dashboard' | 'community' | 'log-dive'
+type View = 'dashboard' | 'community' | 'log-dive' | 'ph'
 
 export default function App() {
   const [view, setView] = useState<View>('dashboard')
+  const [showAuth, setShowAuth] = useState(false)
+  const { user, logout } = useAuth()
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null)
   const [logRefresh, setLogRefresh] = useState(0)
   const [stats, setStats] = useState<SiteStat[]>([])
@@ -53,11 +58,32 @@ export default function App() {
           {navItem('dashboard', 'Dashboard')}
           {navItem('community', 'Community Data')}
           {navItem('log-dive', 'Log a Dive')}
+          {navItem('ph', 'Ocean pH')}
         </nav>
-        <div className="ml-auto text-xs text-white/50">
-          Data: NOAA/JPL MUR SST · NOAA CRW
+        <div className="ml-auto flex items-center gap-3">
+          <span className="text-xs text-white/50 hidden sm:block">Data: NOAA/JPL MUR SST · NOAA CRW · HOT · CMEMS</span>
+          {user ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white/80">{user.full_name ?? user.email}</span>
+              <button
+                onClick={logout}
+                className="text-xs text-white/60 hover:text-white px-2 py-1 rounded hover:bg-white/10 transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowAuth(true)}
+              className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-md font-medium transition-colors"
+            >
+              Sign in
+            </button>
+          )}
         </div>
       </header>
+
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
       {/* Alert banner */}
       <AlertBanner />
@@ -91,6 +117,7 @@ export default function App() {
                 site={selectedSite}
                 allSites={sites}
                 onClose={() => setSelectedSiteId(null)}
+                onSignInClick={() => setShowAuth(true)}
               />
             </div>
           )}
@@ -129,6 +156,10 @@ export default function App() {
         </div>
       )}
 
+      {view === 'ph' && (
+        <PhDashboard onSignInClick={() => setShowAuth(true)} />
+      )}
+
       {view === 'log-dive' && (
         <div className="flex-1 overflow-y-auto p-6">
           <div className="max-w-lg mx-auto">
@@ -140,6 +171,7 @@ export default function App() {
               <DiverLogForm
                 sites={sites}
                 onSubmitted={() => { setLogRefresh(n => n + 1); setView('community') }}
+                onSignInClick={() => setShowAuth(true)}
               />
             </div>
           </div>

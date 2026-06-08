@@ -12,7 +12,12 @@ export function AlertBanner() {
         {alerts.count} active bleaching alert{alerts.count > 1 ? 's' : ''}:
       </span>
       <span className="text-sm">
-        {alerts.alerts.map(a => `${a.name} (${a.alert.label} — ${a.sst_c?.toFixed(1)}°C)`).join(' · ')}
+        {alerts.alerts.map(a => {
+          const parts = [a.name, a.alert.label]
+          if (a.sst_c !== null) parts.push(`SST ${a.sst_c.toFixed(1)}°C`)
+          if (a.dhw !== null) parts.push(`DHW ${a.dhw.toFixed(1)}°C-wk`)
+          return parts.join(' · ')
+        }).join('  |  ')}
       </span>
     </div>
   )

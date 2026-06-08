@@ -8,11 +8,12 @@ interface Props {
   site: ReefSite
   allSites: ReefSite[]
   onClose: () => void
+  onSignInClick?: () => void
 }
 
 type Tab = 'overview' | 'temperature' | 'log' | 'reports'
 
-export function SitePanel({ site, allSites, onClose }: Props) {
+export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
   const [tab, setTab] = useState<Tab>('overview')
   const [logRefresh, setLogRefresh] = useState(0)
 
@@ -85,6 +86,35 @@ export function SitePanel({ site, allSites, onClose }: Props) {
                 </div>
               ))}
             </div>
+
+            {/* CRW thermal stress */}
+            {(site.dhw !== null || site.hotspot !== null) && (
+              <div className="mt-3 bg-gray-50 rounded-lg p-3">
+                <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Thermal Stress (NOAA CRW)</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {site.dhw !== null && (
+                    <div>
+                      <p className="text-xs text-gray-400">Degree Heating Weeks</p>
+                      <p className={`font-bold text-lg ${site.dhw >= 8 ? 'text-red-600' : site.dhw >= 4 ? 'text-orange-500' : 'text-gray-800'}`}>
+                        {site.dhw.toFixed(1)} <span className="text-xs font-normal text-gray-500">°C-weeks</span>
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {site.dhw >= 8 ? 'Significant bleaching likely' : site.dhw >= 4 ? 'Bleaching likely' : site.dhw >= 1 ? 'Watch threshold' : 'No accumulated stress'}
+                      </p>
+                    </div>
+                  )}
+                  {site.hotspot !== null && (
+                    <div>
+                      <p className="text-xs text-gray-400">Hotspot</p>
+                      <p className="font-bold text-lg text-gray-800">
+                        +{site.hotspot.toFixed(2)} <span className="text-xs font-normal text-gray-500">°C</span>
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">Above bleaching threshold</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -102,6 +132,7 @@ export function SitePanel({ site, allSites, onClose }: Props) {
             sites={allSites}
             defaultSiteId={site.id}
             onSubmitted={() => setLogRefresh(n => n + 1)}
+            onSignInClick={onSignInClick}
           />
         )}
 

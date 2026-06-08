@@ -1,9 +1,17 @@
 import axios from 'axios'
-import type { ReefSite, SstHistory, DiverLog, DiverLogCreate, SiteStat, ActiveAlerts, DiverStatOverTime } from '../types'
+import type { ReefSite, SstHistory, DiverLog, DiverLogCreate, SiteStat, ActiveAlerts, DiverStatOverTime, User, TokenResponse, RegisterPayload, PhTrendPoint, PhPrediction, PhSourceInfo } from '../types'
+
+const TOKEN_KEY = 'coral_auth_token'
 
 const client = axios.create({
   baseURL: '/api',
   timeout: 30_000,
+})
+
+client.interceptors.request.use(config => {
+  const token = localStorage.getItem(TOKEN_KEY)
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
 })
 
 export const api = {
@@ -27,4 +35,44 @@ export const api = {
 
   getDiverStatsOverTime: (days = 180): Promise<DiverStatOverTime[]> =>
     client.get<DiverStatOverTime[]>('/diver-logs/stats/over-time', { params: { days } }).then(r => r.data),
+
+  login: (email: string, password: string): Promise<TokenResponse> =>
+    client.post<TokenResponse>('/auth/login', { email, password }).then(r => r.data),
+
+  register: (data: RegisterPayload): Promise<TokenResponse> =>
+    client.post<TokenResponse>('/auth/register', data).then(r => r.data),
+
+  getMe: (): Promise<User> =>
+    client.get<User>('/auth/me').then(r => r.data),
+
+  getPhTrend: (sources?: string[], years = 10): Promise<PhTrendPoint[]> => {
+    const params = new URLSearchParams()
+    if (sources) sources.forEach(s => params.append('sources', s))
+    params.set('years', String(years))
+    return client.get<PhTrendPoint[]>('/ph/trend', { params }).then(r => r.data)
+  },
+
+  getPhPrediction: (): Promise<PhPrediction> =>
+    client.get<PhPrediction>('/ph/prediction').then(r => r.data),
+
+  getPhSources: (): Promise<PhSourceInfo[]> =>
+    client.get<PhSourceInfo[]>('/ph/sources').then(r => r.data),
+
+  uploadPhCsv: (
+    source: string,
+    dataType: string,
+    locationName: string,
+    lat: number | null,
+    lng: number | null,
+    file: File,
+  ): Promise<{ inserted: number; skipped: number }> => {
+    const form = new FormData()
+    form.append('source', source)
+    form.append('data_type', dataType)
+    form.append('location_name', locationName)
+    if (lat !== null) form.append('lat', String(lat))
+    if (lng !== null) form.append('lng', String(lng))
+    form.append('file', file)
+    return client.post('/ph/admin/upload', form).then(r => r.data)
+  },
 }

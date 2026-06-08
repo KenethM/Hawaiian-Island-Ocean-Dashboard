@@ -1,5 +1,5 @@
 from datetime import datetime, date
-from sqlalchemy import String, Float, Text, Date, DateTime, func
+from sqlalchemy import String, Float, Text, Date, DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.database import Base
 
@@ -8,6 +8,7 @@ class DiverLog(Base):
     __tablename__ = "diver_logs"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     reef_site_id: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
     diver_name: Mapped[str | None] = mapped_column(String(200))
     dive_date: Mapped[date] = mapped_column(Date, nullable=False)

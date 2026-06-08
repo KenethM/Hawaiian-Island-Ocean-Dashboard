@@ -5,14 +5,24 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
 from app.models.diver_log import DiverLog
+from app.models.user import User
 from app.schemas.diver_log import DiverLogCreate, DiverLogRead
+from app.api.auth import require_user
 
 router = APIRouter(prefix="/diver-logs", tags=["diver-logs"])
 
 
 @router.post("/", response_model=DiverLogRead, status_code=201)
-async def create_log(payload: DiverLogCreate, db: AsyncSession = Depends(get_db)):
-    log = DiverLog(**payload.model_dump())
+async def create_log(
+    payload: DiverLogCreate,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(require_user),
+):
+    data = payload.model_dump()
+    data["user_id"] = user.id
+    if not data.get("diver_name") and user.full_name:
+        data["diver_name"] = user.full_name
+    log = DiverLog(**data)
     db.add(log)
     await db.commit()
     await db.refresh(log)

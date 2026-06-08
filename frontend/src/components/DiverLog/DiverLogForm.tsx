@@ -1,21 +1,25 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../../services/api'
+import { useAuth } from '../../context/AuthContext'
 import type { DiverLogCreate, BleachingSeverity, ReefSite } from '../../types'
 
 interface Props {
   sites: ReefSite[]
   defaultSiteId?: string
   onSubmitted: () => void
+  onSignInClick?: () => void
 }
 
 const SEVERITY_OPTIONS: BleachingSeverity[] = ['none', 'mild', 'moderate', 'severe', 'mortality']
 
-export function DiverLogForm({ sites, defaultSiteId, onSubmitted }: Props) {
+export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick }: Props) {
   const today = new Date().toISOString().split('T')[0]
+  const { user } = useAuth()
   const [form, setForm] = useState<DiverLogCreate>({
     reef_site_id: defaultSiteId ?? '',
     dive_date: today,
+    diver_name: user?.full_name ?? undefined,
   })
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -39,6 +43,21 @@ export function DiverLogForm({ sites, defaultSiteId, onSubmitted }: Props) {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (!user) {
+    return (
+      <div className="text-center py-8 space-y-3">
+        <p className="text-gray-600 text-sm">Sign in to submit a dive observation.</p>
+        <button
+          type="button"
+          onClick={onSignInClick}
+          className="bg-ocean-700 text-white px-5 py-2 rounded-md font-semibold text-sm hover:bg-ocean-900 transition-colors"
+        >
+          Sign In / Create Account
+        </button>
+      </div>
+    )
   }
 
   return (

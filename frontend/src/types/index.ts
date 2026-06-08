@@ -1,7 +1,33 @@
 export type BleachingSeverity = 'none' | 'mild' | 'moderate' | 'severe' | 'mortality'
+export type Affiliation = 'recreational' | 'researcher' | 'educator' | 'professional' | 'community'
+export type CertLevel = 'none' | 'open_water' | 'advanced' | 'rescue' | 'divemaster' | 'instructor'
+
+export interface User {
+  id: number
+  email: string
+  full_name: string | null
+  affiliation: Affiliation | null
+  cert_level: CertLevel | null
+  created_at: string
+}
+
+export interface TokenResponse {
+  access_token: string
+  token_type: string
+  user: User
+}
+
+export interface RegisterPayload {
+  email: string
+  password: string
+  full_name?: string
+  affiliation?: Affiliation
+  cert_level?: CertLevel
+}
 
 export interface AlertInfo {
-  level: number   // -99=no data, -1=below MMM, 0=normal, 1=watch, 2=warning
+  // -99=no data, -1=below MMM, 0=no stress, 1=watch, 2=warning, 3=alert lvl 1, 4=alert lvl 2
+  level: number
   label: string
   color: string
 }
@@ -16,6 +42,8 @@ export interface ReefSite {
   mmm_c: number
   description: string
   sst_c: number | null
+  dhw: number | null       // Degree Heating Weeks (CRW) — accumulated thermal stress
+  hotspot: number | null   // SST anomaly above bleaching threshold (CRW)
   alert: AlertInfo
 }
 
@@ -68,4 +96,37 @@ export interface DiverStatOverTime {
   count: number
   avg_bleaching_pct: number | null
   avg_coral_cover_pct: number | null
+}
+
+// ── Ocean pH ──────────────────────────────────────────────────────────────────
+
+export type PhSource = 'hot' | 'cmems' | 'ipacoa' | 'dar_reef_check'
+
+export interface PhTrendPoint {
+  date: string      // "YYYY-MM"
+  source: PhSource
+  avg_ph: number
+  count: number
+}
+
+export interface PhPredictionPoint {
+  date: string
+  ph: number
+  lower: number | null
+  upper: number | null
+  is_forecast: boolean
+}
+
+export interface PhPrediction {
+  trend: PhPredictionPoint[]
+  forecast: PhPredictionPoint[]
+  r_squared: number | null
+}
+
+export interface PhSourceInfo {
+  source: PhSource
+  data_type: string
+  count: number
+  earliest: string | null
+  latest: string | null
 }

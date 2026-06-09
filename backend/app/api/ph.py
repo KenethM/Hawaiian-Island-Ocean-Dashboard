@@ -6,7 +6,7 @@ import os
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form
-from sqlalchemy import select, func
+from sqlalchemy import select, func, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
@@ -31,9 +31,11 @@ async def get_ph_trend(
     """Monthly averaged pH per source over the last N years."""
     start_dt = datetime.now(timezone.utc) - timedelta(days=years * 365)
 
+    month_trunc = func.date_trunc(text("'month'"), PhReading.measured_at)
+
     stmt = (
         select(
-            func.date_trunc("month", PhReading.measured_at).label("month"),
+            month_trunc.label("month"),
             PhReading.source,
             func.avg(PhReading.ph).label("avg_ph"),
             func.count().label("count"),
@@ -45,9 +47,7 @@ async def get_ph_trend(
     if data_type:
         stmt = stmt.where(PhReading.data_type == data_type)
 
-    stmt = stmt.group_by(
-        func.date_trunc("month", PhReading.measured_at), PhReading.source
-    ).order_by(func.date_trunc("month", PhReading.measured_at), PhReading.source)
+    stmt = stmt.group_by(month_trunc, PhReading.source).order_by(month_trunc, PhReading.source)
 
     rows = (await db.execute(stmt)).all()
     return [

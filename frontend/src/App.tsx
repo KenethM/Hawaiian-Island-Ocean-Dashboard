@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { ReefMap } from './components/Map/ReefMap'
 import { SitePanel } from './components/SitePanel'
 import { AlertBanner } from './components/AlertBanner'
+import { RecentSightingsFeed } from './components/Map/RecentSightingsFeed'
 import { CommunityChart } from './components/Charts/CommunityChart'
 import { BleachingHistoryChart } from './components/Charts/BleachingHistoryChart'
 import { ReportsOverTimeChart } from './components/Charts/ReportsOverTimeChart'
@@ -10,6 +11,7 @@ import { DiverLogList } from './components/DiverLog/DiverLogList'
 import { AuthModal } from './components/Auth/AuthModal'
 import { PhDashboard } from './components/PhDashboard'
 import { useCurrentConditions } from './hooks/useCurrentConditions'
+import { useDiverLogs } from './hooks/useDiverLogs'
 import { useAuth } from './context/AuthContext'
 import { api } from './services/api'
 import type { SiteStat, DiverStatOverTime } from './types'
@@ -26,6 +28,7 @@ export default function App() {
   const [statsOverTime, setStatsOverTime] = useState<DiverStatOverTime[]>([])
 
   const { sites, loading, error } = useCurrentConditions()
+  const { logs: diverLogs, loading: diverLogsLoading } = useDiverLogs(sites)
   const selectedSite = sites.find(s => s.id === selectedSiteId) ?? null
 
   const siteNames = Object.fromEntries(sites.map(s => [s.id, s.name]))
@@ -107,11 +110,12 @@ export default function App() {
               sites={sites}
               selectedSiteId={selectedSiteId}
               onSelectSite={id => setSelectedSiteId(id === selectedSiteId ? null : id)}
+              diverLogs={diverLogs}
             />
           </div>
 
-          {/* Side panel */}
-          {selectedSite && (
+          {/* Side panel — site detail or recent sightings feed */}
+          {selectedSite ? (
             <div className="w-80 xl:w-96 flex-shrink-0 overflow-hidden">
               <SitePanel
                 site={selectedSite}
@@ -120,6 +124,12 @@ export default function App() {
                 onSignInClick={() => setShowAuth(true)}
               />
             </div>
+          ) : (
+            <RecentSightingsFeed
+              logs={diverLogs}
+              loading={diverLogsLoading}
+              onSelectSite={id => setSelectedSiteId(id)}
+            />
           )}
         </div>
       )}

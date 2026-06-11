@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { ReefSite, SstHistory, DiverLog, DiverLogCreate, SiteStat, ActiveAlerts, DiverStatOverTime, User, TokenResponse, RegisterPayload, PhTrendPoint, PhPrediction, PhSourceInfo } from '../types'
+import type { ReefSite, SstHistory, DiverLog, DiverLogCreate, SiteStat, ActiveAlerts, DiverStatOverTime, User, TokenResponse, RegisterPayload, PhTrendPoint, PhPrediction, PhSourceInfo, SiteSubscription, TideData, WaveData, TurbidityData } from '../types'
 
 const TOKEN_KEY = 'coral_auth_token'
 
@@ -26,6 +26,9 @@ export const api = {
 
   getDiverLogs: (siteId?: string): Promise<DiverLog[]> =>
     client.get<DiverLog[]>('/diver-logs/', { params: siteId ? { site_id: siteId } : {} }).then(r => r.data),
+
+  getRecentDiverLogs: (days = 90, limit = 100): Promise<DiverLog[]> =>
+    client.get<DiverLog[]>('/diver-logs/', { params: { days, limit } }).then(r => r.data),
 
   submitDiverLog: (payload: DiverLogCreate): Promise<DiverLog> =>
     client.post<DiverLog>('/diver-logs/', payload).then(r => r.data),
@@ -57,6 +60,24 @@ export const api = {
 
   getPhSources: (): Promise<PhSourceInfo[]> =>
     client.get<PhSourceInfo[]>('/ph/sources').then(r => r.data),
+
+  getSubscriptions: (): Promise<SiteSubscription[]> =>
+    client.get<SiteSubscription[]>('/alerts/subscriptions').then(r => r.data),
+
+  subscribe: (reefSiteId: string): Promise<SiteSubscription> =>
+    client.post<SiteSubscription>('/alerts/subscriptions', { reef_site_id: reefSiteId }).then(r => r.data),
+
+  unsubscribe: (reefSiteId: string): Promise<void> =>
+    client.delete(`/alerts/subscriptions/${reefSiteId}`).then(() => undefined),
+
+  getTides: (siteId: string): Promise<TideData> =>
+    client.get<TideData>(`/tides/${siteId}`).then(r => r.data),
+
+  getWaves: (siteId: string): Promise<WaveData> =>
+    client.get<WaveData>(`/waves/${siteId}`).then(r => r.data),
+
+  getTurbidity: (siteId: string): Promise<TurbidityData> =>
+    client.get<TurbidityData>(`/turbidity/${siteId}`).then(r => r.data),
 
   uploadPhCsv: (
     source: string,

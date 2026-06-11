@@ -1,14 +1,45 @@
-import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet'
+import L from 'leaflet'
+import { MapContainer, TileLayer, CircleMarker, Tooltip, Marker, Popup } from 'react-leaflet'
 import type { ReefSite } from '../../types'
+import type { DiverLogWithCoords } from '../../hooks/useDiverLogs'
 import { HealthLegend } from './HealthLegend'
+
+const SEVERITY_COLOR: Record<string, string> = {
+  none: '#22c55e',
+  mild: '#fbbf24',
+  moderate: '#f97316',
+  severe: '#ef4444',
+  mortality: '#991b1b',
+}
+
+function severityColor(s: string | undefined): string {
+  return s ? (SEVERITY_COLOR[s] ?? '#94a3b8') : '#94a3b8'
+}
+
+function diverPinIcon(severity: string | undefined): L.DivIcon {
+  const color = severityColor(severity)
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 18 24">
+    <path d="M9 0C4.03 0 0 4.03 0 9c0 6.75 9 15 9 15s9-8.25 9-15C18 4.03 13.97 0 9 0z"
+      fill="${color}" stroke="#fff" stroke-width="1.5"/>
+    <circle cx="9" cy="9" r="3.5" fill="#fff" fill-opacity="0.85"/>
+  </svg>`
+  return L.divIcon({
+    html: svg,
+    className: '',
+    iconSize: [18, 24],
+    iconAnchor: [9, 24],
+    popupAnchor: [0, -26],
+  })
+}
 
 interface Props {
   sites: ReefSite[]
   selectedSiteId: string | null
   onSelectSite: (id: string) => void
+  diverLogs?: DiverLogWithCoords[]
 }
 
-export function ReefMap({ sites, selectedSiteId, onSelectSite }: Props) {
+export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }: Props) {
   return (
     <div className="relative w-full h-full">
       <MapContainer
@@ -22,6 +53,7 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite }: Props) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
+        {/* Reef site health circles */}
         {sites.map(site => (
           <CircleMarker
             key={site.id}
@@ -46,6 +78,43 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite }: Props) {
               </div>
             </Tooltip>
           </CircleMarker>
+        ))}
+
+        {/* Diver log pins */}
+        {diverLogs.map(log => (
+          <Marker
+            key={log.id}
+            position={[log.lat, log.lng]}
+            icon={diverPinIcon(log.bleaching_severity ?? undefined)}
+          >
+            <Popup>
+              <div className="text-xs space-y-1 min-w-[160px]">
+                <p className="font-semibold text-sm">{log.siteName}</p>
+                <p className="text-gray-500">{log.dive_date} · {log.diver_name ?? 'Anonymous'}</p>
+                {log.bleaching_severity && (
+                  <p>
+                    <span className="font-medium">Bleaching:</span>{' '}
+                    <span style={{ color: severityColor(log.bleaching_severity) }} className="font-semibold capitalize">
+                      {log.bleaching_severity}
+                    </span>
+                    {log.bleaching_pct != null && ` (${log.bleaching_pct}%)`}
+                  </p>
+                )}
+                {log.coral_cover_pct != null && (
+                  <p><span className="font-medium">Coral cover:</span> {log.coral_cover_pct}%</p>
+                )}
+                {log.depth_m != null && (
+                  <p><span className="font-medium">Depth:</span> {log.depth_m} m</p>
+                )}
+                {log.water_temp_c != null && (
+                  <p><span className="font-medium">Water temp:</span> {log.water_temp_c.toFixed(1)}°C</p>
+                )}
+                {log.general_notes && (
+                  <p className="text-gray-600 italic mt-1">{log.general_notes}</p>
+                )}
+              </div>
+            </Popup>
+          </Marker>
         ))}
       </MapContainer>
 

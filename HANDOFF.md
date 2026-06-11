@@ -62,21 +62,46 @@ Alembic runs `upgrade head` automatically on backend startup — no manual migra
 - HOT data loaded: **346 records, 1988–2024**, Station ALOHA (22.75°N, 158°W)
 - Prediction model: intercept + linear trend + sin/cos annual sinusoid via `numpy.linalg.lstsq`, 95% CI = ±1.96σ
 
+#### Tides, Waves & Water Clarity
+- `GET /api/tides/{site_id}` — NOAA CO-OPS, hourly 48h predictions + current water level + inferred high/low events; 30-min cache
+  - Each site mapped to nearest active tide gauge (Honolulu, Mokuoloe, Kahului, Kawaihae, Nawiliwili)
+- `GET /api/waves/{site_id}` — NOAA NDBC buoy realtime text files; returns wave height, period, swell direction, water temp, wind; color-coded conditions label (Calm → Dangerous)
+  - Site-to-buoy mapping: Waimea Bay (N Shore), Barbers Point (SE Oahu), Kaneohe Bay, Kaumalapau (Lanai), Kona, NW Hawaii
+- `GET /api/turbidity/{site_id}` — NASA MODIS Aqua Kd490 via CoastWatch ERDDAP (`erdMH1kd4901day_R2022NRT`); 14-day parallel fetch, returns full history array + most recent non-null reading
+  - Lower Kd490 = clearer water; estimated Secchi depth via `1.7 / Kd490`
+  - Cloud-cover gaps shown as "No data" in history — 14-day window ensures something is visible even during multi-day overcast stretches
+  - **Dataset gotcha:** the original `erdMH1kd4901day` dataset was retired in 2022; variable is `Kd_490` (capital K, no altitude dimension)
+
+#### Bleaching Alert Subscriptions
+- `site_subscriptions` table via migration `003_add_site_subscriptions.py`
+- Subscribe/unsubscribe/list endpoints in `app/api/alerts.py`
+- `app/core/email.py` — async SMTP sender, styled HTML bleaching alert template
+- Background loop in `main.py` sweeps subscriptions every 6h and emails users at Watch+ sites
+- 24h cooldown tracked via `last_notified_at` on each subscription row
+
 #### Database Migrations
 | File | What it creates |
 |---|---|
 | `001_initial_schema.py` | `users`, `diver_logs` |
 | `002_add_ph_readings.py` | `ph_readings` (with indexes on source, measured_at, data_type) |
+| `003_add_site_subscriptions.py` | `site_subscriptions` (user_id FK, reef_site_id, last_notified_at) |
 
 ---
 
 ### Frontend
 
 #### Dashboard Views
-- **Map view** — interactive Leaflet map, 11 reef sites color-coded by CRW BAA level
-- **Site panel** — Overview (SST, DHW, Hotspot), Temperature chart (60-day SST), Log Dive, Reports tabs
+- **Map view** — interactive Leaflet map, 11 reef sites color-coded by CRW BAA level; diver log pins overlaid (color-coded by bleaching severity) with click-to-popup
+- **Recent sightings feed** — sidebar panel showing last 90 days of diver reports; click a row to select that site on the map
+- **Site panel — Overview tab** — SST, DHW, Hotspot + live Wave Conditions + Tides chart + 14-day Water Clarity history bars; "Alert me" subscribe button in header
 - **Community Data** — bleaching/coral cover trends, reports over time, reports by site, recent observations
-- **Ocean pH** *(added this session)* — raw multi-source trend chart + model/prediction toggle with CI band
+- **Ocean pH** — raw multi-source trend chart + model/prediction toggle with CI band
+
+#### Live Conditions (Tides / Waves / Water Clarity)
+- `useOceanConditions(siteId)` hook — fetches all three in parallel via `Promise.all`, re-fetches on site change
+- `TideChart.tsx` — 48h Recharts AreaChart with H/L ReferenceDot markers and a dashed "now" reference line
+- Water clarity display — 14-day scrollable bar history (each bar color-coded by clarity label, grayed for no-data days); most recent reading shown as summary above the bars
+- **Docker / Windows note:** Vite HMR does not reliably pick up file changes on Windows host volumes. Run `docker compose restart frontend` after edits to force a reload.
 
 #### Ocean pH Frontend *(added this session)*
 - `src/hooks/usePhData.ts` — manages mode (raw/prediction), source selection, fetch lifecycle, race condition guard via `useRef`
@@ -98,14 +123,15 @@ Alembic runs `upgrade head` automatically on backend startup — no manual migra
 ```
 backend/
   app/
-    api/          noaa.py, diver_logs.py, alerts.py, auth.py, ph.py
-    core/         security.py, cache.py
-    models/       user.py, diver_log.py, ph_reading.py
-    schemas/      user.py, diver_log.py, ph.py
+    api/          noaa.py, diver_logs.py, alerts.py, auth.py, ph.py,
+                  tides.py, waves.py, turbidity.py
+    core/         security.py, cache.py, email.py
+    models/       user.py, diver_log.py, ph_reading.py, site_subscription.py
+    schemas/      user.py, diver_log.py, ph.py, subscription.py
     data/         reef_sites.py   ← 11 hardcoded Hawaiian reef sites + MMM values
     db/           database.py
   alembic/
-    versions/     001_initial_schema.py, 002_add_ph_readings.py
+    versions/     001_initial_schema.py, 002_add_ph_readings.py, 003_add_site_subscriptions.py
   scripts/
     import_hot.py ← HOT flat-file/CSV importer; must run inside Docker container
   alembic.ini
@@ -114,14 +140,15 @@ backend/
 frontend/
   src/
     components/
-      Map/        ReefMap.tsx, HealthLegend.tsx
+      Map/        ReefMap.tsx, HealthLegend.tsx, RecentSightingsFeed.tsx
       Charts/     TempTrendChart, CommunityChart, BleachingHistoryChart,
-                  ReportsOverTimeChart, PhChart.tsx
+                  ReportsOverTimeChart, PhChart.tsx, TideChart.tsx
       DiverLog/   DiverLogForm.tsx, DiverLogList.tsx
       Auth/       AuthModal.tsx
-      PhDashboard.tsx
+      PhDashboard.tsx, SitePanel.tsx
     context/      AuthContext.tsx
-    hooks/        useCurrentConditions.ts, useAlerts.ts, useSstHistory.ts, usePhData.ts
+    hooks/        useCurrentConditions.ts, useAlerts.ts, useSstHistory.ts, usePhData.ts,
+                  useDiverLogs.ts, useOceanConditions.ts
     services/     api.ts
     types/        index.ts
 ```
@@ -159,6 +186,11 @@ frontend/
 ## Known Notes & Gotchas
 
 - **NOAA_DHW longitude format:** confirmed -180 to 180 (negative for Hawaii). A `NOAA_DHW_Lon0360` variant exists for 0–360 format — do NOT use that one.
+- **MODIS Kd490 dataset:** use `erdMH1kd4901day_R2022NRT` (variable `Kd_490`, no altitude dim). The original `erdMH1kd4901day` was retired July 2022 — variable there was `k490`, which is different.
+- **Turbidity cloud gaps:** Hawaii can have 10+ consecutive cloudy days over nearshore sites. The 14-day fetch window handles most stretches; if all 14 days are null, the bar chart shows all gray — that's real cloud cover, not a bug.
+- **NDBC buoy reliability:** buoys occasionally go offline for maintenance. The waves endpoint silently returns `data: null` when a buoy file is unavailable — the UI shows "No buoy data" gracefully.
+- **Tide times are UTC:** CO-OPS data is returned in GMT. Hawaii is UTC−10 (no DST), so subtract 10h for local time. Adding a timezone conversion to the display is a good future improvement.
+- **Docker + Windows HMR:** Vite file-watch events don't reliably propagate from a Windows host into the container. After editing frontend files, run `docker compose restart frontend` to pick up changes instead of relying on hot reload.
 - **Cache is in-memory** — clears on restart. Fine for single-process dev; would need Redis if running multiple backend instances.
 - **`diver_name`** on DiverLog is still free-text for display; `user_id` FK links to the accounts table.
 - **HOT importer script** (`scripts/import_hot.py`) must run **inside the Docker container** — it uses psycopg2 which is only installed there. Use the UI CSV upload at `POST /api/ph/admin/upload` for new data files instead.
@@ -167,24 +199,34 @@ frontend/
 
 ---
 
-## Remaining Roadmap
+## Roadmap
 
-### Next: Interactive reef map layer enhancements
-- Overlay diver log pins on the Leaflet map (click to see report)
-- Color-code pins by bleaching severity
-- "Recent sightings" feed combining map + list view
+### Interactive reef map layer enhancements
+- Diver log pins overlaid on the Leaflet map — click opens a `Popup` with full report details (`ReefMap.tsx`)
+- Pins color-coded by bleaching severity (green → dark red) via `diverPinIcon()` SVG
+- `RecentSightingsFeed` sidebar (last 90 days) + `useDiverLogs` hook wired into `App.tsx`
 
 ### Bleaching alert notifications
-- `alerts.py` router exists as a skeleton
-- Wire to email/push notification when BBB ≥ 1 at a watched site
-- User can subscribe to specific reef sites
+- Full subscribe/unsubscribe/list API in `alerts.py` — `POST /api/alerts/subscriptions`, `DELETE`, `GET`
+- `SiteSubscription` model + migration `003_add_site_subscriptions.py`
+- SMTP email module (`app/core/email.py`) — styled HTML template, gracefully skips if env vars missing
+- Background notification loop in `main.py` — runs every 6h (override with `ALERT_CHECK_INTERVAL_HOURS`)
+- "Alert me" toggle button in `SitePanel.tsx` — auth-gated, 24h cooldown per user/site
+- **To activate:** set `SMTP_USER`, `SMTP_PASSWORD` (and optionally `SMTP_HOST`, `SMTP_PORT`, `SMTP_FROM`) env vars
+
+### Tides, waves & water clarity
+- Live tides (NOAA CO-OPS) with 48h prediction chart and rising/falling state
+- Live wave conditions (NOAA NDBC buoys) with height, period, swell direction, and color-coded label
+- 14-day water clarity history (NASA MODIS Kd490 via ERDDAP) with scrollable bar view in Site Panel
 
 ### CMEMS pH integration
-- Endpoint stub exists at `GET /api/ph/fetch/cmems`
+- Endpoint stub exists at `GET /api/ph/fetch/cmems` — currently returns 503
 - Needs: httpx OPeNDAP fetch, NetCDF parsing, insert as `source='cmems', data_type='modeled'`
 - Product: `cmems_mod_glo_bgc_my_0.083deg_P1M-m`, variable `ph`, Hawaii region
+- Free account required at https://data.marine.copernicus.eu/ — set `CMEMS_USER` and `CMEMS_PASSWORD`
 
 ### Hosting
 - Nothing deployed yet — local Docker only
-- Options: Railway, Render, Fly.io (all support Docker Compose-style)
-- Checklist: SSL cert, CDN for frontend, DB backup strategy, `JWT_SECRET` env var, `CORS_ORIGINS` set to prod domain
+- Recommended: Railway ($5/mo) for backend + Postgres, Vercel (free) for frontend
+- Also viable: Render, Fly.io (both support Docker)
+- Pre-deploy checklist: set `JWT_SECRET`, set `CORS_ORIGINS` to prod domain, SSL cert, DB backup strategy

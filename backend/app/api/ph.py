@@ -1,9 +1,13 @@
 """Ocean pH API — aggregated from HOT, CMEMS, IPACOA, and DAR/Reef Check sources."""
 
+import asyncio
 import io
 import csv
+import math
 import os
+import tempfile
 from datetime import datetime, timedelta, timezone
+import numpy as np
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form
 from sqlalchemy import select, func, text
@@ -64,10 +68,6 @@ async def get_ph_trend(
 @router.get("/prediction", response_model=PhPrediction)
 async def get_ph_prediction(db: AsyncSession = Depends(get_db)):
     """Linear + seasonal trend fitted to HOT Station ALOHA data, plus 24-month forecast."""
-    try:
-        import numpy as np
-    except ImportError:
-        raise HTTPException(status_code=501, detail="numpy not installed — prediction unavailable")
 
     stmt = (
         select(PhReading.measured_at, PhReading.ph)
@@ -255,14 +255,24 @@ async def fetch_cmems_ph(
     _user: User = Depends(require_user),
 ):
     """
-    Fetch modeled pH from CMEMS (Copernicus Marine Service) for the Hawaiian region.
+    Fetch modeled pH from CMEMS (Copernicus Marine Service) for the Hawaiian region
+    and insert into ph_readings as source='cmems', data_type='modeled'.
 
     Requires env vars: CMEMS_USER and CMEMS_PASSWORD
-    Product: cmems_mod_glo_bgc_my_0.083deg_P1M-m (Global Biogeochemistry Monthly)
-    Region: Hawaii (lat 18–23°N, lon -161–-154°W)
+    Free account: https://data.marine.copernicus.eu/
 
-    This endpoint is ready to activate once CMEMS credentials are configured.
+    Dataset: cmems_mod_glo_bgc_my_0.083deg_P1M-m (Global Biogeochemistry Monthly)
+    Variable: ph · Region: lat 18–23°N, lon -161–-154°W
     """
+    try:
+        import copernicusmarine
+        import xarray as xr
+    except ImportError:
+        raise HTTPException(
+            status_code=501,
+            detail="copernicusmarine / xarray not installed — rebuild the Docker image.",
+        )
+
     cmems_user = os.getenv("CMEMS_USER")
     cmems_pass = os.getenv("CMEMS_PASSWORD")
     if not cmems_user or not cmems_pass:
@@ -274,9 +284,88 @@ async def fetch_cmems_ph(
                 "Free account: https://data.marine.copernicus.eu/"
             ),
         )
-    # TODO: implement CMEMS OPeNDAP fetch using httpx with basic auth
-    # Dataset: cmems_mod_glo_bgc_my_0.083deg_P1M-m
-    # Variable: ph (pH at surface, depth index 0)
-    # Region: lat [18, 23], lon [-161, -154]
-    # After fetching NetCDF, parse and insert as source='cmems', data_type='modeled'
-    raise HTTPException(status_code=501, detail="CMEMS fetch not yet implemented — coming soon")
+
+    end_dt = end_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    def _download_nc(tmp_path: str) -> None:
+        copernicusmarine.subset(
+            dataset_id="cmems_mod_glo_bgc_my_0.083deg_P1M-m",
+            variables=["ph"],
+            minimum_latitude=18.0,
+            maximum_latitude=23.0,
+            minimum_longitude=-161.0,
+            maximum_longitude=-154.0,
+            start_datetime=f"{start_date}T00:00:00",
+            end_datetime=f"{end_dt}T23:59:59",
+            output_filename=tmp_path,
+            username=cmems_user,
+            password=cmems_pass,
+            force_download=True,
+            disable_progress_bar=True,
+        )
+
+    with tempfile.NamedTemporaryFile(suffix=".nc", delete=False) as f:
+        tmp_path = f.name
+
+    try:
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, _download_nc, tmp_path)
+
+        ds = xr.open_dataset(tmp_path)
+        ph_var = ds["ph"]
+
+        # Average over lat/lon → one monthly value per time step for Hawaii region
+        # isel(depth=0) selects surface layer; fall back if no depth dimension
+        ph_surface = ph_var.isel(depth=0) if "depth" in ph_var.dims else ph_var
+        ph_mean = ph_surface.mean(dim=["latitude", "longitude"])
+
+        inserted = 0
+        skipped = 0
+        for t_val, ph_val in zip(ph_mean.time.values, ph_mean.values):
+            if ph_val is None or math.isnan(float(ph_val)):
+                skipped += 1
+                continue
+
+            # numpy datetime64[ns] → Python datetime
+            ts_s = int(np.datetime64(t_val, "s").astype(np.int64))
+            ts = datetime.utcfromtimestamp(ts_s).replace(tzinfo=timezone.utc)
+
+            # Upsert-style: skip if already present for this month
+            existing = await db.execute(
+                select(PhReading).where(
+                    PhReading.source == "cmems",
+                    PhReading.measured_at == ts,
+                )
+            )
+            if existing.scalar_one_or_none():
+                skipped += 1
+                continue
+
+            db.add(
+                PhReading(
+                    source="cmems",
+                    location_name="Hawaii Region (18–23°N, 161–154°W)",
+                    lat=20.5,
+                    lng=-157.5,
+                    measured_at=ts,
+                    ph=round(float(ph_val), 4),
+                    data_type="modeled",
+                )
+            )
+            inserted += 1
+
+        await db.commit()
+        ds.close()
+
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+
+    return {
+        "inserted": inserted,
+        "skipped": skipped,
+        "start_date": start_date,
+        "end_date": end_dt,
+    }

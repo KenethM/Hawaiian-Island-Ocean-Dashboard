@@ -1,4 +1,6 @@
 import os
+import asyncio
+import logging
 import pathlib
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -9,6 +11,20 @@ from alembic import command
 from app.api import noaa, diver_logs, alerts
 from app.api import auth
 from app.api import ph
+from app.api import tides, waves, turbidity
+from app.api.alerts import run_notification_check
+from app.db.database import AsyncSessionLocal
+
+# Ensure all models are imported so Alembic autogenerate picks them up
+import app.models.user            # noqa: F401
+import app.models.diver_log       # noqa: F401
+import app.models.ph_reading      # noqa: F401
+import app.models.site_subscription  # noqa: F401
+
+log = logging.getLogger(__name__)
+
+# Hours between notification sweep runs (override with ALERT_CHECK_INTERVAL_HOURS env var)
+_CHECK_INTERVAL_HOURS = float(os.getenv("ALERT_CHECK_INTERVAL_HOURS", "6"))
 
 
 def _run_migrations() -> None:
@@ -17,10 +33,28 @@ def _run_migrations() -> None:
     command.upgrade(cfg, "head")
 
 
+async def _notification_loop() -> None:
+    """Runs in the background; checks and sends bleaching alerts every N hours."""
+    await asyncio.sleep(60)  # brief delay so the DB is ready after startup
+    while True:
+        try:
+            async with AsyncSessionLocal() as db:
+                await run_notification_check(db)
+        except Exception as exc:
+            log.error("Unhandled error in notification loop: %s", exc)
+        await asyncio.sleep(_CHECK_INTERVAL_HOURS * 3600)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _run_migrations()
+    task = asyncio.create_task(_notification_loop())
     yield
+    task.cancel()
+    try:
+        await task
+    except asyncio.CancelledError:
+        pass
 
 
 app = FastAPI(
@@ -45,6 +79,9 @@ app.include_router(noaa.router, prefix="/api")
 app.include_router(diver_logs.router, prefix="/api")
 app.include_router(alerts.router, prefix="/api")
 app.include_router(ph.router, prefix="/api")
+app.include_router(tides.router, prefix="/api")
+app.include_router(waves.router, prefix="/api")
+app.include_router(turbidity.router, prefix="/api")
 
 
 @app.get("/health")

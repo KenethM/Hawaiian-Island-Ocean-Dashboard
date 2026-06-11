@@ -1,5 +1,6 @@
 from datetime import date, timedelta
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,10 +31,18 @@ async def create_log(
 
 
 @router.get("/", response_model=list[DiverLogRead])
-async def list_logs(site_id: str | None = None, limit: int = 50, db: AsyncSession = Depends(get_db)):
+async def list_logs(
+    site_id: Optional[str] = None,
+    limit: int = Query(default=50, le=200),
+    days: Optional[int] = Query(default=None, description="Only return logs from the last N days"),
+    db: AsyncSession = Depends(get_db),
+):
     q = select(DiverLog).order_by(DiverLog.dive_date.desc()).limit(limit)
     if site_id:
         q = q.where(DiverLog.reef_site_id == site_id)
+    if days is not None:
+        cutoff = date.today() - timedelta(days=days)
+        q = q.where(DiverLog.dive_date >= cutoff)
     result = await db.execute(q)
     return result.scalars().all()
 

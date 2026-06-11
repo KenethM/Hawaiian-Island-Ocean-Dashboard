@@ -98,6 +98,75 @@ export interface DiverStatOverTime {
   avg_coral_cover_pct: number | null
 }
 
+// ── Alert Subscriptions ───────────────────────────────────────────────────────
+
+export interface SiteSubscription {
+  id: number
+  reef_site_id: string
+  created_at: string
+  last_notified_at: string | null
+}
+
+// ── Tides ─────────────────────────────────────────────────────────────────────
+
+export interface TidePrediction {
+  time: string      // "YYYY-MM-DD HH:MM"
+  height_m: number
+}
+
+export interface TideHighLow extends TidePrediction {
+  type: 'H' | 'L'
+}
+
+export interface TideData {
+  site_id: string
+  station_id: string | null
+  station_name: string | null
+  current: { time: string; height_m: number } | null
+  tide_state: 'rising' | 'falling' | null
+  predictions: TidePrediction[]
+  high_lows: TideHighLow[]
+}
+
+// ── Waves ─────────────────────────────────────────────────────────────────────
+
+export interface WaveObs {
+  wave_height_m: number
+  dominant_period_s: number | null
+  mean_direction_deg: number | null
+  mean_direction_label: string | null
+  water_temp_c: number | null
+  wind_speed_ms: number | null
+  wind_dir_deg: number | null
+  observed_at: string
+  conditions_label: string
+  conditions_color: string
+}
+
+export interface WaveData {
+  site_id: string
+  buoy_id: string | null
+  buoy_name: string | null
+  data: WaveObs | null
+}
+
+// ── Turbidity / Water Clarity ─────────────────────────────────────────────────
+
+export interface ClarityDay {
+  date: string
+  days_ago: number
+  kd490: number | null
+  estimated_visibility_m: number | null
+  label: string   // "Very Clear" | "Clear" | "Moderate" | "Slightly Turbid" | "Turbid" | "No data"
+  color: string
+}
+
+export interface TurbidityData {
+  site_id: string
+  latest: ClarityDay | null    // most recent non-null reading
+  history: ClarityDay[]        // last 7 days, newest first, includes no-data days
+}
+
 // ── Ocean pH ──────────────────────────────────────────────────────────────────
 
 export type PhSource = 'hot' | 'cmems' | 'ipacoa' | 'dar_reef_check'

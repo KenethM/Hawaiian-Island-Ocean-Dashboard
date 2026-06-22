@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { ReefSite, SstHistory, DiverLog, DiverLogCreate, SiteStat, ActiveAlerts, DiverStatOverTime, User, TokenResponse, RegisterPayload, PhTrendPoint, PhPrediction, PhSourceInfo, SiteSubscription, TideData, WaveData, TurbidityData } from '../types'
+import type { WeatherGridData } from '../hooks/useWeatherData'
 
 const TOKEN_KEY = 'coral_auth_token'
 
@@ -78,6 +79,9 @@ export const api = {
 
   getTurbidity: (siteId: string): Promise<TurbidityData> =>
     client.get<TurbidityData>(`/turbidity/${siteId}`).then(r => r.data),
+
+  getWeatherGrid: (): Promise<WeatherGridData> =>
+    client.get<WeatherGridData>('/weather/grid').then(r => r.data),
 
   uploadPhCsv: (
     source: string,

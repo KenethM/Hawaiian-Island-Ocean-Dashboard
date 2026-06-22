@@ -1,8 +1,12 @@
+import { useState } from 'react'
 import L from 'leaflet'
 import { MapContainer, TileLayer, CircleMarker, Tooltip, Marker, Popup } from 'react-leaflet'
 import type { ReefSite } from '../../types'
 import type { DiverLogWithCoords } from '../../hooks/useDiverLogs'
 import { HealthLegend } from './HealthLegend'
+import { WeatherOverlay, WeatherControlPanel } from './WeatherOverlay'
+import type { WeatherControlState } from './WeatherOverlay'
+import { useWeatherData } from '../../hooks/useWeatherData'
 
 const SEVERITY_COLOR: Record<string, string> = {
   none: '#22c55e',
@@ -32,6 +36,16 @@ function diverPinIcon(severity: string | undefined): L.DivIcon {
   })
 }
 
+const DEFAULT_WEATHER_STATE: WeatherControlState = {
+  enabled: false,
+  showForecast: false,
+  forecastDay: 0,
+  mode: 'today',
+  opacity: 0.8,
+  animating: false,
+  animDay: 0,
+}
+
 interface Props {
   sites: ReefSite[]
   selectedSiteId: string | null
@@ -40,6 +54,21 @@ interface Props {
 }
 
 export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }: Props) {
+  const [weather, setWeather] = useState<WeatherControlState>(DEFAULT_WEATHER_STATE)
+  const { data: weatherData, loading: weatherLoading, error: weatherError } = useWeatherData(weather.enabled)
+
+  const histDays = weatherData
+    ? weatherData.grid[0]?.daily.filter(d => !d.is_forecast).length ?? 30
+    : 30
+
+  function handleWeatherChange(patch: Partial<WeatherControlState>) {
+    setWeather(prev => ({ ...prev, ...patch }))
+  }
+
+  function handleTickDay(next: number) {
+    setWeather(prev => ({ ...prev, animDay: next }))
+  }
+
   return (
     <div className="relative w-full h-full">
       <MapContainer
@@ -52,6 +81,9 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }:
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        {/* Weather heatmap — rendered inside map so it uses useMap() */}
+        <WeatherOverlay data={weatherData ?? null} state={weather} />
 
         {/* Reef site health circles */}
         {sites.map(site => (
@@ -119,6 +151,17 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }:
       </MapContainer>
 
       <HealthLegend />
+
+      {/* Weather control panel — floats over the map */}
+      <WeatherControlPanel
+        state={weather}
+        histDays={histDays}
+        loading={weatherLoading}
+        error={weatherError}
+        onChange={handleWeatherChange}
+        onTickDay={handleTickDay}
+      />
+
     </div>
   )
 }

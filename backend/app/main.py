@@ -12,6 +12,7 @@ from app.api import noaa, diver_logs, alerts
 from app.api import auth
 from app.api import ph
 from app.api import tides, waves, turbidity
+from app.api import weather
 from app.api.alerts import run_notification_check
 from app.db.database import AsyncSessionLocal
 
@@ -82,6 +83,7 @@ app.include_router(ph.router, prefix="/api")
 app.include_router(tides.router, prefix="/api")
 app.include_router(waves.router, prefix="/api")
 app.include_router(turbidity.router, prefix="/api")
+app.include_router(weather.router, prefix="/api")
 
 
 @app.get("/health")

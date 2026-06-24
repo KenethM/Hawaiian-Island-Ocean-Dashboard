@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/Hawaiian-Island-Ocean-Dashboard/sw.js', { scope: '/Hawaiian-Island-Ocean-Dashboard/' })})}

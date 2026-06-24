@@ -167,10 +167,8 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }:
         ))}
       </MapContainer>
 
-      <HealthLegend />
-
-      {/* Chlorophyll toggle + legend */}
-      <div className="absolute bottom-24 left-3 z-[1000] flex flex-col gap-2">
+      {/* Chl-a toggle + bleaching risk legend, stacked bottom-left */}
+      <div className="absolute bottom-8 left-3 z-[1000] flex flex-col items-start gap-2">
         <button
           onClick={() => setShowChlorophyll(v => !v)}
           className={`text-xs px-2.5 py-1.5 rounded-md font-medium shadow border transition-colors ${
@@ -182,6 +180,7 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }:
           {chlorophyllLoading ? '⏳ Loading…' : showChlorophyll ? '🌿 Chl-a on' : '🌿 Chl-a'}
         </button>
         <ChlorophyllLegend visible={showChlorophyll && !!chlorophyllData} />
+        <HealthLegend />
       </div>
 
       {/* Weather control panel — floats over the map */}

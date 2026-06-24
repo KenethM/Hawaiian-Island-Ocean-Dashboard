@@ -29,7 +29,7 @@ services:
     volumes:
       - ./backend:/app
       - uploads_data:/app/uploads
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
   frontend:
     image: node:20-alpine
@@ -37,11 +37,11 @@ services:
     ports:
       - "5173:5173"
     environment:
-      VITE_API_BASE_URL: http://backend:8000
+      VITE_API_PROXY_TARGET: http://backend:8000
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    command: sh -c "npm install && npm run dev -- --host"
+    command: sh -c "npm install --legacy-peer-deps && npm run dev -- --host"
     depends_on:
       - backend
 

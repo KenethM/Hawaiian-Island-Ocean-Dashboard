@@ -10,7 +10,7 @@ const LEGEND = [
 
 export function HealthLegend() {
   return (
-    <div className="absolute bottom-8 left-4 z-[400] bg-white/90 backdrop-blur rounded-lg shadow-lg p-3 text-xs">
+    <div className="bg-white/90 backdrop-blur rounded-lg shadow-lg p-3 text-xs">
       <p className="font-semibold text-gray-700 mb-1">Bleaching Risk</p>
       <p className="text-gray-400 mb-2" style={{ fontSize: '10px' }}>Source: NOAA Coral Reef Watch</p>
       {LEGEND.map(({ color, label }) => (

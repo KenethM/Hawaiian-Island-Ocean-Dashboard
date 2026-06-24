@@ -6,6 +6,7 @@ import { DhwForecastChart } from './Charts/DhwForecastChart'
 import { SstYoYChart } from './Charts/SstYoYChart'
 import { DiverLogForm } from './DiverLog/DiverLogForm'
 import { DiverLogList } from './DiverLog/DiverLogList'
+import { InfoTooltip } from './InfoTooltip'
 import { useAuth } from '../context/AuthContext'
 import { useOceanConditions } from '../hooks/useOceanConditions'
 import { api } from '../services/api'
@@ -137,14 +138,17 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
           <div className="space-y-4">
             <p className="text-sm text-gray-600">{site.description}</p>
             <div className="grid grid-cols-2 gap-3">
-              {[
-                ['Island', site.island],
-                ['Max Depth', `${site.depth_m} m`],
-                ['MMM Temp', `${site.mmm_c}°C`],
-                ['Current SST', site.sst_c !== null ? `${site.sst_c.toFixed(1)}°C` : 'No data'],
-              ].map(([label, value]) => (
+              {([
+                ['Island', site.island, ''],
+                ['Max Depth', `${site.depth_m} m`, 'Depth of the reef site where divers typically survey.'],
+                ['MMM Temp', `${site.mmm_c}°C`, 'Maximum Monthly Mean — the warmest average month at this site over the historical baseline. Bleaching stress is measured above this value.'],
+                ['Current SST', site.sst_c !== null ? `${site.sst_c.toFixed(1)}°C` : 'No data', 'Sea Surface Temperature from NASA/NOAA MUR satellite, updated daily. Temperatures above MMM+1°C indicate heat stress.'],
+              ] as [string, string, string][]).map(([label, value, tip]) => (
                 <div key={label} className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-400 mb-0.5">{label}</p>
+                  <p className="text-xs text-gray-400 mb-0.5 flex items-center">
+                    {label}
+                    {tip && <InfoTooltip text={tip} />}
+                  </p>
                   <p className="font-semibold text-gray-800">{value}</p>
                 </div>
               ))}
@@ -153,11 +157,17 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
             {/* CRW thermal stress */}
             {(site.dhw !== null || site.hotspot !== null) && (
               <div className="mt-3 bg-gray-50 rounded-lg p-3">
-                <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Thermal Stress (NOAA CRW)</p>
+                <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide flex items-center">
+                  Thermal Stress (NOAA CRW)
+                  <InfoTooltip text="NOAA Coral Reef Watch satellite data measuring cumulative heat stress. Updated daily at 5 km resolution." />
+                </p>
                 <div className="grid grid-cols-2 gap-3">
                   {site.dhw !== null && (
                     <div>
-                      <p className="text-xs text-gray-400">Degree Heating Weeks</p>
+                      <p className="text-xs text-gray-400 flex items-center">
+                        Degree Heating Weeks
+                        <InfoTooltip text="DHW measures accumulated heat stress over the past 12 weeks. 4+ °C-weeks = bleaching likely. 8+ = mass bleaching expected." />
+                      </p>
                       <p className={`font-bold text-lg ${site.dhw >= 8 ? 'text-red-600' : site.dhw >= 4 ? 'text-orange-500' : 'text-gray-800'}`}>
                         {site.dhw.toFixed(1)} <span className="text-xs font-normal text-gray-500">°C-weeks</span>
                       </p>
@@ -168,7 +178,10 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                   )}
                   {site.hotspot !== null && (
                     <div>
-                      <p className="text-xs text-gray-400">Hotspot</p>
+                      <p className="text-xs text-gray-400 flex items-center">
+                        Hotspot
+                        <InfoTooltip text="Temperature above the bleaching threshold (MMM+1°C). A positive hotspot means the ocean is currently warm enough to cause bleaching stress." />
+                      </p>
                       <p className="font-bold text-lg text-gray-800">
                         +{site.hotspot.toFixed(2)} <span className="text-xs font-normal text-gray-500">°C</span>
                       </p>
@@ -197,8 +210,9 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
               <div className="space-y-3">
                 {/* Waves */}
                 <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
                     Wave Conditions
+                    <InfoTooltip text="Live data from the nearest NOAA NDBC buoy. Wave height is significant wave height (average of the tallest third of waves)." />
                     {conditions.waves?.buoy_name && (
                       <span className="normal-case font-normal ml-1">· {conditions.waves.buoy_name} buoy</span>
                     )}
@@ -238,7 +252,10 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
 
                 {/* Salinity */}
                 <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Salinity</p>
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
+                    Salinity
+                    <InfoTooltip text="Measured in Practical Salinity Units (PSU). Normal Hawaiian nearshore seawater is 34–35 PSU. Lower values may indicate freshwater runoff after rain." />
+                  </p>
                   {conditions.salinity?.salinity_psu != null ? (
                     <div className="flex items-baseline gap-2">
                       <span className="text-2xl font-bold text-gray-900">{conditions.salinity.salinity_psu} PSU</span>
@@ -297,9 +314,10 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
 
                 {/* Water Clarity */}
                 <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
                     Water Clarity
-                    <span className="normal-case font-normal ml-1">· MODIS satellite · past 14 days</span>
+                    <InfoTooltip text="Derived from NASA MODIS satellite Kd490 (light diffuse attenuation at 490 nm). Lower Kd490 = clearer water. Only available on cloud-free days." />
+                    <span className="normal-case font-normal ml-1 text-gray-400">· MODIS · 14 days</span>
                   </p>
                   {conditions.turbidity?.history.length ? (
                     <>

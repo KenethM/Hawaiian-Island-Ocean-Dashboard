@@ -9,6 +9,7 @@ ERDDAP URL: https://coastwatch.pfeg.noaa.gov/erddap/griddap/
 """
 
 import asyncio
+import logging
 import statistics
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -17,6 +18,8 @@ from fastapi import APIRouter, HTTPException
 
 from app.data.reef_sites import REEF_SITES
 from app.core import cache
+
+log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/noaa", tags=["noaa"])
 
@@ -53,29 +56,57 @@ def _bleaching_level(sst: float, mmm: float) -> dict[str, Any]:
         return {"level": -1, "label": "Below MMM", "color": "#3b82f6"}
 
 
-async def _fetch_crw_point(
-    client: httpx.AsyncClient, lat: float, lng: float, date_str: str
-) -> dict[str, Any] | None:
-    """Fetch CRW BAA, DHW, and Hotspot for a single point from NOAA_DHW dataset."""
+# ── Hawaii bounding box (covers all reef sites) ───────────────────────────────
+_HAWAII_LAT_MIN, _HAWAII_LAT_MAX = 18.5, 22.5
+_HAWAII_LNG_MIN, _HAWAII_LNG_MAX = -161.0, -154.0
+
+async def _fetch_sst_bbox(client: httpx.AsyncClient, date_str: str) -> list:
+    """Fetch SST grid covering all Hawaiian sites in one ERDDAP request (stride=5 → 0.05°)."""
+    url = (
+        f"{ERDDAP_BASE}/{SST_DATASET}.json"
+        f"?analysed_sst[({date_str}):1:({date_str})]"
+        f"[({_HAWAII_LAT_MIN}):5:({_HAWAII_LAT_MAX})]"
+        f"[({_HAWAII_LNG_MIN}):5:({_HAWAII_LNG_MAX})]"
+    )
+    resp = await client.get(url, timeout=30.0)
+    resp.raise_for_status()
+    return resp.json()["table"]["rows"]  # columns: time, lat, lng, analysed_sst
+
+async def _fetch_crw_bbox(client: httpx.AsyncClient, date_str: str) -> list:
+    """Fetch CRW grid covering all Hawaiian sites in one ERDDAP request."""
     url = (
         f"{ERDDAP_BASE}/{CRW_DATASET}.json"
         f"?CRW_BAA,CRW_DHW,CRW_HOTSPOT"
         f"[({date_str}):1:({date_str})]"
-        f"[({lat:.4f}):1:({lat:.4f})]"
-        f"[({lng:.4f}):1:({lng:.4f})]"
+        f"[({_HAWAII_LAT_MIN}):1:({_HAWAII_LAT_MAX})]"
+        f"[({_HAWAII_LNG_MIN}):1:({_HAWAII_LNG_MAX})]"
     )
-    resp = await client.get(url, timeout=20.0)
+    resp = await client.get(url, timeout=30.0)
     resp.raise_for_status()
-    data = resp.json()
-    rows = data["table"]["rows"]
-    if not rows:
+    return resp.json()["table"]["rows"]  # columns: time, lat, lng, CRW_BAA, CRW_DHW, CRW_HOTSPOT
+
+def _nearest_sst(rows: list, lat: float, lng: float) -> float | None:
+    best_val, best_dist = None, float('inf')
+    for r in rows:
+        if r[3] is None:
+            continue
+        d = (r[1] - lat) ** 2 + (r[2] - lng) ** 2
+        if d < best_dist:
+            best_dist, best_val = d, r[3]
+    return round(best_val, 2) if best_val is not None else None
+
+def _nearest_crw(rows: list, lat: float, lng: float) -> dict | None:
+    best_row, best_dist = None, float('inf')
+    for r in rows:
+        d = (r[1] - lat) ** 2 + (r[2] - lng) ** 2
+        if d < best_dist:
+            best_dist, best_row = d, r
+    if best_row is None:
         return None
-    row = rows[-1]
-    # columns: time, latitude, longitude, CRW_BAA, CRW_DHW, CRW_HOTSPOT
     return {
-        "baa":     int(row[3])          if row[3] is not None else None,
-        "dhw":     round(float(row[4]), 2) if row[4] is not None else None,
-        "hotspot": round(float(row[5]), 2) if row[5] is not None else None,
+        "baa":     int(best_row[3])            if best_row[3] is not None else None,
+        "dhw":     round(float(best_row[4]), 2) if best_row[4] is not None else None,
+        "hotspot": round(float(best_row[5]), 2) if best_row[5] is not None else None,
     }
 
 
@@ -135,30 +166,21 @@ async def get_current_conditions():
         return cached
 
     lag_dt = datetime.now(timezone.utc).replace(hour=9, minute=0, second=0, microsecond=0) - timedelta(days=2)
-    sst_end_str = lag_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-    sst_start_str = (lag_dt - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    sst_date_str = lag_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
     crw_date_str = lag_dt.strftime("%Y-%m-%dT12:00:00Z")
 
+    # Two bbox requests instead of 22 point requests
     async with httpx.AsyncClient() as client:
-        site_tasks = [
-            asyncio.gather(
-                _fetch_sst_point(client, site["lat"], site["lng"], sst_start_str, sst_end_str),
-                _fetch_crw_point(client, site["lat"], site["lng"], crw_date_str),
-                return_exceptions=True,
-            )
-            for site in REEF_SITES
-        ]
-        all_site_results = await asyncio.gather(*site_tasks)
+        sst_rows, crw_rows = await asyncio.gather(
+            _fetch_sst_bbox(client, sst_date_str),
+            _fetch_crw_bbox(client, crw_date_str),
+            return_exceptions=True,
+        )
 
     results = []
-    for site, (sst_result, crw_result) in zip(REEF_SITES, all_site_results):
-        latest_sst = None
-        if not isinstance(sst_result, Exception) and sst_result:
-            latest_sst = sst_result[-1]["sst_c"]
-
-        crw: dict | None = None
-        if not isinstance(crw_result, Exception):
-            crw = crw_result
+    for site in REEF_SITES:
+        latest_sst = _nearest_sst(sst_rows, site["lat"], site["lng"]) if not isinstance(sst_rows, Exception) else None
+        crw = _nearest_crw(crw_rows, site["lat"], site["lng"]) if not isinstance(crw_rows, Exception) else None
 
         if crw and crw["baa"] is not None:
             alert = _baa_to_alert(crw["baa"])
@@ -181,43 +203,45 @@ async def get_current_conditions():
 
 # ── Chlorophyll-a overlay ─────────────────────────────────────────────────────
 
-CHLA_DATASET = "erdMH1chla1day"
-# Bounding box covering main Hawaiian island chain at 0.5° resolution
-_CHLA_LAT_MIN, _CHLA_LAT_MAX, _CHLA_LAT_STEP = 18.5, 22.5, 0.5
-_CHLA_LNG_MIN, _CHLA_LNG_MAX, _CHLA_LNG_STEP = -161.0, -154.0, 0.5
+# VIIRS-N (Suomi NPP) daily chlorophyll — active replacement for retired MODIS Aqua
+CHLA_DATASET = "erdVHNchla1day"
+_CHLA_LAT_MIN, _CHLA_LAT_MAX = 18.5, 22.5
+_CHLA_LNG_MIN, _CHLA_LNG_MAX = -161.0, -154.0
+_CHLA_STRIDE = 50  # ~0.375° resolution at 0.0075°/px native
 
 
 @router.get("/chlorophyll")
 async def get_chlorophyll_grid():
-    """Return a MODIS chlorophyll-a grid (mg/m³) covering Hawaiian waters."""
+    """Return a VIIRS chlorophyll-a grid (mg/m³) covering Hawaiian waters."""
     if cached := cache.get("chlorophyll-grid"):
         return cached
 
-    # Try most recent available day (MODIS lags ~1-2 days)
-    async with httpx.AsyncClient() as client:
-        for lag in range(2, 8):
-            date_dt = datetime.now(timezone.utc) - timedelta(days=lag)
-            date_str = date_dt.strftime("%Y-%m-%dT12:00:00Z")
-            url = (
-                f"{ERDDAP_BASE}/{CHLA_DATASET}.json"
-                f"?chlorophyll[({date_str}):1:({date_str})]"
-                f"[({_CHLA_LAT_MIN}):4:({_CHLA_LAT_MAX})]"
-                f"[({_CHLA_LNG_MIN}):4:({_CHLA_LNG_MAX})]"
-            )
-            try:
-                resp = await client.get(url, timeout=25.0)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    rows = data["table"]["rows"]
-                    points = [
-                        {"lat": r[1], "lng": r[2], "chlorophyll": round(r[3], 4) if r[3] is not None else None}
-                        for r in rows
-                    ]
-                    result = {"date": date_str[:10], "points": points, "fetched_at": datetime.now(timezone.utc).isoformat()}
-                    cache.set("chlorophyll-grid", result, ttl=3600)
-                    return result
-            except Exception:
-                continue
+    # (last) always fetches the most recently processed day
+    url = (
+        f"{ERDDAP_BASE}/{CHLA_DATASET}.json"
+        f"?chla[(last):1:(last)][(0.0):1:(0.0)]"
+        f"[({_CHLA_LAT_MIN}):{_CHLA_STRIDE}:({_CHLA_LAT_MAX})]"
+        f"[({_CHLA_LNG_MIN}):{_CHLA_STRIDE}:({_CHLA_LNG_MAX})]"
+    )
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, timeout=25.0)
+        if resp.status_code == 200:
+            data = resp.json()
+            rows = data["table"]["rows"]
+            # columns: time(0), altitude(1), latitude(2), longitude(3), chla(4)
+            date_str = rows[0][0][:10] if rows else "unknown"
+            points = [
+                {"lat": r[2], "lng": r[3], "chlorophyll": round(r[4], 4) if r[4] is not None else None}
+                for r in rows
+            ]
+            result = {"date": date_str, "points": points, "fetched_at": datetime.now(timezone.utc).isoformat()}
+            cache.set("chlorophyll-grid", result)
+            return result
+        else:
+            log.error("Chlorophyll ERDDAP returned %s", resp.status_code)
+    except Exception as exc:
+        log.exception("Chlorophyll fetch failed: %s", exc)
 
     raise HTTPException(status_code=502, detail="Chlorophyll data unavailable")
 
@@ -263,7 +287,7 @@ async def get_sst_yoy(site_id: str, days: int = 180):
         "last_year": last_year if not isinstance(last_year, Exception) else [],
         "fetched_at": datetime.now(timezone.utc).isoformat(),
     }
-    cache.set(cache_key, result, ttl=3600)
+    cache.set(cache_key, result)
     return result
 
 
@@ -335,7 +359,7 @@ async def get_dhw_forecast(site_id: str, forecast_days: int = 28):
         "historical_readings": readings[-90:],
         "fetched_at": datetime.now(timezone.utc).isoformat(),
     }
-    cache.set(cache_key, result, ttl=3600)
+    cache.set(cache_key, result)
     return result
 
 
@@ -405,5 +429,5 @@ async def get_salinity(site_id: str):
         "observed_at": observed_at,
         "fetched_at": datetime.now(timezone.utc).isoformat(),
     }
-    cache.set(cache_key, result, ttl=1800)
+    cache.set(cache_key, result)
     return result

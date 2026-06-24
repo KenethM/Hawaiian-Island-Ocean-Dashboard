@@ -5,6 +5,7 @@ import pathlib
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from alembic.config import Config
 from alembic import command
@@ -43,6 +44,16 @@ def _run_migrations() -> None:
     command.upgrade(cfg, "head")
 
 
+async def _warm_cache() -> None:
+    """Pre-fetch current conditions so the first user request hits cache."""
+    try:
+        from app.api.noaa import get_current_conditions
+        await get_current_conditions()
+        log.info("Cache warm complete.")
+    except Exception as exc:
+        log.warning("Cache warm failed (non-fatal): %s", exc)
+
+
 async def _notification_loop() -> None:
     await asyncio.sleep(60)
     while True:
@@ -57,11 +68,12 @@ async def _notification_loop() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _run_migrations()
-    task = asyncio.create_task(_notification_loop())
+    notif_task = asyncio.create_task(_notification_loop())
+    asyncio.create_task(_warm_cache())
     yield
-    task.cancel()
+    notif_task.cancel()
     try:
-        await task
+        await notif_task
     except asyncio.CancelledError:
         pass
 
@@ -75,6 +87,7 @@ app = FastAPI(
 
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
 
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,

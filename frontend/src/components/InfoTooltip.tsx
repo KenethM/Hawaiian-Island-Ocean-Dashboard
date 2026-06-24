@@ -5,7 +5,7 @@ interface Props {
 
 export function InfoTooltip({ text, width = 'w-52' }: Props) {
   return (
-    <span className="group relative inline-flex items-center ml-1">
+    <span className="group relative inline-flex items-center ml-1 normal-case tracking-normal font-normal">
       <span className="w-3.5 h-3.5 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-500 text-[9px] font-bold flex items-center justify-center cursor-help select-none transition-colors">
         i
       </span>

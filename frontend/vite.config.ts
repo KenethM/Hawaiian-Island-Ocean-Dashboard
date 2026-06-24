@@ -2,13 +2,14 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const base = process.env.VITE_BASE_PATH || '/'
+
 export default defineConfig({
-  base: process.env.VITE_BASE_PATH || '/',
+  base,
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
       manifest: {
         name: 'Hawaii Coral Reef Dashboard',
         short_name: 'ReefWatch',
@@ -16,24 +17,15 @@ export default defineConfig({
         theme_color: '#0c4a6e',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/',
-        icons: [
-          {
-            src: '/pwa-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: '/pwa-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
-          },
-        ],
+        scope: base,
+        start_url: base,
       },
       workbox: {
-        // Cache static assets; skip API calls (live data must be fresh)
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // navigateFallback disabled — SPA routing handled by the 404.html
+        // copy in the deploy workflow; enabling it causes workbox to try
+        // serving a non-precached URL when the app is at a subpath.
+        navigateFallback: null,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/[a-z]+\.tile\.openstreetmap\.org\//,
@@ -44,7 +36,6 @@ export default defineConfig({
             },
           },
         ],
-        navigateFallback: '/index.html',
       },
     }),
   ],

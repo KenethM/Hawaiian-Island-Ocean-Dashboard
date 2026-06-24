@@ -61,27 +61,31 @@ _HAWAII_LAT_MIN, _HAWAII_LAT_MAX = 18.5, 22.5
 _HAWAII_LNG_MIN, _HAWAII_LNG_MAX = -161.0, -154.0
 
 async def _fetch_sst_bbox(client: httpx.AsyncClient, date_str: str) -> list:
-    """Fetch SST grid covering all Hawaiian sites in one ERDDAP request (stride=5 → 0.05°)."""
+    """Fetch SST grid covering all Hawaiian sites in one ERDDAP request.
+    stride=10 on a 0.01° dataset → 0.1° resolution → ~2,800 rows (vs 11,200 at stride=5).
+    """
     url = (
         f"{ERDDAP_BASE}/{SST_DATASET}.json"
         f"?analysed_sst[({date_str}):1:({date_str})]"
-        f"[({_HAWAII_LAT_MIN}):5:({_HAWAII_LAT_MAX})]"
-        f"[({_HAWAII_LNG_MIN}):5:({_HAWAII_LNG_MAX})]"
+        f"[({_HAWAII_LAT_MIN}):10:({_HAWAII_LAT_MAX})]"
+        f"[({_HAWAII_LNG_MIN}):10:({_HAWAII_LNG_MAX})]"
     )
-    resp = await client.get(url, timeout=30.0)
+    resp = await client.get(url, timeout=45.0)
     resp.raise_for_status()
     return resp.json()["table"]["rows"]  # columns: time, lat, lng, analysed_sst
 
 async def _fetch_crw_bbox(client: httpx.AsyncClient, date_str: str) -> list:
-    """Fetch CRW grid covering all Hawaiian sites in one ERDDAP request."""
+    """Fetch CRW grid covering all Hawaiian sites in one ERDDAP request.
+    stride=2 on a 0.05° dataset → 0.1° resolution → ~2,800 rows (vs 11,200 at stride=1).
+    """
     url = (
         f"{ERDDAP_BASE}/{CRW_DATASET}.json"
         f"?CRW_BAA,CRW_DHW,CRW_HOTSPOT"
         f"[({date_str}):1:({date_str})]"
-        f"[({_HAWAII_LAT_MIN}):1:({_HAWAII_LAT_MAX})]"
-        f"[({_HAWAII_LNG_MIN}):1:({_HAWAII_LNG_MAX})]"
+        f"[({_HAWAII_LAT_MIN}):2:({_HAWAII_LAT_MAX})]"
+        f"[({_HAWAII_LNG_MIN}):2:({_HAWAII_LNG_MAX})]"
     )
-    resp = await client.get(url, timeout=30.0)
+    resp = await client.get(url, timeout=45.0)
     resp.raise_for_status()
     return resp.json()["table"]["rows"]  # columns: time, lat, lng, CRW_BAA, CRW_DHW, CRW_HOTSPOT
 
@@ -169,13 +173,17 @@ async def get_current_conditions():
     sst_date_str = lag_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
     crw_date_str = lag_dt.strftime("%Y-%m-%dT12:00:00Z")
 
-    # Two bbox requests instead of 22 point requests
     async with httpx.AsyncClient() as client:
         sst_rows, crw_rows = await asyncio.gather(
             _fetch_sst_bbox(client, sst_date_str),
             _fetch_crw_bbox(client, crw_date_str),
             return_exceptions=True,
         )
+
+    if isinstance(sst_rows, Exception):
+        log.error("SST bbox fetch failed for %s: %s", sst_date_str, sst_rows)
+    if isinstance(crw_rows, Exception):
+        log.error("CRW bbox fetch failed for %s: %s", crw_date_str, crw_rows)
 
     results = []
     for site in REEF_SITES:

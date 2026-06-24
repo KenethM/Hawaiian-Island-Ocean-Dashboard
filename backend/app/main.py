@@ -45,10 +45,15 @@ def _run_migrations() -> None:
 
 
 async def _warm_cache() -> None:
-    """Pre-fetch current conditions so the first user request hits cache."""
+    """Pre-fetch high-latency endpoints so first user requests hit cache."""
     try:
         from app.api.noaa import get_current_conditions
-        await get_current_conditions()
+        from app.api.weather import get_weather_grid
+        await asyncio.gather(
+            get_current_conditions(),
+            get_weather_grid(),
+            return_exceptions=True,
+        )
         log.info("Cache warm complete.")
     except Exception as exc:
         log.warning("Cache warm failed (non-fatal): %s", exc)

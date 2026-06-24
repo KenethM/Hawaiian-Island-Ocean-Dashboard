@@ -117,7 +117,7 @@ async def _fetch_sst_point(client: httpx.AsyncClient, lat: float, lng: float, st
         f"[({lat:.4f}):1:({lat:.4f})]"
         f"[({lng:.4f}):1:({lng:.4f})]"
     )
-    resp = await client.get(url, timeout=20.0)
+    resp = await client.get(url, timeout=45.0)
     resp.raise_for_status()
     data = resp.json()
     rows = data["table"]["rows"]

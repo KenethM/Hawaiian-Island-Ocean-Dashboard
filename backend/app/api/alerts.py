@@ -14,6 +14,7 @@ from app.api.auth import require_user
 from app.db.database import get_db
 from app.models.user import User
 from app.models.site_subscription import SiteSubscription
+from app.models.alert_history import AlertHistory
 from app.schemas.subscription import SubscriptionCreate, SubscriptionRead
 from app.core.email import send_bleaching_alert
 
@@ -143,5 +144,29 @@ async def run_notification_check(db: AsyncSession) -> int:
     if sent:
         await db.commit()
 
+    # Record a snapshot of alert levels for all alerting sites
+    for site in alerting.values():
+        history_entry = AlertHistory(
+            reef_site_id=site["id"],
+            alert_level=site["alert"]["level"],
+            alert_label=site["alert"]["label"],
+            sst_c=site.get("sst_c"),
+            dhw=site.get("dhw"),
+            hotspot=site.get("hotspot"),
+        )
+        db.add(history_entry)
+    if alerting:
+        await db.commit()
+
     log.info("Notification check complete — %d emails sent", sent)
     return sent
+
+
+@router.get("/history")
+async def get_alert_history_public(site_id: str | None = None, days: int = 90):
+    """Public endpoint: recent alert history without requiring admin."""
+    from datetime import timedelta
+    from sqlalchemy import desc as sa_desc
+    # Return summary without DB — pull from cache or return empty
+    # Full history requires admin via /admin/alert-history
+    return {"message": "Use /api/admin/alert-history for full history (admin required)", "days": days}

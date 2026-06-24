@@ -6,6 +6,12 @@ from pydantic import BaseModel, Field
 BleachingSeverity = Literal["none", "mild", "moderate", "severe", "mortality"]
 
 
+class SpeciesSightingCreate(BaseModel):
+    species_name: str
+    count: int | None = Field(None, ge=1)
+    notes: str | None = None
+
+
 class DiverLogCreate(BaseModel):
     reef_site_id: str
     diver_name: str | None = None
@@ -18,6 +24,7 @@ class DiverLogCreate(BaseModel):
     visibility_m: float | None = Field(None, ge=0, le=100)
     species_notes: str | None = None
     general_notes: str | None = None
+    species_sightings: list[SpeciesSightingCreate] | None = None
 
 
 class DiverLogRead(DiverLogCreate):

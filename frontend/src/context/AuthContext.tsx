@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
-import { api } from '../services/api'
+import { api, TOKEN_KEY } from '../services/api'
 import type { User, RegisterPayload } from '../types'
 
 interface AuthState {
@@ -10,8 +10,6 @@ interface AuthState {
 }
 
 const AuthContext = createContext<AuthState | null>(null)
-
-export const TOKEN_KEY = 'coral_auth_token'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)

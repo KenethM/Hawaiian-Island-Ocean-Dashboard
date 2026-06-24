@@ -31,6 +31,12 @@ async def require_user(user: User | None = Depends(get_current_user)) -> User:
     return user
 
 
+async def require_admin(user: User = Depends(require_user)) -> User:
+    if not user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user
+
+
 @router.post("/register", response_model=TokenResponse, status_code=201)
 async def register(payload: UserRegister, db: AsyncSession = Depends(get_db)):
     existing = await db.execute(select(User).where(User.email == payload.email))

@@ -6,6 +6,7 @@ export function useCurrentConditions(refreshMs = 300_000) {
   const [sites, setSites] = useState<ReefSite[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [fetchedAt, setFetchedAt] = useState<Date | null>(null)
 
   useEffect(() => {
     let active = true
@@ -13,7 +14,11 @@ export function useCurrentConditions(refreshMs = 300_000) {
     const load = async () => {
       try {
         const data = await api.getCurrentConditions()
-        if (active) { setSites(data); setError(null) }
+        if (active) {
+          setSites(data)
+          setError(null)
+          setFetchedAt(new Date())
+        }
       } catch {
         if (active) setError('Could not load reef conditions from NOAA.')
       } finally {
@@ -26,5 +31,5 @@ export function useCurrentConditions(refreshMs = 300_000) {
     return () => { active = false; clearInterval(timer) }
   }, [refreshMs])
 
-  return { sites, loading, error }
+  return { sites, loading, error, fetchedAt }
 }

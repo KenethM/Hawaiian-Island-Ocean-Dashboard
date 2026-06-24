@@ -5,6 +5,7 @@ import pathlib
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from alembic.config import Config
 from alembic import command
 
@@ -13,6 +14,7 @@ from app.api import auth
 from app.api import ph
 from app.api import tides, waves, turbidity
 from app.api import weather
+from app.api import admin
 from app.api.alerts import run_notification_check
 from app.db.database import AsyncSessionLocal
 
@@ -21,11 +23,18 @@ import app.models.user            # noqa: F401
 import app.models.diver_log       # noqa: F401
 import app.models.ph_reading      # noqa: F401
 import app.models.site_subscription  # noqa: F401
+import app.models.species_sighting   # noqa: F401
+import app.models.diver_log_photo    # noqa: F401
+import app.models.alert_history      # noqa: F401
+import app.models.audit_log          # noqa: F401
+import app.models.reef_site_db       # noqa: F401
 
 log = logging.getLogger(__name__)
 
-# Hours between notification sweep runs (override with ALERT_CHECK_INTERVAL_HOURS env var)
 _CHECK_INTERVAL_HOURS = float(os.getenv("ALERT_CHECK_INTERVAL_HOURS", "6"))
+
+UPLOADS_DIR = pathlib.Path(os.getenv("UPLOADS_DIR", "/app/uploads"))
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def _run_migrations() -> None:
@@ -35,8 +44,7 @@ def _run_migrations() -> None:
 
 
 async def _notification_loop() -> None:
-    """Runs in the background; checks and sends bleaching alerts every N hours."""
-    await asyncio.sleep(60)  # brief delay so the DB is ready after startup
+    await asyncio.sleep(60)
     while True:
         try:
             async with AsyncSessionLocal() as db:
@@ -61,7 +69,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Coral Reef Health Dashboard API",
     description="Live NOAA ocean data + diver observation logs for Hawaiian reef sites.",
-    version="1.0.0",
+    version="1.1.0",
     lifespan=lifespan,
 )
 
@@ -84,6 +92,10 @@ app.include_router(tides.router, prefix="/api")
 app.include_router(waves.router, prefix="/api")
 app.include_router(turbidity.router, prefix="/api")
 app.include_router(weather.router, prefix="/api")
+app.include_router(admin.router, prefix="/api")
+
+# Serve uploaded diver log photos
+app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 
 @app.get("/health")

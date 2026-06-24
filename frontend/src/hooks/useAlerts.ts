@@ -5,6 +5,7 @@ import type { ActiveAlerts } from '../types'
 export function useAlerts(refreshMs = 300_000) {
   const [alerts, setAlerts] = useState<ActiveAlerts | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let active = true
@@ -12,7 +13,9 @@ export function useAlerts(refreshMs = 300_000) {
     const load = async () => {
       try {
         const data = await api.getActiveAlerts()
-        if (active) setAlerts(data)
+        if (active) { setAlerts(data); setError(null) }
+      } catch {
+        if (active) setError('Could not load bleaching alerts.')
       } finally {
         if (active) setLoading(false)
       }
@@ -23,5 +26,5 @@ export function useAlerts(refreshMs = 300_000) {
     return () => { active = false; clearInterval(timer) }
   }, [refreshMs])
 
-  return { alerts, loading }
+  return { alerts, loading, error }
 }

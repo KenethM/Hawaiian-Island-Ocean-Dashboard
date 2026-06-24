@@ -23,8 +23,6 @@ export function TempTrendChart({ siteId, mmm }: Props) {
   const data = history.readings.map(r => ({
     date: formatDate(r.time),
     sst: r.sst_c,
-    watch: mmm + 1,
-    warning: mmm + 2,
   }))
 
   return (

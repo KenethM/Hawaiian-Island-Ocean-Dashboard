@@ -4,10 +4,12 @@ NOAA data fetching via ERDDAP.
 SST source: NOAA/JPL MUR SST Analysis (jplMURSST41) — 1 km daily, in °C.
 CRW source: NOAA Coral Reef Watch (NOAA_DHW) — 5 km daily.
   Provides Bleaching Alert Area (BAA 0-4), Degree Heating Weeks (DHW), and Hotspot.
+Chlorophyll: MODIS Aqua erdMH1chla1day — 0.0125° daily.
 ERDDAP URL: https://coastwatch.pfeg.noaa.gov/erddap/griddap/
 """
 
 import asyncio
+import statistics
 from datetime import datetime, timedelta, timezone
 from typing import Any
 import httpx
@@ -137,37 +139,271 @@ async def get_current_conditions():
     sst_start_str = (lag_dt - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
     crw_date_str = lag_dt.strftime("%Y-%m-%dT12:00:00Z")
 
-    results = []
     async with httpx.AsyncClient() as client:
-        for site in REEF_SITES:
-            sst_result, crw_result = await asyncio.gather(
+        site_tasks = [
+            asyncio.gather(
                 _fetch_sst_point(client, site["lat"], site["lng"], sst_start_str, sst_end_str),
                 _fetch_crw_point(client, site["lat"], site["lng"], crw_date_str),
                 return_exceptions=True,
             )
+            for site in REEF_SITES
+        ]
+        all_site_results = await asyncio.gather(*site_tasks)
 
-            latest_sst = None
-            if not isinstance(sst_result, Exception) and sst_result:
-                latest_sst = sst_result[-1]["sst_c"]
+    results = []
+    for site, (sst_result, crw_result) in zip(REEF_SITES, all_site_results):
+        latest_sst = None
+        if not isinstance(sst_result, Exception) and sst_result:
+            latest_sst = sst_result[-1]["sst_c"]
 
-            crw: dict | None = None
-            if not isinstance(crw_result, Exception):
-                crw = crw_result
+        crw: dict | None = None
+        if not isinstance(crw_result, Exception):
+            crw = crw_result
 
-            if crw and crw["baa"] is not None:
-                alert = _baa_to_alert(crw["baa"])
-            elif latest_sst is not None:
-                alert = _bleaching_level(latest_sst, site["mmm_c"])
-            else:
-                alert = {"level": -99, "label": "No Data", "color": "#6b7280"}
+        if crw and crw["baa"] is not None:
+            alert = _baa_to_alert(crw["baa"])
+        elif latest_sst is not None:
+            alert = _bleaching_level(latest_sst, site["mmm_c"])
+        else:
+            alert = {"level": -99, "label": "No Data", "color": "#6b7280"}
 
-            results.append({
-                **{k: site[k] for k in ("id", "name", "island", "lat", "lng", "depth_m", "mmm_c", "description")},
-                "sst_c": latest_sst,
-                "dhw": crw["dhw"] if crw else None,
-                "hotspot": crw["hotspot"] if crw else None,
-                "alert": alert,
-            })
+        results.append({
+            **{k: site[k] for k in ("id", "name", "island", "lat", "lng", "depth_m", "mmm_c", "description")},
+            "sst_c": latest_sst,
+            "dhw": crw["dhw"] if crw else None,
+            "hotspot": crw["hotspot"] if crw else None,
+            "alert": alert,
+        })
 
     cache.set("current-conditions", results)
     return results
+
+
+# ── Chlorophyll-a overlay ─────────────────────────────────────────────────────
+
+CHLA_DATASET = "erdMH1chla1day"
+# Bounding box covering main Hawaiian island chain at 0.5° resolution
+_CHLA_LAT_MIN, _CHLA_LAT_MAX, _CHLA_LAT_STEP = 18.5, 22.5, 0.5
+_CHLA_LNG_MIN, _CHLA_LNG_MAX, _CHLA_LNG_STEP = -161.0, -154.0, 0.5
+
+
+@router.get("/chlorophyll")
+async def get_chlorophyll_grid():
+    """Return a MODIS chlorophyll-a grid (mg/m³) covering Hawaiian waters."""
+    if cached := cache.get("chlorophyll-grid"):
+        return cached
+
+    # Try most recent available day (MODIS lags ~1-2 days)
+    async with httpx.AsyncClient() as client:
+        for lag in range(2, 8):
+            date_dt = datetime.now(timezone.utc) - timedelta(days=lag)
+            date_str = date_dt.strftime("%Y-%m-%dT12:00:00Z")
+            url = (
+                f"{ERDDAP_BASE}/{CHLA_DATASET}.json"
+                f"?chlorophyll[({date_str}):1:({date_str})]"
+                f"[({_CHLA_LAT_MIN}):4:({_CHLA_LAT_MAX})]"
+                f"[({_CHLA_LNG_MIN}):4:({_CHLA_LNG_MAX})]"
+            )
+            try:
+                resp = await client.get(url, timeout=25.0)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    rows = data["table"]["rows"]
+                    points = [
+                        {"lat": r[1], "lng": r[2], "chlorophyll": round(r[3], 4) if r[3] is not None else None}
+                        for r in rows
+                    ]
+                    result = {"date": date_str[:10], "points": points, "fetched_at": datetime.now(timezone.utc).isoformat()}
+                    cache.set("chlorophyll-grid", result, ttl=3600)
+                    return result
+            except Exception:
+                continue
+
+    raise HTTPException(status_code=502, detail="Chlorophyll data unavailable")
+
+
+# ── Year-over-year SST comparison ─────────────────────────────────────────────
+
+@router.get("/sst/{site_id}/yoy")
+async def get_sst_yoy(site_id: str, days: int = 180):
+    """Return SST for the current period vs. the same period last year."""
+    site = next((s for s in REEF_SITES if s["id"] == site_id), None)
+    if not site:
+        raise HTTPException(status_code=404, detail="Reef site not found")
+
+    cache_key = f"sst-yoy:{site_id}:{days}"
+    if cached := cache.get(cache_key):
+        return cached
+
+    now = datetime.now(timezone.utc).replace(hour=9, minute=0, second=0, microsecond=0) - timedelta(days=2)
+    this_year_end = now
+    this_year_start = now - timedelta(days=days)
+    last_year_end = now - timedelta(days=365)
+    last_year_start = last_year_end - timedelta(days=days)
+
+    fmt = "%Y-%m-%dT%H:%M:%SZ"
+
+    try:
+        async with httpx.AsyncClient() as client:
+            this_year, last_year = await asyncio.gather(
+                _fetch_sst_point(client, site["lat"], site["lng"],
+                                 this_year_start.strftime(fmt), this_year_end.strftime(fmt)),
+                _fetch_sst_point(client, site["lat"], site["lng"],
+                                 last_year_start.strftime(fmt), last_year_end.strftime(fmt)),
+                return_exceptions=True,
+            )
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=502, detail=f"NOAA ERDDAP error: {exc}")
+
+    result = {
+        "site_id": site_id,
+        "site_name": site["name"],
+        "mmm_c": site["mmm_c"],
+        "this_year": this_year if not isinstance(this_year, Exception) else [],
+        "last_year": last_year if not isinstance(last_year, Exception) else [],
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+    }
+    cache.set(cache_key, result, ttl=3600)
+    return result
+
+
+# ── DHW Forecast ──────────────────────────────────────────────────────────────
+
+def _calc_dhw(readings: list[dict], mmm: float) -> float:
+    """Calculate Degree Heating Weeks from last 84 days of SST readings."""
+    dhw = 0.0
+    for r in readings[-84:]:
+        hotspot = r["sst_c"] - (mmm + 1.0)
+        if hotspot > 0:
+            dhw += hotspot / 7.0
+    return round(dhw, 2)
+
+
+@router.get("/dhw-forecast/{site_id}")
+async def get_dhw_forecast(site_id: str, forecast_days: int = 28):
+    """Project DHW accumulation forward using current SST trend."""
+    site = next((s for s in REEF_SITES if s["id"] == site_id), None)
+    if not site:
+        raise HTTPException(status_code=404, detail="Reef site not found")
+
+    cache_key = f"dhw-forecast:{site_id}:{forecast_days}"
+    if cached := cache.get(cache_key):
+        return cached
+
+    now = datetime.now(timezone.utc).replace(hour=9, minute=0, second=0, microsecond=0) - timedelta(days=2)
+    start = now - timedelta(days=90)
+    fmt = "%Y-%m-%dT%H:%M:%SZ"
+
+    try:
+        async with httpx.AsyncClient() as client:
+            readings = await _fetch_sst_point(client, site["lat"], site["lng"],
+                                               start.strftime(fmt), now.strftime(fmt))
+    except httpx.HTTPError as exc:
+        raise HTTPException(status_code=502, detail=f"NOAA ERDDAP error: {exc}")
+
+    if len(readings) < 14:
+        raise HTTPException(status_code=422, detail="Insufficient SST data for forecast")
+
+    mmm = site["mmm_c"]
+    current_dhw = _calc_dhw(readings, mmm)
+
+    # Linear trend from last 14 days
+    recent_sst = [r["sst_c"] for r in readings[-14:]]
+    sst_trend_per_day = (recent_sst[-1] - recent_sst[0]) / 14.0
+    last_sst = recent_sst[-1]
+
+    projected = []
+    running_dhw = current_dhw
+    for day in range(1, forecast_days + 1):
+        proj_sst = last_sst + sst_trend_per_day * day
+        hotspot = max(0.0, proj_sst - (mmm + 1.0))
+        running_dhw += hotspot / 7.0
+        projected.append({
+            "day": day,
+            "projected_sst_c": round(proj_sst, 2),
+            "accumulated_dhw": round(running_dhw, 2),
+        })
+
+    result = {
+        "site_id": site_id,
+        "site_name": site["name"],
+        "mmm_c": mmm,
+        "current_dhw": current_dhw,
+        "sst_trend_per_day": round(sst_trend_per_day, 4),
+        "last_observed_sst": last_sst,
+        "forecast": projected,
+        "historical_readings": readings[-90:],
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+    }
+    cache.set(cache_key, result, ttl=3600)
+    return result
+
+
+# ── Salinity (CO-OPS) ─────────────────────────────────────────────────────────
+
+_SITE_TO_COOPS: dict[str, str] = {
+    "hanauma_bay":    "1612340",  # Honolulu
+    "kaneohe_bay":    "1612340",
+    "sharks_cove":    "1612340",
+    "molokini":       "1615680",  # Kahului, Maui
+    "honolua_bay":    "1615680",
+    "kealakekua_bay": "1617433",  # Kawaihae, Big Island
+    "kona_coast":     "1617433",
+    "tunnels_reef":   "1612480",  # Nawiliwili, Kauai
+    "poipu":          "1612480",
+    "french_frigate": "1619910",  # Sand Island, Midway (closest)
+    "midway_atoll":   "1619910",
+}
+
+COOPS_API = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
+
+
+@router.get("/salinity/{site_id}")
+async def get_salinity(site_id: str):
+    """Return latest nearshore salinity (PSU) from the nearest NOAA CO-OPS station."""
+    site = next((s for s in REEF_SITES if s["id"] == site_id), None)
+    if not site:
+        raise HTTPException(status_code=404, detail="Reef site not found")
+
+    station_id = _SITE_TO_COOPS.get(site_id)
+    if not station_id:
+        return {"site_id": site_id, "salinity_psu": None, "station_id": None,
+                "note": "No nearby salinity station", "fetched_at": datetime.now(timezone.utc).isoformat()}
+
+    cache_key = f"salinity:{site_id}"
+    if cached := cache.get(cache_key):
+        return cached
+
+    today = datetime.now(timezone.utc)
+    begin = (today - timedelta(days=2)).strftime("%Y%m%d")
+    end = today.strftime("%Y%m%d")
+
+    url = (
+        f"{COOPS_API}?product=salinity&application=coral_dashboard"
+        f"&begin_date={begin}&end_date={end}&station={station_id}"
+        f"&time_zone=GMT&units=metric&format=json"
+    )
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, timeout=15.0)
+            resp.raise_for_status()
+            data = resp.json()
+    except Exception:
+        return {"site_id": site_id, "salinity_psu": None, "station_id": station_id,
+                "note": "Salinity data unavailable", "fetched_at": datetime.now(timezone.utc).isoformat()}
+
+    readings_raw = data.get("data", [])
+    # Filter valid readings and take the most recent
+    valid = [r for r in readings_raw if r.get("v") not in (None, "", "0.000")]
+    salinity = round(float(valid[-1]["v"]), 2) if valid else None
+    observed_at = valid[-1]["t"] if valid else None
+
+    result = {
+        "site_id": site_id,
+        "station_id": station_id,
+        "salinity_psu": salinity,
+        "observed_at": observed_at,
+        "fetched_at": datetime.now(timezone.utc).isoformat(),
+    }
+    cache.set(cache_key, result, ttl=1800)
+    return result

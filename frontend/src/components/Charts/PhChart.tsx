@@ -61,7 +61,7 @@ export function PhRawChart({ data, activeSources }: RawChartProps) {
         />
         <Tooltip formatter={(v: number) => v.toFixed(4)} labelFormatter={l => `Month: ${l}`} />
         <Legend wrapperStyle={{ fontSize: 11 }} />
-        <ReferenceLine y={8.1} stroke="#6b7280" strokeDasharray="4 2"
+        <ReferenceLine y={8.18} stroke="#6b7280" strokeDasharray="4 2"
           label={{ value: 'Pre-industrial ~8.18', fontSize: 9, fill: '#6b7280', position: 'right' }} />
         {activeSources.map(src => (
           <Line

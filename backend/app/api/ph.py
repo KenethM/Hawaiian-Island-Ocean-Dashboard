@@ -16,13 +16,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
 from app.models.ph_reading import PhReading
 from app.schemas.ph import PhTrendPoint, PhPrediction, PhPredictionPoint
-from app.api.auth import require_user
+from app.api.auth import require_admin
 from app.models.user import User
 
 router = APIRouter(prefix="/ph", tags=["ph"])
 
 VALID_SOURCES = {"hot", "cmems", "ipacoa", "dar_reef_check"}
 VALID_DATA_TYPES = {"observed", "modeled"}
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
 
 
 @router.get("/trend", response_model=list[PhTrendPoint])
@@ -152,7 +153,7 @@ async def upload_ph_csv(
     lng: float | None = Form(default=None),
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(require_user),
+    _user: User = Depends(require_admin),
 ):
     """
     Upload a CSV file with pH readings. Requires authentication.
@@ -175,6 +176,11 @@ async def upload_ph_csv(
         raise HTTPException(status_code=422, detail=f"Unknown data_type '{data_type}'. Use: {VALID_DATA_TYPES}")
 
     content = await file.read()
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File too large. Maximum allowed size is {MAX_UPLOAD_BYTES // (1024 * 1024)} MB.",
+        )
     text_content = content.decode("utf-8-sig")  # strip BOM if present
 
     reader = csv.DictReader(io.StringIO(text_content))
@@ -252,7 +258,7 @@ async def fetch_cmems_ph(
     start_date: str = "2015-01-01",
     end_date: str | None = None,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(require_user),
+    _user: User = Depends(require_admin),
 ):
     """
     Fetch modeled pH from CMEMS (Copernicus Marine Service) for the Hawaiian region
@@ -272,6 +278,13 @@ async def fetch_cmems_ph(
             status_code=501,
             detail="copernicusmarine / xarray not installed — rebuild the Docker image.",
         )
+
+    try:
+        datetime.strptime(start_date, "%Y-%m-%d")
+        if end_date:
+            datetime.strptime(end_date, "%Y-%m-%d")
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Dates must be in YYYY-MM-DD format.")
 
     cmems_user = os.getenv("CMEMS_USER")
     cmems_pass = os.getenv("CMEMS_PASSWORD")

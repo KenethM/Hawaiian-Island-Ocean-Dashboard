@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import type { ReefSite } from '../types'
 import { TempTrendChart } from './Charts/TempTrendChart'
 import { TideChart } from './Charts/TideChart'
+import { DhwForecastChart } from './Charts/DhwForecastChart'
+import { SstYoYChart } from './Charts/SstYoYChart'
 import { DiverLogForm } from './DiverLog/DiverLogForm'
 import { DiverLogList } from './DiverLog/DiverLogList'
 import { useAuth } from '../context/AuthContext'
@@ -16,6 +18,22 @@ interface Props {
 }
 
 type Tab = 'overview' | 'temperature' | 'log' | 'reports'
+
+function FreshnessTag({ fetchedAt }: { fetchedAt: Date | null }) {
+  const [label, setLabel] = useState('')
+  useEffect(() => {
+    if (!fetchedAt) return
+    const update = () => {
+      const mins = Math.floor((Date.now() - fetchedAt.getTime()) / 60_000)
+      setLabel(mins < 1 ? 'just now' : `${mins}m ago`)
+    }
+    update()
+    const id = setInterval(update, 30_000)
+    return () => clearInterval(id)
+  }, [fetchedAt])
+  if (!fetchedAt) return null
+  return <span className="text-[10px] text-gray-400">· updated {label}</span>
+}
 
 export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
   const [tab, setTab] = useState<Tab>('overview')
@@ -69,7 +87,6 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
         </div>
 
-        {/* Alert badge + subscribe button */}
         <div className="mt-2 flex items-center gap-2 flex-wrap">
           <span
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-white"
@@ -162,9 +179,14 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
               </div>
             )}
 
-            {/* ── Live Conditions ─────────────────────────────────────── */}
+            {/* Live Conditions */}
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Live Conditions</p>
+              <FreshnessTag fetchedAt={conditions.fetchedAt} />
+            </div>
+
             {conditions.loading && (
-              <div className="mt-3 space-y-2 animate-pulse">
+              <div className="space-y-2 animate-pulse">
                 <div className="h-16 bg-gray-100 rounded-lg" />
                 <div className="h-24 bg-gray-100 rounded-lg" />
                 <div className="h-14 bg-gray-100 rounded-lg" />
@@ -172,8 +194,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
             )}
 
             {!conditions.loading && (
-              <div className="mt-3 space-y-3">
-
+              <div className="space-y-3">
                 {/* Waves */}
                 <div className="bg-gray-50 rounded-lg p-3">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
@@ -212,6 +233,22 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                     </>
                   ) : (
                     <p className="text-xs text-gray-400">No buoy data available</p>
+                  )}
+                </div>
+
+                {/* Salinity */}
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Salinity</p>
+                  {conditions.salinity?.salinity_psu != null ? (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-bold text-gray-900">{conditions.salinity.salinity_psu} PSU</span>
+                      <span className="text-xs text-gray-400">
+                        · station {conditions.salinity.station_id}
+                        {conditions.salinity.observed_at && ` · ${conditions.salinity.observed_at.slice(0, 16)}`}
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-400">{conditions.salinity?.note ?? 'No salinity data available'}</p>
                   )}
                 </div>
 
@@ -266,7 +303,6 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                   </p>
                   {conditions.turbidity?.history.length ? (
                     <>
-                      {/* Most recent reading summary */}
                       {conditions.turbidity.latest ? (
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-lg font-bold text-gray-900">
@@ -282,26 +318,18 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                       ) : (
                         <p className="text-xs text-gray-400 mb-3">No clear-sky reading this week</p>
                       )}
-
-                      {/* 14-day history bars */}
                       <div className="flex gap-1 overflow-x-auto pb-1">
                         {conditions.turbidity.history.map((day, i) => (
                           <div
                             key={i}
                             className="flex-shrink-0 w-8 flex flex-col items-center gap-0.5"
-                            title={
-                              day.kd490 != null
-                                ? `${day.date}\n${day.label}\nKd490: ${day.kd490} m⁻¹\nEst. visibility: ~${day.estimated_visibility_m} m`
-                                : `${day.date}\nNo satellite data (clouds or processing delay)`
-                            }
+                            title={day.kd490 != null
+                              ? `${day.date}\n${day.label}\nKd490: ${day.kd490} m⁻¹\nEst. visibility: ~${day.estimated_visibility_m} m`
+                              : `${day.date}\nNo satellite data`}
                           >
                             <div
                               className="w-full rounded"
-                              style={{
-                                height: day.kd490 != null ? '20px' : '20px',
-                                background: day.color,
-                                opacity: day.kd490 != null ? 1 : 0.35,
-                              }}
+                              style={{ height: '20px', background: day.color, opacity: day.kd490 != null ? 1 : 0.35 }}
                             />
                             <span className="text-[9px] text-gray-400 leading-none">
                               {day.date.slice(5).replace('-', '/')}
@@ -309,13 +337,12 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                           </div>
                         ))}
                       </div>
-
-                      {/* Legend */}
                       <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] text-gray-400">
                         <span><span className="inline-block w-2 h-2 rounded-sm mr-0.5" style={{ background: '#22c55e' }} />Very Clear</span>
                         <span><span className="inline-block w-2 h-2 rounded-sm mr-0.5" style={{ background: '#84cc16' }} />Clear</span>
                         <span><span className="inline-block w-2 h-2 rounded-sm mr-0.5" style={{ background: '#eab308' }} />Moderate</span>
-                        <span><span className="inline-block w-2 h-2 rounded-sm mr-0.5" style={{ background: '#f97316' }} />Turbid</span>
+                        <span><span className="inline-block w-2 h-2 rounded-sm mr-0.5" style={{ background: '#f97316' }} />Slightly Turbid</span>
+                        <span><span className="inline-block w-2 h-2 rounded-sm mr-0.5" style={{ background: '#ef4444' }} />Turbid</span>
                         <span><span className="inline-block w-2 h-2 rounded-sm mr-0.5 opacity-35" style={{ background: '#d1d5db' }} />No data</span>
                       </div>
                     </>
@@ -323,18 +350,30 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                     <p className="text-xs text-gray-400">No satellite data available</p>
                   )}
                 </div>
-
               </div>
             )}
           </div>
         )}
 
         {tab === 'temperature' && (
-          <div>
-            <p className="text-xs text-gray-500 mb-3">
-              Daily SST (last 60 days) vs bleaching thresholds from NOAA/JPL MUR SST.
-            </p>
-            <TempTrendChart siteId={site.id} mmm={site.mmm_c} />
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">60-Day SST History</p>
+              <p className="text-xs text-gray-500 mb-3">Daily SST vs bleaching thresholds · NOAA/JPL MUR SST</p>
+              <TempTrendChart siteId={site.id} mmm={site.mmm_c} />
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Year-over-Year Comparison</p>
+              <p className="text-xs text-gray-500 mb-3">This year vs last year, same 180-day window</p>
+              <SstYoYChart siteId={site.id} mmm={site.mmm_c} />
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">DHW Forecast (28 days)</p>
+              <p className="text-xs text-gray-500 mb-3">Projected heat stress if current SST trend continues</p>
+              <DhwForecastChart siteId={site.id} mmm={site.mmm_c} />
+            </div>
           </div>
         )}
 

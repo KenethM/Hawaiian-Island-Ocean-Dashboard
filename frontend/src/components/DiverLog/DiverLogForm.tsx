@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { FormEvent } from 'react'
 import { api } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
-import type { DiverLogCreate, BleachingSeverity, ReefSite } from '../../types'
+import type { DiverLogCreate, BleachingSeverity, ReefSite, SpeciesSightingCreate } from '../../types'
 
 interface Props {
   sites: ReefSite[]
@@ -13,6 +13,73 @@ interface Props {
 
 const SEVERITY_OPTIONS: BleachingSeverity[] = ['none', 'mild', 'moderate', 'severe', 'mortality']
 
+function SpeciesTracker({
+  sightings,
+  onChange,
+}: {
+  sightings: SpeciesSightingCreate[]
+  onChange: (s: SpeciesSightingCreate[]) => void
+}) {
+  const add = () => onChange([...sightings, { species_name: '' }])
+  const remove = (i: number) => onChange(sightings.filter((_, idx) => idx !== i))
+  const update = (i: number, patch: Partial<SpeciesSightingCreate>) =>
+    onChange(sightings.map((s, idx) => (idx === i ? { ...s, ...patch } : s)))
+
+  return (
+    <div className="col-span-2">
+      <div className="flex items-center justify-between mb-1">
+        <label className="block font-medium text-gray-700">Species Sightings</label>
+        <button
+          type="button"
+          onClick={add}
+          className="text-xs text-ocean-700 hover:text-ocean-900 font-medium"
+        >
+          + Add species
+        </button>
+      </div>
+      {sightings.length === 0 ? (
+        <p className="text-xs text-gray-400 italic">No species added yet</p>
+      ) : (
+        <div className="space-y-2">
+          {sightings.map((s, i) => (
+            <div key={i} className="flex gap-2 items-start">
+              <input
+                type="text"
+                placeholder="Species name"
+                value={s.species_name}
+                onChange={e => update(i, { species_name: e.target.value })}
+                className="flex-1 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+              />
+              <input
+                type="number"
+                placeholder="#"
+                min={1}
+                value={s.count ?? ''}
+                onChange={e => update(i, { count: e.target.value ? Number(e.target.value) : undefined })}
+                className="w-16 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+              />
+              <input
+                type="text"
+                placeholder="Notes"
+                value={s.notes ?? ''}
+                onChange={e => update(i, { notes: e.target.value || undefined })}
+                className="flex-1 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+              />
+              <button
+                type="button"
+                onClick={() => remove(i)}
+                className="text-gray-400 hover:text-red-500 text-lg leading-none px-1"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick }: Props) {
   const today = new Date().toISOString().split('T')[0]
   const { user } = useAuth()
@@ -21,9 +88,16 @@ export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick 
     dive_date: today,
     diver_name: user?.full_name ?? undefined,
   })
+  const [species, setSpecies] = useState<SpeciesSightingCreate[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (defaultSiteId !== undefined) {
+      setForm(prev => ({ ...prev, reef_site_id: defaultSiteId }))
+    }
+  }, [defaultSiteId])
 
   const set = (key: keyof DiverLogCreate, value: string | number | undefined) =>
     setForm(prev => ({ ...prev, [key]: value }))
@@ -33,9 +107,14 @@ export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick 
     setSubmitting(true)
     setError(null)
     try {
-      await api.submitDiverLog(form)
+      const payload: DiverLogCreate = {
+        ...form,
+        species_sightings: species.filter(s => s.species_name.trim()),
+      }
+      await api.submitDiverLog(payload)
       setSuccess(true)
       setForm({ reef_site_id: defaultSiteId ?? '', dive_date: today })
+      setSpecies([])
       onSubmitted()
       setTimeout(() => setSuccess(false), 4000)
     } catch {
@@ -167,7 +246,7 @@ export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick 
               <button
                 key={sev}
                 type="button"
-                onClick={() => set('bleaching_severity', sev)}
+                onClick={() => set('bleaching_severity', form.bleaching_severity === sev ? undefined : sev)}
                 className={`px-3 py-1 rounded-full border text-xs capitalize transition-colors ${
                   form.bleaching_severity === sev
                     ? 'bg-ocean-700 text-white border-ocean-700'
@@ -179,6 +258,9 @@ export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick 
             ))}
           </div>
         </div>
+
+        {/* Species sighting tracker */}
+        <SpeciesTracker sightings={species} onChange={setSpecies} />
 
         <div className="col-span-2">
           <label className="block font-medium text-gray-700 mb-1">Species Notes</label>

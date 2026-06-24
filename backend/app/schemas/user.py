@@ -25,6 +25,7 @@ class UserRead(BaseModel):
     full_name: str | None
     affiliation: str | None
     cert_level: str | None
+    is_admin: bool = False
     created_at: datetime
 
     model_config = {"from_attributes": True}

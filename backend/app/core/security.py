@@ -1,9 +1,22 @@
 import os
-from datetime import datetime, timedelta
+import logging
+from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 
-SECRET_KEY = os.getenv("JWT_SECRET", "change-me-in-production-please")
+log = logging.getLogger(__name__)
+
+_RAW_SECRET = os.getenv("JWT_SECRET", "")
+_DEFAULT_SENTINEL = "change-me-in-production-please"
+
+if not _RAW_SECRET:
+    log.critical(
+        "JWT_SECRET env var is not set — using an insecure default. "
+        "Set JWT_SECRET to a long random string before deploying."
+    )
+    _RAW_SECRET = _DEFAULT_SENTINEL
+
+SECRET_KEY = _RAW_SECRET
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 30
 
@@ -19,7 +32,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 def create_access_token(user_id: int) -> str:
-    expire = datetime.utcnow() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
+    expire = datetime.now(timezone.utc) + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
     return jwt.encode({"sub": str(user_id), "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
 
 

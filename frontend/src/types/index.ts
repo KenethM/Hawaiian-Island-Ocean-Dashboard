@@ -8,6 +8,7 @@ export interface User {
   full_name: string | null
   affiliation: Affiliation | null
   cert_level: CertLevel | null
+  is_admin: boolean
   created_at: string
 }
 
@@ -26,7 +27,6 @@ export interface RegisterPayload {
 }
 
 export interface AlertInfo {
-  // -99=no data, -1=below MMM, 0=no stress, 1=watch, 2=warning, 3=alert lvl 1, 4=alert lvl 2
   level: number
   label: string
   color: string
@@ -42,9 +42,10 @@ export interface ReefSite {
   mmm_c: number
   description: string
   sst_c: number | null
-  dhw: number | null       // Degree Heating Weeks (CRW) — accumulated thermal stress
-  hotspot: number | null   // SST anomaly above bleaching threshold (CRW)
+  dhw: number | null
+  hotspot: number | null
   alert: AlertInfo
+  fetched_at?: string
 }
 
 export interface SstReading {
@@ -57,7 +58,31 @@ export interface SstHistory {
   site_name: string
   mmm_c: number
   readings: SstReading[]
+  fetched_at?: string
 }
+
+export interface SstYoY {
+  site_id: string
+  site_name: string
+  mmm_c: number
+  this_year: SstReading[]
+  last_year: SstReading[]
+  fetched_at: string
+}
+
+// ── Species Sightings ─────────────────────────────────────────────────────────
+
+export interface SpeciesSightingCreate {
+  species_name: string
+  count?: number
+  notes?: string
+}
+
+export interface SpeciesSighting extends SpeciesSightingCreate {
+  id: number
+}
+
+// ── Diver Logs ────────────────────────────────────────────────────────────────
 
 export interface DiverLogCreate {
   reef_site_id: string
@@ -71,11 +96,20 @@ export interface DiverLogCreate {
   visibility_m?: number
   species_notes?: string
   general_notes?: string
+  species_sightings?: SpeciesSightingCreate[]
 }
 
 export interface DiverLog extends DiverLogCreate {
   id: number
   submitted_at: string
+}
+
+export interface DiverLogPhoto {
+  id: number
+  filename: string
+  original_name: string
+  url: string
+  uploaded_at: string
 }
 
 export interface SiteStat {
@@ -107,10 +141,23 @@ export interface SiteSubscription {
   last_notified_at: string | null
 }
 
+// ── Alert History ─────────────────────────────────────────────────────────────
+
+export interface AlertHistoryEntry {
+  id: number
+  reef_site_id: string
+  alert_level: number
+  alert_label: string
+  sst_c: number | null
+  dhw: number | null
+  hotspot: number | null
+  recorded_at: string
+}
+
 // ── Tides ─────────────────────────────────────────────────────────────────────
 
 export interface TidePrediction {
-  time: string      // "YYYY-MM-DD HH:MM"
+  time: string
   height_m: number
 }
 
@@ -157,14 +204,59 @@ export interface ClarityDay {
   days_ago: number
   kd490: number | null
   estimated_visibility_m: number | null
-  label: string   // "Very Clear" | "Clear" | "Moderate" | "Slightly Turbid" | "Turbid" | "No data"
+  label: string
   color: string
 }
 
 export interface TurbidityData {
   site_id: string
-  latest: ClarityDay | null    // most recent non-null reading
-  history: ClarityDay[]        // last 7 days, newest first, includes no-data days
+  latest: ClarityDay | null
+  history: ClarityDay[]
+}
+
+// ── Salinity ──────────────────────────────────────────────────────────────────
+
+export interface SalinityData {
+  site_id: string
+  station_id: string | null
+  salinity_psu: number | null
+  observed_at: string | null
+  fetched_at: string
+  note?: string
+}
+
+// ── Chlorophyll ───────────────────────────────────────────────────────────────
+
+export interface ChlorophyllPoint {
+  lat: number
+  lng: number
+  chlorophyll: number | null
+}
+
+export interface ChlorophyllGrid {
+  date: string
+  points: ChlorophyllPoint[]
+  fetched_at: string
+}
+
+// ── DHW Forecast ──────────────────────────────────────────────────────────────
+
+export interface DhwForecastPoint {
+  day: number
+  projected_sst_c: number
+  accumulated_dhw: number
+}
+
+export interface DhwForecast {
+  site_id: string
+  site_name: string
+  mmm_c: number
+  current_dhw: number
+  sst_trend_per_day: number
+  last_observed_sst: number
+  forecast: DhwForecastPoint[]
+  historical_readings: SstReading[]
+  fetched_at: string
 }
 
 // ── Ocean pH ──────────────────────────────────────────────────────────────────
@@ -172,7 +264,7 @@ export interface TurbidityData {
 export type PhSource = 'hot' | 'cmems' | 'ipacoa' | 'dar_reef_check'
 
 export interface PhTrendPoint {
-  date: string      // "YYYY-MM"
+  date: string
   source: PhSource
   avg_ph: number
   count: number
@@ -198,4 +290,29 @@ export interface PhSourceInfo {
   count: number
   earliest: string | null
   latest: string | null
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+
+export interface ReefSiteAdmin {
+  id: string
+  name: string
+  island: string
+  lat: number
+  lng: number
+  depth_m: number
+  mmm_c: number
+  description: string | null
+  is_active: boolean
+  created_at: string
+}
+
+export interface AuditLogEntry {
+  id: number
+  user_email: string | null
+  action: string
+  resource_type: string | null
+  resource_id: string | null
+  details: Record<string, unknown> | null
+  created_at: string
 }

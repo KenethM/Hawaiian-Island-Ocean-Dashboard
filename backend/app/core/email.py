@@ -100,7 +100,7 @@ async def send_bleaching_alert(
 """
 
     try:
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         await loop.run_in_executor(None, _send_sync, to_email, subject, html_body)
         log.info("Bleaching alert email sent to %s for %s (%s)", to_email, site_name, label)
         return True

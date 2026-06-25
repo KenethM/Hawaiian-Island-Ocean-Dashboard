@@ -159,4 +159,16 @@ async def debug_connectivity():
         "https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdVHNchla1day.json"
         "?chla[(last):1:(last)][(0.0):1:(0.0)][(18.5):1:(22.5)][(-161.0):1:(-154.0)]",
     )
+    # Test alternative ERDDAP servers
+    await probe(
+        "ncei_erddap_oisst",
+        "https://www.ncei.noaa.gov/erddap/griddap/ncdcOisst21Agg_LonPM180.json"
+        "?sst[(2026-06-23):1:(2026-06-23)][(0):1:(0)][(21.27):1:(21.27)][(-157.82):1:(-157.82)]",
+    )
+    await probe(
+        "polarwatch_erddap",
+        "https://polarwatch.noaa.gov/erddap/griddap/jplMURSST41.json"
+        "?analysed_sst[(2026-06-23T09:00:00Z):1:(2026-06-23T09:00:00Z)]"
+        "[(21.27):1:(21.27)][(-157.82):1:(-157.82)]",
+    )
     return results

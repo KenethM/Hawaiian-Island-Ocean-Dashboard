@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import L from 'leaflet'
 import { MapContainer, TileLayer, CircleMarker, Tooltip, Marker, Popup } from 'react-leaflet'
-import type { ReefSite, ChlorophyllGrid } from '../../types'
+import type { ReefSite } from '../../types'
 import type { DiverLogWithCoords } from '../../hooks/useDiverLogs'
 import { HealthLegend } from './HealthLegend'
 import { WeatherOverlay, WeatherControlPanel } from './WeatherOverlay'
 import type { WeatherControlState } from './WeatherOverlay'
 import { useWeatherData } from '../../hooks/useWeatherData'
 import { ChlorophyllOverlay, ChlorophyllLegend } from './ChlorophyllOverlay'
-import { api } from '../../services/api'
 
 const SEVERITY_COLOR: Record<string, string> = {
   none: '#22c55e',
@@ -59,17 +58,6 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }:
   const [weather, setWeather] = useState<WeatherControlState>(DEFAULT_WEATHER_STATE)
   const { data: weatherData, loading: weatherLoading, error: weatherError } = useWeatherData(weather.enabled)
   const [showChlorophyll, setShowChlorophyll] = useState(false)
-  const [chlorophyllData, setChlorophyllData] = useState<ChlorophyllGrid | null>(null)
-  const [chlorophyllLoading, setChlorophyllLoading] = useState(false)
-
-  useEffect(() => {
-    if (!showChlorophyll || chlorophyllData) return
-    setChlorophyllLoading(true)
-    api.getChlorophyllGrid()
-      .then(setChlorophyllData)
-      .catch(() => {})
-      .finally(() => setChlorophyllLoading(false))
-  }, [showChlorophyll, chlorophyllData])
 
   const histDays = weatherData
     ? weatherData.grid[0]?.daily.filter(d => !d.is_forecast).length ?? 30
@@ -100,7 +88,7 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }:
         <WeatherOverlay data={weatherData ?? null} state={weather} />
 
         {/* Chlorophyll overlay */}
-        {showChlorophyll && <ChlorophyllOverlay data={chlorophyllData} />}
+        {showChlorophyll && <ChlorophyllOverlay />}
 
         {/* Reef site health circles */}
         {sites.map(site => (
@@ -177,9 +165,9 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }:
               : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'
           }`}
         >
-          {chlorophyllLoading ? '⏳ Loading…' : showChlorophyll ? '🌿 Chl-a on' : '🌿 Chl-a'}
+          {showChlorophyll ? '🌿 Chl-a on' : '🌿 Chl-a'}
         </button>
-        <ChlorophyllLegend visible={showChlorophyll && !!chlorophyllData} />
+        <ChlorophyllLegend visible={showChlorophyll} />
         <HealthLegend />
       </div>
 

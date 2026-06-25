@@ -1,89 +1,56 @@
 import { useEffect, useRef } from 'react'
 import { useMap } from 'react-leaflet'
-import type { ChlorophyllGrid } from '../../types'
+import L from 'leaflet'
 
 interface Props {
-  data: ChlorophyllGrid | null
   opacity?: number
 }
 
-// Color ramp: very low (deep blue) → medium (green) → high bloom (red)
-function chlaToColor(val: number): [number, number, number] {
-  // Typical open ocean: 0.01–0.5 mg/m³; bloom: 1–10+
-  const t = Math.min(1, Math.log10(Math.max(0.01, val) + 1) / Math.log10(11))
-  if (t < 0.25) {
-    const r = t / 0.25
-    return [Math.round(20 + r * 20), Math.round(100 + r * 100), Math.round(180 - r * 60)]
-  } else if (t < 0.5) {
-    const r = (t - 0.25) / 0.25
-    return [Math.round(40 + r * 60), Math.round(200 - r * 40), Math.round(120 - r * 60)]
-  } else if (t < 0.75) {
-    const r = (t - 0.5) / 0.25
-    return [Math.round(100 + r * 100), Math.round(160 - r * 80), Math.round(60 - r * 30)]
-  } else {
-    const r = (t - 0.75) / 0.25
-    return [Math.round(200 + r * 55), Math.round(80 - r * 60), Math.round(30 - r * 20)]
-  }
+// Hawaii bounding box used for both the overlay and the WMS request
+const BOUNDS: L.LatLngBoundsExpression = [[17.5, -161.5], [23.5, -153.5]]
+const GIBS = 'https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi'
+
+function gibsUrl(date: string): string {
+  return (
+    `${GIBS}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap` +
+    `&LAYERS=VIIRS_SNPP_L2_Chlorophyll_A` +
+    `&CRS=CRS:84&BBOX=-161.5,17.5,-153.5,23.5` +
+    `&WIDTH=900&HEIGHT=700&FORMAT=image%2Fpng&TRANSPARENT=true` +
+    `&TIME=${date}`
+  )
 }
 
-export function ChlorophyllOverlay({ data, opacity = 0.65 }: Props) {
+function targetDate(): string {
+  const d = new Date()
+  d.setUTCDate(d.getUTCDate() - 2)
+  return d.toISOString().slice(0, 10)
+}
+
+export function ChlorophyllOverlay({ opacity = 0.7 }: Props) {
   const map = useMap()
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const overlayRef = useRef<L.Layer | null>(null)
+  const layerRef = useRef<L.Layer | null>(null)
 
   useEffect(() => {
-    if (!data || data.points.length === 0) return
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const L = (window as any).L as typeof import('leaflet')
-    if (!L) return
-
-    // Remove previous overlay
-    if (overlayRef.current) {
-      map.removeLayer(overlayRef.current)
-      overlayRef.current = null
+    if (layerRef.current) {
+      map.removeLayer(layerRef.current)
+      layerRef.current = null
     }
 
-    const canvas = document.createElement('canvas')
-    canvas.width = 400
-    canvas.height = 300
-    canvasRef.current = canvas
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    // Determine bounds from data
-    const lats = data.points.map(p => p.lat)
-    const lngs = data.points.map(p => p.lng)
-    const latMin = Math.min(...lats)
-    const latMax = Math.max(...lats)
-    const lngMin = Math.min(...lngs)
-    const lngMax = Math.max(...lngs)
-
-    // Paint each point as a filled rectangle on the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    for (const pt of data.points) {
-      if (pt.chlorophyll == null) continue
-      const x = Math.round(((pt.lng - lngMin) / (lngMax - lngMin)) * (canvas.width - 1))
-      const y = Math.round(((latMax - pt.lat) / (latMax - latMin)) * (canvas.height - 1))
-      const [r, g, b] = chlaToColor(pt.chlorophyll)
-      ctx.fillStyle = `rgba(${r},${g},${b},${opacity})`
-      const cellW = Math.ceil(canvas.width / (lngs.filter((v, i, a) => a.indexOf(v) === i).length || 1)) + 2
-      const cellH = Math.ceil(canvas.height / (lats.filter((v, i, a) => a.indexOf(v) === i).length || 1)) + 2
-      ctx.fillRect(x - cellW / 2, y - cellH / 2, cellW, cellH)
-    }
-
-    const bounds: L.LatLngBoundsExpression = [[latMin, lngMin], [latMax, lngMax]]
-    const layer = L.imageOverlay(canvas.toDataURL(), bounds, { opacity, interactive: false })
+    const layer = L.imageOverlay(gibsUrl(targetDate()), BOUNDS, {
+      opacity,
+      interactive: false,
+      attribution: 'NASA GIBS · VIIRS Chl-a',
+    })
     layer.addTo(map)
-    overlayRef.current = layer
+    layerRef.current = layer
 
     return () => {
-      if (overlayRef.current) {
-        map.removeLayer(overlayRef.current)
-        overlayRef.current = null
+      if (layerRef.current) {
+        map.removeLayer(layerRef.current)
+        layerRef.current = null
       }
     }
-  }, [data, opacity, map])
+  }, [opacity, map])
 
   return null
 }
@@ -92,16 +59,18 @@ interface LegendProps { visible: boolean }
 
 export function ChlorophyllLegend({ visible }: LegendProps) {
   if (!visible) return null
+  // Color stops approximate the NASA GIBS ocean-color palette
   const stops = [
-    { label: '< 0.1', color: 'rgb(20,130,160)' },
-    { label: '0.5', color: 'rgb(60,180,90)' },
-    { label: '1.0', color: 'rgb(160,120,30)' },
-    { label: '> 5', color: 'rgb(240,30,10)' },
+    { label: '< 0.1', color: 'rgb(68,1,84)' },
+    { label: '0.3', color: 'rgb(59,82,139)' },
+    { label: '1.0', color: 'rgb(33,145,140)' },
+    { label: '3.0', color: 'rgb(94,201,98)' },
+    { label: '> 10', color: 'rgb(253,231,37)' },
   ]
   return (
     <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow text-[10px] text-gray-700">
       <p className="font-semibold mb-1">Chlorophyll-a (mg/m³)</p>
-      <div className="flex gap-1.5 items-center">
+      <div className="flex gap-1 items-end">
         {stops.map(s => (
           <span key={s.label} className="flex flex-col items-center gap-0.5">
             <span className="w-5 h-3 rounded-sm block" style={{ background: s.color }} />
@@ -109,6 +78,7 @@ export function ChlorophyllLegend({ visible }: LegendProps) {
           </span>
         ))}
       </div>
+      <p className="text-gray-400 mt-1">NASA GIBS · VIIRS · {targetDate()}</p>
     </div>
   )
 }

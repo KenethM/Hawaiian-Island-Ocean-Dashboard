@@ -1,0 +1,1051 @@
+{
+  "points": [
+    {
+      "lat": 22.50375,
+      "lng": -160.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -160.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -160.24875,
+      "chlorophyll": 0.09981029
+    },
+    {
+      "lat": 22.50375,
+      "lng": -159.87375,
+      "chlorophyll": 0.08287659
+    },
+    {
+      "lat": 22.50375,
+      "lng": -159.49875,
+      "chlorophyll": 0.08025859
+    },
+    {
+      "lat": 22.50375,
+      "lng": -159.12375,
+      "chlorophyll": 0.081267565
+    },
+    {
+      "lat": 22.50375,
+      "lng": -158.74875,
+      "chlorophyll": 0.08315078
+    },
+    {
+      "lat": 22.50375,
+      "lng": -158.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -157.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -157.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -157.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -156.87375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -156.49875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -156.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -155.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -155.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.50375,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -160.99875,
+      "chlorophyll": 0.08997146
+    },
+    {
+      "lat": 22.12875,
+      "lng": -160.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -160.24875,
+      "chlorophyll": 0.091957726
+    },
+    {
+      "lat": 22.12875,
+      "lng": -159.87375,
+      "chlorophyll": 0.09303575
+    },
+    {
+      "lat": 22.12875,
+      "lng": -159.49875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -159.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -158.74875,
+      "chlorophyll": 0.08198638
+    },
+    {
+      "lat": 22.12875,
+      "lng": -158.37375,
+      "chlorophyll": 0.07931262
+    },
+    {
+      "lat": 22.12875,
+      "lng": -157.99875,
+      "chlorophyll": 0.054966986
+    },
+    {
+      "lat": 22.12875,
+      "lng": -157.62375,
+      "chlorophyll": 0.069106616
+    },
+    {
+      "lat": 22.12875,
+      "lng": -157.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -156.87375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -156.49875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -156.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -155.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -155.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 22.12875,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -160.99875,
+      "chlorophyll": 0.10429597
+    },
+    {
+      "lat": 21.75375,
+      "lng": -160.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -160.24875,
+      "chlorophyll": 0.093973815
+    },
+    {
+      "lat": 21.75375,
+      "lng": -159.87375,
+      "chlorophyll": 0.11645063
+    },
+    {
+      "lat": 21.75375,
+      "lng": -159.49875,
+      "chlorophyll": 0.09504317
+    },
+    {
+      "lat": 21.75375,
+      "lng": -159.12375,
+      "chlorophyll": 0.0871568
+    },
+    {
+      "lat": 21.75375,
+      "lng": -158.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -158.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -157.99875,
+      "chlorophyll": 0.11661517
+    },
+    {
+      "lat": 21.75375,
+      "lng": -157.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -157.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -156.87375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -156.49875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -156.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -155.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -155.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.75375,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -160.99875,
+      "chlorophyll": 0.10042284
+    },
+    {
+      "lat": 21.37875,
+      "lng": -160.62375,
+      "chlorophyll": 0.08933287
+    },
+    {
+      "lat": 21.37875,
+      "lng": -160.24875,
+      "chlorophyll": 0.11107337
+    },
+    {
+      "lat": 21.37875,
+      "lng": -159.87375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -159.49875,
+      "chlorophyll": 0.093110606
+    },
+    {
+      "lat": 21.37875,
+      "lng": -159.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -158.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -158.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -157.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -157.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -157.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -156.87375,
+      "chlorophyll": 0.06701367
+    },
+    {
+      "lat": 21.37875,
+      "lng": -156.49875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -156.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -155.74875,
+      "chlorophyll": 0.071811564
+    },
+    {
+      "lat": 21.37875,
+      "lng": -155.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.37875,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.00375,
+      "lng": -160.99875,
+      "chlorophyll": 0.09673612
+    },
+    {
+      "lat": 21.00375,
+      "lng": -160.62375,
+      "chlorophyll": 0.084990576
+    },
+    {
+      "lat": 21.00375,
+      "lng": -160.24875,
+      "chlorophyll": 0.065931395
+    },
+    {
+      "lat": 21.00375,
+      "lng": -159.87375,
+      "chlorophyll": 0.08346962
+    },
+    {
+      "lat": 21.00375,
+      "lng": -159.49875,
+      "chlorophyll": 0.08287484
+    },
+    {
+      "lat": 21.00375,
+      "lng": -159.12375,
+      "chlorophyll": 0.09936739
+    },
+    {
+      "lat": 21.00375,
+      "lng": -158.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.00375,
+      "lng": -158.37375,
+      "chlorophyll": 0.07484395
+    },
+    {
+      "lat": 21.00375,
+      "lng": -157.99875,
+      "chlorophyll": 0.08385881
+    },
+    {
+      "lat": 21.00375,
+      "lng": -157.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.00375,
+      "lng": -157.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.00375,
+      "lng": -156.87375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.00375,
+      "lng": -156.49875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.00375,
+      "lng": -156.12375,
+      "chlorophyll": 0.093050055
+    },
+    {
+      "lat": 21.00375,
+      "lng": -155.74875,
+      "chlorophyll": 0.090317205
+    },
+    {
+      "lat": 21.00375,
+      "lng": -155.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.00375,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.00375,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 21.00375,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.62875,
+      "lng": -160.99875,
+      "chlorophyll": 0.08159263
+    },
+    {
+      "lat": 20.62875,
+      "lng": -160.62375,
+      "chlorophyll": 0.08768948
+    },
+    {
+      "lat": 20.62875,
+      "lng": -160.24875,
+      "chlorophyll": 0.06964272
+    },
+    {
+      "lat": 20.62875,
+      "lng": -159.87375,
+      "chlorophyll": 0.08616301
+    },
+    {
+      "lat": 20.62875,
+      "lng": -159.49875,
+      "chlorophyll": 0.0997491
+    },
+    {
+      "lat": 20.62875,
+      "lng": -159.12375,
+      "chlorophyll": 0.092432655
+    },
+    {
+      "lat": 20.62875,
+      "lng": -158.74875,
+      "chlorophyll": 0.10750418
+    },
+    {
+      "lat": 20.62875,
+      "lng": -158.37375,
+      "chlorophyll": 0.103538364
+    },
+    {
+      "lat": 20.62875,
+      "lng": -157.99875,
+      "chlorophyll": 0.1113791
+    },
+    {
+      "lat": 20.62875,
+      "lng": -157.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.62875,
+      "lng": -157.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.62875,
+      "lng": -156.87375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.62875,
+      "lng": -156.49875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.62875,
+      "lng": -156.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.62875,
+      "lng": -155.74875,
+      "chlorophyll": 0.07438245
+    },
+    {
+      "lat": 20.62875,
+      "lng": -155.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.62875,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.62875,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.62875,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.25375,
+      "lng": -160.99875,
+      "chlorophyll": 0.078557536
+    },
+    {
+      "lat": 20.25375,
+      "lng": -160.62375,
+      "chlorophyll": 0.06570016
+    },
+    {
+      "lat": 20.25375,
+      "lng": -160.24875,
+      "chlorophyll": 0.06574424
+    },
+    {
+      "lat": 20.25375,
+      "lng": -159.87375,
+      "chlorophyll": 0.070446454
+    },
+    {
+      "lat": 20.25375,
+      "lng": -159.49875,
+      "chlorophyll": 0.08753617
+    },
+    {
+      "lat": 20.25375,
+      "lng": -159.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.25375,
+      "lng": -158.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.25375,
+      "lng": -158.37375,
+      "chlorophyll": 0.10238245
+    },
+    {
+      "lat": 20.25375,
+      "lng": -157.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.25375,
+      "lng": -157.62375,
+      "chlorophyll": 0.08770116
+    },
+    {
+      "lat": 20.25375,
+      "lng": -157.24875,
+      "chlorophyll": 0.095361345
+    },
+    {
+      "lat": 20.25375,
+      "lng": -156.87375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.25375,
+      "lng": -156.49875,
+      "chlorophyll": 0.08259233
+    },
+    {
+      "lat": 20.25375,
+      "lng": -156.12375,
+      "chlorophyll": 0.07805948
+    },
+    {
+      "lat": 20.25375,
+      "lng": -155.74875,
+      "chlorophyll": 0.11605619
+    },
+    {
+      "lat": 20.25375,
+      "lng": -155.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.25375,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.25375,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 20.25375,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.87875,
+      "lng": -160.99875,
+      "chlorophyll": 0.072330125
+    },
+    {
+      "lat": 19.87875,
+      "lng": -160.62375,
+      "chlorophyll": 0.06459844
+    },
+    {
+      "lat": 19.87875,
+      "lng": -160.24875,
+      "chlorophyll": 0.06256362
+    },
+    {
+      "lat": 19.87875,
+      "lng": -159.87375,
+      "chlorophyll": 0.065442234
+    },
+    {
+      "lat": 19.87875,
+      "lng": -159.49875,
+      "chlorophyll": 0.08536058
+    },
+    {
+      "lat": 19.87875,
+      "lng": -159.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.87875,
+      "lng": -158.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.87875,
+      "lng": -158.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.87875,
+      "lng": -157.99875,
+      "chlorophyll": 0.09166489
+    },
+    {
+      "lat": 19.87875,
+      "lng": -157.62375,
+      "chlorophyll": 0.097338006
+    },
+    {
+      "lat": 19.87875,
+      "lng": -157.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.87875,
+      "lng": -156.87375,
+      "chlorophyll": 0.12683535
+    },
+    {
+      "lat": 19.87875,
+      "lng": -156.49875,
+      "chlorophyll": 0.0679458
+    },
+    {
+      "lat": 19.87875,
+      "lng": -156.12375,
+      "chlorophyll": 0.07162913
+    },
+    {
+      "lat": 19.87875,
+      "lng": -155.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.87875,
+      "lng": -155.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.87875,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.87875,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.87875,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.50375,
+      "lng": -160.99875,
+      "chlorophyll": 0.08060668
+    },
+    {
+      "lat": 19.50375,
+      "lng": -160.62375,
+      "chlorophyll": 0.08083078
+    },
+    {
+      "lat": 19.50375,
+      "lng": -160.24875,
+      "chlorophyll": 0.08294102
+    },
+    {
+      "lat": 19.50375,
+      "lng": -159.87375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.50375,
+      "lng": -159.49875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.50375,
+      "lng": -159.12375,
+      "chlorophyll": 0.07075064
+    },
+    {
+      "lat": 19.50375,
+      "lng": -158.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.50375,
+      "lng": -158.37375,
+      "chlorophyll": 0.07844166
+    },
+    {
+      "lat": 19.50375,
+      "lng": -157.99875,
+      "chlorophyll": 0.08905597
+    },
+    {
+      "lat": 19.50375,
+      "lng": -157.62375,
+      "chlorophyll": 0.096077755
+    },
+    {
+      "lat": 19.50375,
+      "lng": -157.24875,
+      "chlorophyll": 0.09606974
+    },
+    {
+      "lat": 19.50375,
+      "lng": -156.87375,
+      "chlorophyll": 0.092868276
+    },
+    {
+      "lat": 19.50375,
+      "lng": -156.49875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.50375,
+      "lng": -156.12375,
+      "chlorophyll": 0.078341685
+    },
+    {
+      "lat": 19.50375,
+      "lng": -155.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.50375,
+      "lng": -155.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.50375,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.50375,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.50375,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.12875,
+      "lng": -160.99875,
+      "chlorophyll": 0.053817797
+    },
+    {
+      "lat": 19.12875,
+      "lng": -160.62375,
+      "chlorophyll": 0.0784748
+    },
+    {
+      "lat": 19.12875,
+      "lng": -160.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.12875,
+      "lng": -159.87375,
+      "chlorophyll": 0.083914466
+    },
+    {
+      "lat": 19.12875,
+      "lng": -159.49875,
+      "chlorophyll": 0.07892475
+    },
+    {
+      "lat": 19.12875,
+      "lng": -159.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.12875,
+      "lng": -158.74875,
+      "chlorophyll": 0.046084754
+    },
+    {
+      "lat": 19.12875,
+      "lng": -158.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.12875,
+      "lng": -157.99875,
+      "chlorophyll": 0.06692057
+    },
+    {
+      "lat": 19.12875,
+      "lng": -157.62375,
+      "chlorophyll": 0.097182125
+    },
+    {
+      "lat": 19.12875,
+      "lng": -157.24875,
+      "chlorophyll": 0.0921089
+    },
+    {
+      "lat": 19.12875,
+      "lng": -156.87375,
+      "chlorophyll": 0.090221934
+    },
+    {
+      "lat": 19.12875,
+      "lng": -156.49875,
+      "chlorophyll": 0.083584376
+    },
+    {
+      "lat": 19.12875,
+      "lng": -156.12375,
+      "chlorophyll": 0.07380459
+    },
+    {
+      "lat": 19.12875,
+      "lng": -155.74875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.12875,
+      "lng": -155.37375,
+      "chlorophyll": 0.052953273
+    },
+    {
+      "lat": 19.12875,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.12875,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 19.12875,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 18.75375,
+      "lng": -160.99875,
+      "chlorophyll": 0.065959565
+    },
+    {
+      "lat": 18.75375,
+      "lng": -160.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 18.75375,
+      "lng": -160.24875,
+      "chlorophyll": 0.070461944
+    },
+    {
+      "lat": 18.75375,
+      "lng": -159.87375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 18.75375,
+      "lng": -159.49875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 18.75375,
+      "lng": -159.12375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 18.75375,
+      "lng": -158.74875,
+      "chlorophyll": 0.063859075
+    },
+    {
+      "lat": 18.75375,
+      "lng": -158.37375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 18.75375,
+      "lng": -157.99875,
+      "chlorophyll": 0.07792459
+    },
+    {
+      "lat": 18.75375,
+      "lng": -157.62375,
+      "chlorophyll": 0.07735978
+    },
+    {
+      "lat": 18.75375,
+      "lng": -157.24875,
+      "chlorophyll": 0.072588764
+    },
+    {
+      "lat": 18.75375,
+      "lng": -156.87375,
+      "chlorophyll": 0.06063374
+    },
+    {
+      "lat": 18.75375,
+      "lng": -156.49875,
+      "chlorophyll": 0.052843444
+    },
+    {
+      "lat": 18.75375,
+      "lng": -156.12375,
+      "chlorophyll": 0.064124025
+    },
+    {
+      "lat": 18.75375,
+      "lng": -155.74875,
+      "chlorophyll": 0.09123857
+    },
+    {
+      "lat": 18.75375,
+      "lng": -155.37375,
+      "chlorophyll": 0.105529465
+    },
+    {
+      "lat": 18.75375,
+      "lng": -154.99875,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 18.75375,
+      "lng": -154.62375,
+      "chlorophyll": NaN
+    },
+    {
+      "lat": 18.75375,
+      "lng": -154.24875,
+      "chlorophyll": NaN
+    }
+  ],
+  "fetched_date": "2026-06-15",
+  "dataset": "VIIRS-N erdVHNchla1day"
+}

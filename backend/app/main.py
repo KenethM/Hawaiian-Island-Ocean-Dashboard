@@ -119,3 +119,44 @@ app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/api/debug/connectivity")
+async def debug_connectivity():
+    """Temporary diagnostic endpoint — tests outbound HTTPS from Render."""
+    import httpx
+    results = {}
+
+    async def probe(label: str, url: str, **kwargs):
+        try:
+            async with httpx.AsyncClient() as c:
+                r = await c.get(url, timeout=20.0, **kwargs)
+            results[label] = {"status": r.status_code, "preview": r.text[:300]}
+        except Exception as exc:
+            results[label] = {"error": type(exc).__name__, "detail": str(exc)[:300]}
+
+    await probe(
+        "open_meteo",
+        "https://api.open-meteo.com/v1/forecast",
+        params={"latitude": 21.27, "longitude": -157.82,
+                "daily": "precipitation_sum", "timezone": "Pacific/Honolulu",
+                "forecast_days": 1},
+    )
+    await probe(
+        "erddap_sst",
+        "https://coastwatch.pfeg.noaa.gov/erddap/griddap/jplMURSST41.json"
+        "?analysed_sst[(2026-06-23T09:00:00Z):1:(2026-06-23T09:00:00Z)]"
+        "[(21.27):1:(21.27)][(-157.82):1:(-157.82)]",
+    )
+    await probe(
+        "erddap_crw",
+        "https://coastwatch.pfeg.noaa.gov/erddap/griddap/NOAA_DHW.json"
+        "?CRW_BAA[(2026-06-23T12:00:00Z):1:(2026-06-23T12:00:00Z)]"
+        "[(21.27):1:(21.27)][(-157.82):1:(-157.82)]",
+    )
+    await probe(
+        "viirs_chla",
+        "https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdVHNchla1day.json"
+        "?chla[(last):1:(last)][(0.0):1:(0.0)][(18.5):1:(22.5)][(-161.0):1:(-154.0)]",
+    )
+    return results

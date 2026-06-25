@@ -151,11 +151,14 @@ async def get_sst_for_site(site_id: str, days: int = 30):
             resp.raise_for_status()
             all_history = resp.json()
         site_data = all_history.get(site_id)
-        if site_data:
-            # Trim to requested number of days
-            site_data["readings"] = site_data["readings"][-days:]
-            cache.set(cache_key, site_data)
-            return site_data
+        if not site_data:
+            raise HTTPException(status_code=404, detail="SST history not found for site")
+        # Trim to requested number of days
+        site_data["readings"] = site_data["readings"][-days:]
+        cache.set(cache_key, site_data)
+        return site_data
+    except HTTPException:
+        raise
     except Exception as exc:
         log.error("SST history fetch from GitHub Pages failed: %s", exc)
         raise HTTPException(status_code=503, detail="SST data temporarily unavailable")

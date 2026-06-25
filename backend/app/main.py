@@ -90,7 +90,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+cors_origins = os.getenv(
+    "CORS_ORIGINS",
+    "http://localhost:5173,https://kenethm.github.io",
+).split(",")
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(

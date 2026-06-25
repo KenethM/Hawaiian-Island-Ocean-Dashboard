@@ -10,6 +10,7 @@ ERDDAP URL: https://coastwatch.pfeg.noaa.gov/erddap/griddap/
 
 import asyncio
 import logging
+import os
 import statistics
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -18,6 +19,11 @@ from fastapi import APIRouter, HTTPException
 
 from app.data.reef_sites import REEF_SITES
 from app.core import cache
+
+GITHUB_DATA_URL = os.getenv(
+    "GITHUB_DATA_URL",
+    "https://kenethm.github.io/Hawaiian-Island-Ocean-Dashboard/data",
+)
 
 log = logging.getLogger(__name__)
 
@@ -139,28 +145,20 @@ async def get_sst_for_site(site_id: str, days: int = 30):
     if cached := cache.get(cache_key):
         return cached
 
-    end_dt = datetime.now(timezone.utc).replace(hour=9, minute=0, second=0, microsecond=0)
-    start_dt = end_dt - timedelta(days=days)
-    # MUR SST lags ~1-2 days behind real-time
-    end_dt -= timedelta(days=2)
-
-    end_str = end_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-    start_str = start_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-
     try:
         async with httpx.AsyncClient() as client:
-            readings = await _fetch_sst_point(client, site["lat"], site["lng"], start_str, end_str)
-    except httpx.HTTPError as exc:
-        raise HTTPException(status_code=502, detail=f"NOAA ERDDAP error: {exc}")
-
-    result = {
-        "site_id": site_id,
-        "site_name": site["name"],
-        "mmm_c": site["mmm_c"],
-        "readings": readings,
-    }
-    cache.set(cache_key, result)
-    return result
+            resp = await client.get(f"{GITHUB_DATA_URL}/sst-history.json", timeout=15.0)
+            resp.raise_for_status()
+            all_history = resp.json()
+        site_data = all_history.get(site_id)
+        if site_data:
+            # Trim to requested number of days
+            site_data["readings"] = site_data["readings"][-days:]
+            cache.set(cache_key, site_data)
+            return site_data
+    except Exception as exc:
+        log.error("SST history fetch from GitHub Pages failed: %s", exc)
+        raise HTTPException(status_code=503, detail="SST data temporarily unavailable")
 
 
 @router.get("/current-conditions")
@@ -169,44 +167,16 @@ async def get_current_conditions():
     if cached := cache.get("current-conditions"):
         return cached
 
-    lag_dt = datetime.now(timezone.utc).replace(hour=9, minute=0, second=0, microsecond=0) - timedelta(days=2)
-    sst_date_str = lag_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-    crw_date_str = lag_dt.strftime("%Y-%m-%dT12:00:00Z")
-
-    async with httpx.AsyncClient() as client:
-        sst_rows, crw_rows = await asyncio.gather(
-            _fetch_sst_bbox(client, sst_date_str),
-            _fetch_crw_bbox(client, crw_date_str),
-            return_exceptions=True,
-        )
-
-    if isinstance(sst_rows, Exception):
-        log.error("SST bbox fetch failed for %s: %s", sst_date_str, sst_rows)
-    if isinstance(crw_rows, Exception):
-        log.error("CRW bbox fetch failed for %s: %s", crw_date_str, crw_rows)
-
-    results = []
-    for site in REEF_SITES:
-        latest_sst = _nearest_sst(sst_rows, site["lat"], site["lng"]) if not isinstance(sst_rows, Exception) else None
-        crw = _nearest_crw(crw_rows, site["lat"], site["lng"]) if not isinstance(crw_rows, Exception) else None
-
-        if crw and crw["baa"] is not None:
-            alert = _baa_to_alert(crw["baa"])
-        elif latest_sst is not None:
-            alert = _bleaching_level(latest_sst, site["mmm_c"])
-        else:
-            alert = {"level": -99, "label": "No Data", "color": "#6b7280"}
-
-        results.append({
-            **{k: site[k] for k in ("id", "name", "island", "lat", "lng", "depth_m", "mmm_c", "description")},
-            "sst_c": latest_sst,
-            "dhw": crw["dhw"] if crw else None,
-            "hotspot": crw["hotspot"] if crw else None,
-            "alert": alert,
-        })
-
-    cache.set("current-conditions", results)
-    return results
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(f"{GITHUB_DATA_URL}/current-conditions.json", timeout=15.0)
+            resp.raise_for_status()
+            results = resp.json()
+        cache.set("current-conditions", results)
+        return results
+    except Exception as exc:
+        log.error("Current conditions fetch from GitHub Pages failed: %s", exc)
+        raise HTTPException(status_code=503, detail="Ocean data temporarily unavailable")
 
 
 # ── Chlorophyll-a overlay ─────────────────────────────────────────────────────
@@ -224,32 +194,15 @@ async def get_chlorophyll_grid():
     if cached := cache.get("chlorophyll-grid"):
         return cached
 
-    # (last) always fetches the most recently processed day
-    url = (
-        f"{ERDDAP_BASE}/{CHLA_DATASET}.json"
-        f"?chla[(last):1:(last)][(0.0):1:(0.0)]"
-        f"[({_CHLA_LAT_MIN}):{_CHLA_STRIDE}:({_CHLA_LAT_MAX})]"
-        f"[({_CHLA_LNG_MIN}):{_CHLA_STRIDE}:({_CHLA_LNG_MAX})]"
-    )
     try:
         async with httpx.AsyncClient() as client:
-            resp = await client.get(url, timeout=25.0)
-        if resp.status_code == 200:
-            data = resp.json()
-            rows = data["table"]["rows"]
-            # columns: time(0), altitude(1), latitude(2), longitude(3), chla(4)
-            date_str = rows[0][0][:10] if rows else "unknown"
-            points = [
-                {"lat": r[2], "lng": r[3], "chlorophyll": round(r[4], 4) if r[4] is not None else None}
-                for r in rows
-            ]
-            result = {"date": date_str, "points": points, "fetched_at": datetime.now(timezone.utc).isoformat()}
-            cache.set("chlorophyll-grid", result)
-            return result
-        else:
-            log.error("Chlorophyll ERDDAP returned %s", resp.status_code)
+            resp = await client.get(f"{GITHUB_DATA_URL}/chlorophyll.json", timeout=15.0)
+            resp.raise_for_status()
+            result = resp.json()
+        cache.set("chlorophyll-grid", result)
+        return result
     except Exception as exc:
-        log.exception("Chlorophyll fetch failed: %s", exc)
+        log.error("Chlorophyll fetch from GitHub Pages failed: %s", exc)
 
     raise HTTPException(status_code=502, detail="Chlorophyll data unavailable")
 

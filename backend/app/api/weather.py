@@ -1,11 +1,17 @@
 import asyncio
 import logging
+import os
 from datetime import date, timedelta
 
 import httpx
 from fastapi import APIRouter, HTTPException
 
 from app.core import cache
+
+GITHUB_DATA_URL = os.getenv(
+    "GITHUB_DATA_URL",
+    "https://kenethm.github.io/Hawaiian-Island-Ocean-Dashboard/data",
+)
 
 log = logging.getLogger(__name__)
 
@@ -67,46 +73,17 @@ async def _fetch_point(client: httpx.AsyncClient, lat: float, lon: float) -> dic
 
 @router.get("/grid")
 async def get_weather_grid():
-    """
-    Returns 30-day precipitation history + 7-day forecast for a grid of points
-    across the Hawaiian Islands, sourced from Open-Meteo (no API key required).
-    Each point includes daily precip_mm, rain probability, and WMO weather code.
-    """
     cached = cache.get(FORECAST_CACHE_KEY, ttl=FORECAST_TTL)
     if cached:
         return cached
 
-    async with httpx.AsyncClient() as client:
-        raw = await asyncio.gather(
-            *[_fetch_point(client, p["lat"], p["lon"]) for p in HAWAII_GRID]
-        )
-
-    today_str = date.today().isoformat()
-    grid = []
-    for point, result in zip(HAWAII_GRID, raw):
-        if result is None:
-            continue
-        daily = result.get("daily", {})
-        times = daily.get("time", [])
-        precips = daily.get("precipitation_sum", [])
-        probs = daily.get("precipitation_probability_max", [])
-        codes = daily.get("weathercode", [])
-        days = []
-        for i, t in enumerate(times):
-            days.append({
-                "date": t,
-                "precip_mm": precips[i] if i < len(precips) else None,
-                "rain_prob": probs[i] if i < len(probs) else None,
-                "weather_code": codes[i] if i < len(codes) else None,
-                "is_forecast": t > today_str,
-            })
-        grid.append({
-            "name": point["name"],
-            "lat": point["lat"],
-            "lon": point["lon"],
-            "daily": days,
-        })
-
-    response = {"grid": grid, "fetched_at": today_str}
-    cache.set(FORECAST_CACHE_KEY, response)
-    return response
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(f"{GITHUB_DATA_URL}/weather.json", timeout=15.0)
+            resp.raise_for_status()
+            result = resp.json()
+        cache.set(FORECAST_CACHE_KEY, result)
+        return result
+    except Exception as exc:
+        log.error("Weather data fetch from GitHub Pages failed: %s", exc)
+        raise HTTPException(status_code=503, detail="Weather data temporarily unavailable")

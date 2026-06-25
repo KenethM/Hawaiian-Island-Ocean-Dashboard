@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Fetch ocean data from ERDDAP and Open-Meteo and write JSON files for
-static hosting on GitHub Pages.
+Fetch ocean data from Open-Meteo Marine, NOAA ERDDAP, and Open-Meteo Weather,
+then write JSON files for static hosting on GitHub Pages.
 
 Usage:
     python scripts/fetch_ocean_data.py --output data
@@ -10,6 +10,7 @@ Usage:
 import argparse
 import asyncio
 import json
+import math
 import os
 import sys
 from datetime import datetime, timedelta, timezone
@@ -166,10 +167,12 @@ WEATHER_GRID = [
 ]
 
 # ---------------------------------------------------------------------------
-# ERDDAP base URLs
+# API URLs
 # ---------------------------------------------------------------------------
 
 ERDDAP_BASE = "https://coastwatch.pfeg.noaa.gov/erddap/griddap"
+MARINE_API_URL = "https://marine-api.open-meteo.com/v1/marine"
+CHLA_DATASET = "nesdisVHNnoaaSNPPnoaa20NRTchlaGapfilledDaily"
 SITE_TIMEOUT = 30.0
 
 # ---------------------------------------------------------------------------
@@ -194,7 +197,6 @@ BAA_LABELS = {
 
 
 def compute_alert(baa, sst, mmm_c):
-    """Return (level, color, label) for the alert state."""
     if baa is not None and baa >= 0:
         level = int(baa)
         return level, BAA_COLORS.get(level, "#6b7280"), BAA_LABELS.get(level, "Unknown")
@@ -215,17 +217,12 @@ def compute_alert(baa, sst, mmm_c):
 # ---------------------------------------------------------------------------
 
 def _parse_csv(text: str):
-    """Parse ERDDAP CSV response, skipping the units row.
-
-    Returns list-of-dicts with column headers as keys and float/string values.
-    """
     lines = [l for l in text.strip().splitlines() if l.strip()]
     if len(lines) < 3:
         return []
     headers = [h.strip() for h in lines[0].split(",")]
-    # lines[1] is the units row — skip it
     rows = []
-    for line in lines[2:]:
+    for line in lines[2:]:  # skip units row
         parts = line.split(",")
         row = {}
         for i, h in enumerate(headers):
@@ -239,44 +236,69 @@ def _parse_csv(text: str):
 
 
 # ---------------------------------------------------------------------------
-# SST fetching
+# SST — Open-Meteo Marine API (not NOAA; works from cloud IPs)
 # ---------------------------------------------------------------------------
 
-async def fetch_sst_site(client: httpx.AsyncClient, site: dict, date_str: str):
-    """Fetch SST for a single site. Returns (site_id, sst_c) or (site_id, None)."""
-    lat, lng = site["lat"], site["lng"]
-    url = (
-        f"{ERDDAP_BASE}/jplMURSST41.csv"
-        f"?analysed_sst[({date_str}T09:00:00Z):1:({date_str}T09:00:00Z)]"
-        f"[({lat}):1:({lat})][({lng}):1:({lng})]"
-    )
+async def fetch_sst_site(client: httpx.AsyncClient, site: dict):
+    """Fetch current SST and 60-day history from Open-Meteo Marine."""
     try:
-        resp = await client.get(url, timeout=SITE_TIMEOUT)
+        resp = await client.get(
+            MARINE_API_URL,
+            params={
+                "latitude": site["lat"],
+                "longitude": site["lng"],
+                "hourly": "sea_surface_temperature",
+                "timezone": "UTC",
+                "past_days": 60,
+                "forecast_days": 1,
+            },
+            timeout=SITE_TIMEOUT,
+        )
         resp.raise_for_status()
-        rows = _parse_csv(resp.text)
-        if rows:
-            raw = rows[0].get("analysed_sst")
-            if raw is not None:
-                return site["id"], float(raw)
+        data = resp.json()
+        times = data.get("hourly", {}).get("time", [])
+        sst_vals = data.get("hourly", {}).get("sea_surface_temperature", [])
+
+        # Current: most recent non-null value
+        current_sst = next((v for v in reversed(sst_vals) if v is not None), None)
+
+        # History: one reading per day at noon UTC (index 12, 36, 60, ...)
+        readings = []
+        for i in range(12, len(times), 24):
+            if i < len(sst_vals) and sst_vals[i] is not None:
+                readings.append({"time": times[i], "sst_c": sst_vals[i]})
+
+        return site["id"], current_sst, readings
     except Exception as exc:
         print(f"[SST] {site['id']}: {exc}", file=sys.stderr)
-    return site["id"], None
+    return site["id"], None, []
 
 
-async def fetch_all_sst(date_str: str):
-    """Fetch SST for all sites concurrently. Returns dict site_id -> sst_c."""
+async def fetch_all_sst():
+    """Fetch SST for all sites concurrently. Returns (sst_dict, history_dict)."""
     async with httpx.AsyncClient() as client:
-        tasks = [fetch_sst_site(client, s, date_str) for s in REEF_SITES]
+        tasks = [fetch_sst_site(client, s) for s in REEF_SITES]
         results = await asyncio.gather(*tasks)
-    return dict(results)
+
+    sst_data = {}
+    history_data = {}
+    for site_id, current_sst, readings in results:
+        sst_data[site_id] = current_sst
+        site = next(s for s in REEF_SITES if s["id"] == site_id)
+        history_data[site_id] = {
+            "site_id": site_id,
+            "site_name": site["name"],
+            "mmm_c": site["mmm_c"],
+            "readings": readings,
+        }
+    return sst_data, history_data
 
 
 # ---------------------------------------------------------------------------
-# CRW fetching
+# CRW — still attempt (falls back to SST alerts if blocked)
 # ---------------------------------------------------------------------------
 
 async def fetch_crw_site(client: httpx.AsyncClient, site: dict, date_str: str):
-    """Fetch CRW (BAA, DHW, hotspot) for a single site."""
     lat, lng = site["lat"], site["lng"]
     url = (
         f"{ERDDAP_BASE}/NOAA_DHW.csv"
@@ -304,7 +326,6 @@ async def fetch_crw_site(client: httpx.AsyncClient, site: dict, date_str: str):
 
 
 async def fetch_all_crw(date_str: str):
-    """Fetch CRW for all sites concurrently. Returns dict site_id -> crw_dict."""
     async with httpx.AsyncClient() as client:
         tasks = [fetch_crw_site(client, s, date_str) for s in REEF_SITES]
         results = await asyncio.gather(*tasks)
@@ -312,14 +333,14 @@ async def fetch_all_crw(date_str: str):
 
 
 # ---------------------------------------------------------------------------
-# Chlorophyll fetching
+# Chlorophyll — VIIRS NRT gap-filled (correct dataset and variable name)
 # ---------------------------------------------------------------------------
 
 async def fetch_chlorophyll():
-    """Fetch VIIRS chlorophyll grid. Returns chlorophyll.json payload."""
     url = (
-        f"{ERDDAP_BASE}/erdVHNchla1day.csv"
-        "?chla[(last):1:(last)][(0.0):1:(0.0)][(18.5):50:(22.5)][(-161.0):50:(-154.0)]"
+        f"{ERDDAP_BASE}/{CHLA_DATASET}.csv"
+        "?chlor_a[(last):1:(last)][(0.0):1:(0.0)]"
+        "[(18.5):5:(22.5)][(-161.0):5:(-154.0)]"
     )
     try:
         async with httpx.AsyncClient() as client:
@@ -329,35 +350,40 @@ async def fetch_chlorophyll():
         points = []
         fetched_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         for row in rows:
-            chla = row.get("chla")
-            lat = row.get("latitude") or row.get("lat")
-            lng = row.get("longitude") or row.get("lon") or row.get("lng")
-            if lat is not None and lng is not None and chla is not None:
-                points.append({"lat": float(lat), "lng": float(lng), "chlorophyll": float(chla)})
-            # Capture the date from the time column if present
+            chla = row.get("chlor_a")
+            lat = row.get("latitude")
+            lng = row.get("longitude")
+            if lat is None or lng is None or chla is None:
+                continue
+            try:
+                chla_f = float(chla)
+                if math.isnan(chla_f):
+                    continue
+                points.append({"lat": float(lat), "lng": float(lng), "chlorophyll": chla_f})
+            except (ValueError, TypeError):
+                continue
             t = row.get("time")
             if t and isinstance(t, str) and len(t) >= 10:
                 fetched_date = t[:10]
         return {
             "points": points,
             "fetched_date": fetched_date,
-            "dataset": "VIIRS-N erdVHNchla1day",
+            "dataset": f"VIIRS-N {CHLA_DATASET}",
         }
     except Exception as exc:
         print(f"[Chlorophyll] fetch failed: {exc}", file=sys.stderr)
         return {
             "points": [],
             "fetched_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-            "dataset": "VIIRS-N erdVHNchla1day",
+            "dataset": f"VIIRS-N {CHLA_DATASET}",
         }
 
 
 # ---------------------------------------------------------------------------
-# Weather fetching
+# Weather — Open-Meteo forecast
 # ---------------------------------------------------------------------------
 
 async def fetch_weather_point(client: httpx.AsyncClient, point: dict, today_str: str):
-    """Fetch weather for one grid point. Returns point dict with 'daily' list."""
     params = {
         "latitude": point["lat"],
         "longitude": point["lon"],
@@ -395,7 +421,6 @@ async def fetch_weather_point(client: httpx.AsyncClient, point: dict, today_str:
 
 
 async def fetch_all_weather():
-    """Fetch weather for all 25 grid points concurrently. Returns weather.json payload."""
     today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     async with httpx.AsyncClient() as client:
         tasks = [fetch_weather_point(client, p, today_str) for p in WEATHER_GRID]
@@ -407,73 +432,26 @@ async def fetch_all_weather():
 
 
 # ---------------------------------------------------------------------------
-# SST history fetching (60 days)
-# ---------------------------------------------------------------------------
-
-async def fetch_sst_history_site(client: httpx.AsyncClient, site: dict, start_str: str, end_str: str):
-    """Fetch 60-day SST history for one site."""
-    lat, lng = site["lat"], site["lng"]
-    url = (
-        f"{ERDDAP_BASE}/jplMURSST41.csv"
-        f"?analysed_sst[({start_str}T09:00:00Z):1:({end_str}T09:00:00Z)]"
-        f"[({lat}):1:({lat})][({lng}):1:({lng})]"
-    )
-    readings = []
-    try:
-        resp = await client.get(url, timeout=60.0)
-        resp.raise_for_status()
-        rows = _parse_csv(resp.text)
-        for row in rows:
-            t = row.get("time")
-            sst = row.get("analysed_sst")
-            if t is not None and sst is not None:
-                readings.append({"time": str(t), "sst_c": float(sst)})
-    except Exception as exc:
-        print(f"[SST-history] {site['id']}: {exc}", file=sys.stderr)
-    return site["id"], {
-        "site_id": site["id"],
-        "site_name": site["name"],
-        "mmm_c": site["mmm_c"],
-        "readings": readings,
-    }
-
-
-async def fetch_all_sst_history(end_date_str: str):
-    """Fetch SST history for all 11 sites concurrently. Returns dict site_id -> history."""
-    end_dt = datetime.strptime(end_date_str, "%Y-%m-%d")
-    start_dt = end_dt - timedelta(days=60)
-    start_str = start_dt.strftime("%Y-%m-%d")
-    async with httpx.AsyncClient() as client:
-        tasks = [
-            fetch_sst_history_site(client, s, start_str, end_date_str)
-            for s in REEF_SITES
-        ]
-        results = await asyncio.gather(*tasks)
-    return dict(results)
-
-
-# ---------------------------------------------------------------------------
 # Main orchestration
 # ---------------------------------------------------------------------------
 
 async def main(output_dir: str):
     now_utc = datetime.now(timezone.utc)
-    target_date = (now_utc - timedelta(days=2)).strftime("%Y-%m-%d")
+    crw_date = (now_utc - timedelta(days=2)).strftime("%Y-%m-%d")
 
-    print(f"Target date: {target_date}")
-    print(f"Output dir:  {output_dir}")
+    print(f"CRW target date: {crw_date}")
+    print(f"Output dir:      {output_dir}")
 
     os.makedirs(output_dir, exist_ok=True)
 
-    # Run all top-level fetches concurrently
-    sst_task = asyncio.create_task(fetch_all_sst(target_date))
-    crw_task = asyncio.create_task(fetch_all_crw(target_date))
+    # SST (Open-Meteo Marine) and CRW (NOAA, may be blocked) run concurrently
+    sst_task = asyncio.create_task(fetch_all_sst())
+    crw_task = asyncio.create_task(fetch_all_crw(crw_date))
     chlorophyll_task = asyncio.create_task(fetch_chlorophyll())
     weather_task = asyncio.create_task(fetch_all_weather())
-    sst_history_task = asyncio.create_task(fetch_all_sst_history(target_date))
 
-    sst_data, crw_data, chlorophyll, weather, sst_history = await asyncio.gather(
-        sst_task, crw_task, chlorophyll_task, weather_task, sst_history_task
+    (sst_data, sst_history), crw_data, chlorophyll, weather = await asyncio.gather(
+        sst_task, crw_task, chlorophyll_task, weather_task
     )
 
     # ----- current-conditions.json -----
@@ -498,28 +476,20 @@ async def main(output_dir: str):
             "sst_c": sst_c,
             "dhw": dhw,
             "hotspot": hotspot,
-            "alert": {
-                "level": level,
-                "color": color,
-                "label": label,
-            },
+            "alert": {"level": level, "color": color, "label": label},
         })
-
-    # ----- Write files -----
-    files_written = []
 
     def write_json(filename: str, payload):
         path = os.path.join(output_dir, filename)
         with open(path, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=2)
-        files_written.append(filename)
+        return path
 
-    write_json("current-conditions.json", conditions)
-    write_json("chlorophyll.json", chlorophyll)
-    write_json("weather.json", weather)
-    write_json("sst-history.json", sst_history)
+    p1 = write_json("current-conditions.json", conditions)
+    p2 = write_json("chlorophyll.json", chlorophyll)
+    p3 = write_json("weather.json", weather)
+    p4 = write_json("sst-history.json", sst_history)
 
-    # ----- Summary -----
     sst_ok = sum(1 for v in sst_data.values() if v is not None)
     crw_ok = sum(1 for v in crw_data.values() if v.get("baa") is not None)
     chla_pts = len(chlorophyll.get("points", []))
@@ -527,25 +497,17 @@ async def main(output_dir: str):
     hist_ok = sum(1 for v in sst_history.values() if v.get("readings"))
 
     print("\n=== Fetch Summary ===")
-    print(f"SST (current):   {sst_ok}/{len(REEF_SITES)} sites")
-    print(f"CRW:             {crw_ok}/{len(REEF_SITES)} sites")
-    print(f"Chlorophyll pts: {chla_pts}")
-    print(f"Weather grids:   {wx_ok}/{len(WEATHER_GRID)} points")
-    print(f"SST history:     {hist_ok}/{len(REEF_SITES)} sites with readings")
-    print(f"\nFiles written to {output_dir}:")
-    for fn in files_written:
-        path = os.path.join(output_dir, fn)
-        size = os.path.getsize(path)
-        print(f"  {fn}  ({size:,} bytes)")
+    print(f"SST (Open-Meteo Marine): {sst_ok}/{len(REEF_SITES)} sites")
+    print(f"CRW (NOAA ERDDAP):       {crw_ok}/{len(REEF_SITES)} sites")
+    print(f"Chlorophyll pts:         {chla_pts}")
+    print(f"Weather grids:           {wx_ok}/{len(WEATHER_GRID)} points")
+    print(f"SST history sites:       {hist_ok}/{len(REEF_SITES)} with readings")
+    for p in [p1, p2, p3, p4]:
+        print(f"  {os.path.basename(p)}  ({os.path.getsize(p):,} bytes)")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Fetch ocean data for Hawaii reef dashboard.")
-    parser.add_argument(
-        "--output",
-        default="data",
-        metavar="DIR",
-        help="Directory to write JSON output files (default: data)",
-    )
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", default="data", metavar="DIR")
     args = parser.parse_args()
     asyncio.run(main(args.output))

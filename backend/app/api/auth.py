@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+import os
+
+from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.security import OAuth2PasswordBearer
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -68,4 +71,25 @@ async def login(payload: UserLogin, db: AsyncSession = Depends(get_db)):
 
 @router.get("/me", response_model=UserRead)
 async def me(user: User = Depends(require_user)):
+    return user
+
+
+class BootstrapAdminRequest(BaseModel):
+    email: str
+    secret: str
+
+
+@router.post("/bootstrap-admin", response_model=UserRead)
+async def bootstrap_admin(payload: BootstrapAdminRequest, db: AsyncSession = Depends(get_db)):
+    """One-time endpoint to promote a user to admin. Requires the ADMIN_BOOTSTRAP_SECRET env var to be set."""
+    expected = os.environ.get("ADMIN_BOOTSTRAP_SECRET", "")
+    if not expected or payload.secret != expected:
+        raise HTTPException(status_code=403, detail="Invalid or missing bootstrap secret")
+    result = await db.execute(select(User).where(User.email == payload.email))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.is_admin = True
+    await db.commit()
+    await db.refresh(user)
     return user

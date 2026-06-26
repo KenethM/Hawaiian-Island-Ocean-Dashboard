@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import L from 'leaflet'
-import { MapContainer, TileLayer, CircleMarker, Tooltip, Marker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, CircleMarker, Tooltip, Marker, Popup, useMap } from 'react-leaflet'
 import type { ReefSite } from '../../types'
 import type { DiverLogWithCoords } from '../../hooks/useDiverLogs'
 import { HealthLegend } from './HealthLegend'
@@ -47,6 +47,16 @@ const DEFAULT_WEATHER_STATE: WeatherControlState = {
   animDay: 0,
 }
 
+function MapResizeHandler() {
+  const map = useMap()
+  useEffect(() => {
+    const ro = new ResizeObserver(() => { map.invalidateSize() })
+    ro.observe(map.getContainer())
+    return () => ro.disconnect()
+  }, [map])
+  return null
+}
+
 interface Props {
   sites: ReefSite[]
   selectedSiteId: string | null
@@ -79,6 +89,7 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }:
         className="w-full h-full"
         zoomControl={true}
       >
+        <MapResizeHandler />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -162,7 +173,7 @@ export function ReefMap({ sites, selectedSiteId, onSelectSite, diverLogs = [] }:
           className={`text-xs px-2.5 py-1.5 rounded-md font-medium shadow border transition-colors ${
             showChlorophyll
               ? 'bg-green-700 text-white border-green-800'
-              : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'
+              : 'bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 border-gray-300 dark:border-slate-600 hover:border-green-500 dark:hover:border-green-400'
           }`}
         >
           {showChlorophyll ? '🌿 Chl-a on' : '🌿 Chl-a'}

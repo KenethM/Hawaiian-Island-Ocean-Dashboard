@@ -205,19 +205,19 @@ export default function App() {
               onSelectSite={id => setSelectedSiteId(id === selectedSiteId ? null : id)}
               diverLogs={diverLogs}
             />
-
-            {/* Sidebar toggle — floats at right edge of map (desktop only) */}
-            <button
-              onClick={() => setSidebarOpen(o => !o)}
-              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-[1001] flex-col items-center justify-center w-5 h-16 bg-white dark:bg-slate-700 border border-r-0 border-gray-200 dark:border-slate-600 rounded-l-lg shadow text-gray-400 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
-              title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
-                  d={sidebarOpen ? 'M9 5l7 7-7 7' : 'M15 19l-7-7 7-7'} />
-              </svg>
-            </button>
           </div>
+
+          {/* Sidebar toggle strip — desktop only, sits between map and sidebar as a flex sibling so it never overlaps Leaflet layers */}
+          <button
+            onClick={() => setSidebarOpen(o => !o)}
+            className="hidden md:flex flex-col items-center justify-center w-4 flex-shrink-0 bg-gray-50 dark:bg-slate-700 border-x border-gray-200 dark:border-slate-600 text-gray-400 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-600 hover:text-gray-600 dark:hover:text-slate-200 transition-colors"
+            title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
+                d={sidebarOpen ? 'M9 5l7 7-7 7' : 'M15 19l-7-7 7-7'} />
+            </svg>
+          </button>
 
           {/* Side panel */}
           {sidebarOpen && (

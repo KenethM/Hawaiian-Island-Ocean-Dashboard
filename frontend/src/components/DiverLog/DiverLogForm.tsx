@@ -13,6 +13,9 @@ interface Props {
 
 const SEVERITY_OPTIONS: BleachingSeverity[] = ['none', 'mild', 'moderate', 'severe', 'mortality']
 
+const inputCls = 'w-full border border-gray-300 dark:border-slate-600 rounded-md px-3 py-2 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-400 focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500 focus:outline-none'
+const labelCls = 'block font-medium text-gray-700 dark:text-slate-300 mb-1'
+
 function SpeciesTracker({
   sightings,
   onChange,
@@ -25,20 +28,22 @@ function SpeciesTracker({
   const update = (i: number, patch: Partial<SpeciesSightingCreate>) =>
     onChange(sightings.map((s, idx) => (idx === i ? { ...s, ...patch } : s)))
 
+  const smallInput = 'border border-gray-300 dark:border-slate-600 rounded-md px-2 py-1.5 text-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-400'
+
   return (
     <div className="col-span-2">
       <div className="flex items-center justify-between mb-1">
-        <label className="block font-medium text-gray-700">Species Sightings</label>
+        <label className={labelCls}>Species Sightings</label>
         <button
           type="button"
           onClick={add}
-          className="text-xs text-ocean-700 hover:text-ocean-900 font-medium"
+          className="text-xs text-ocean-700 dark:text-ocean-400 hover:text-ocean-900 font-medium"
         >
           + Add species
         </button>
       </div>
       {sightings.length === 0 ? (
-        <p className="text-xs text-gray-400 italic">No species added yet</p>
+        <p className="text-xs text-gray-400 dark:text-slate-500 italic">No species added yet</p>
       ) : (
         <div className="space-y-2">
           {sightings.map((s, i) => (
@@ -48,7 +53,7 @@ function SpeciesTracker({
                 placeholder="Species name"
                 value={s.species_name}
                 onChange={e => update(i, { species_name: e.target.value })}
-                className="flex-1 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+                className={`flex-1 ${smallInput}`}
               />
               <input
                 type="number"
@@ -56,14 +61,14 @@ function SpeciesTracker({
                 min={1}
                 value={s.count ?? ''}
                 onChange={e => update(i, { count: e.target.value ? Number(e.target.value) : undefined })}
-                className="w-16 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+                className={`w-16 ${smallInput}`}
               />
               <input
                 type="text"
                 placeholder="Notes"
                 value={s.notes ?? ''}
                 onChange={e => update(i, { notes: e.target.value || undefined })}
-                className="flex-1 border border-gray-300 rounded-md px-2 py-1.5 text-sm"
+                className={`flex-1 ${smallInput}`}
               />
               <button
                 type="button"
@@ -127,7 +132,7 @@ export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick 
   if (!user) {
     return (
       <div className="text-center py-8 space-y-3">
-        <p className="text-gray-600 text-sm">Sign in to submit a dive observation.</p>
+        <p className="text-gray-600 dark:text-slate-400 text-sm">Sign in to submit a dive observation.</p>
         <button
           type="button"
           onClick={onSignInClick}
@@ -142,22 +147,22 @@ export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-sm">
       {success && (
-        <div className="bg-green-50 border border-green-300 text-green-700 rounded-md px-3 py-2">
+        <div className="bg-green-50 dark:bg-green-900/30 border border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 rounded-md px-3 py-2">
           Observation submitted — mahalo!
         </div>
       )}
       {error && (
-        <div className="bg-red-50 border border-red-300 text-red-700 rounded-md px-3 py-2">{error}</div>
+        <div className="bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-400 rounded-md px-3 py-2">{error}</div>
       )}
 
       <div className="grid grid-cols-2 gap-3">
         <div className="col-span-2">
-          <label className="block font-medium text-gray-700 mb-1">Reef Site *</label>
+          <label className={labelCls}>Reef Site *</label>
           <select
             required
             value={form.reef_site_id}
             onChange={e => set('reef_site_id', e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-ocean-500 focus:border-ocean-500"
+            className={inputCls}
           >
             <option value="">— select a site —</option>
             {sites.map(s => (
@@ -167,80 +172,80 @@ export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick 
         </div>
 
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Dive Date *</label>
+          <label className={labelCls}>Dive Date *</label>
           <input
             required
             type="date"
             value={form.dive_date}
             max={today}
             onChange={e => set('dive_date', e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2"
+            className={inputCls}
           />
         </div>
 
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Your Name</label>
+          <label className={labelCls}>Your Name</label>
           <input
             type="text"
             placeholder="Optional"
             value={form.diver_name ?? ''}
             onChange={e => set('diver_name', e.target.value || undefined)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2"
+            className={inputCls}
           />
         </div>
 
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Depth (m)</label>
+          <label className={labelCls}>Depth (m)</label>
           <input
             type="number" min={0} max={200} step={0.5}
             value={form.depth_m ?? ''}
             onChange={e => set('depth_m', e.target.value ? Number(e.target.value) : undefined)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2"
+            className={inputCls}
           />
         </div>
 
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Water Temp (°C)</label>
+          <label className={labelCls}>Water Temp (°C)</label>
           <input
             type="number" min={15} max={35} step={0.1}
             value={form.water_temp_c ?? ''}
             onChange={e => set('water_temp_c', e.target.value ? Number(e.target.value) : undefined)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2"
+            className={inputCls}
           />
         </div>
 
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Visibility (m)</label>
+          <label className={labelCls}>Visibility (m)</label>
           <input
             type="number" min={0} max={100} step={1}
             value={form.visibility_m ?? ''}
             onChange={e => set('visibility_m', e.target.value ? Number(e.target.value) : undefined)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2"
+            className={inputCls}
           />
         </div>
 
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Coral Cover (%)</label>
+          <label className={labelCls}>Coral Cover (%)</label>
           <input
             type="number" min={0} max={100} step={1}
             value={form.coral_cover_pct ?? ''}
             onChange={e => set('coral_cover_pct', e.target.value ? Number(e.target.value) : undefined)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2"
+            className={inputCls}
           />
         </div>
 
         <div>
-          <label className="block font-medium text-gray-700 mb-1">Bleaching (%)</label>
+          <label className={labelCls}>Bleaching (%)</label>
           <input
             type="number" min={0} max={100} step={1}
             value={form.bleaching_pct ?? ''}
             onChange={e => set('bleaching_pct', e.target.value ? Number(e.target.value) : undefined)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2"
+            className={inputCls}
           />
         </div>
 
         <div className="col-span-2">
-          <label className="block font-medium text-gray-700 mb-1">Bleaching Severity</label>
+          <label className={labelCls}>Bleaching Severity</label>
           <div className="flex gap-2 flex-wrap">
             {SEVERITY_OPTIONS.map(sev => (
               <button
@@ -250,7 +255,7 @@ export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick 
                 className={`px-3 py-1 rounded-full border text-xs capitalize transition-colors ${
                   form.bleaching_severity === sev
                     ? 'bg-ocean-700 text-white border-ocean-700'
-                    : 'bg-white text-gray-600 border-gray-300 hover:border-ocean-500'
+                    : 'bg-white dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-300 dark:border-slate-600 hover:border-ocean-500'
                 }`}
               >
                 {sev}
@@ -259,28 +264,27 @@ export function DiverLogForm({ sites, defaultSiteId, onSubmitted, onSignInClick 
           </div>
         </div>
 
-        {/* Species sighting tracker */}
         <SpeciesTracker sightings={species} onChange={setSpecies} />
 
         <div className="col-span-2">
-          <label className="block font-medium text-gray-700 mb-1">Species Notes</label>
+          <label className={labelCls}>Species Notes</label>
           <textarea
             rows={2}
             placeholder="e.g. Acropora bleaching on south wall, Porites healthy"
             value={form.species_notes ?? ''}
             onChange={e => set('species_notes', e.target.value || undefined)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 resize-none"
+            className={`${inputCls} resize-none`}
           />
         </div>
 
         <div className="col-span-2">
-          <label className="block font-medium text-gray-700 mb-1">General Notes</label>
+          <label className={labelCls}>General Notes</label>
           <textarea
             rows={2}
             placeholder="Anything else worth noting about this dive"
             value={form.general_notes ?? ''}
             onChange={e => set('general_notes', e.target.value || undefined)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 resize-none"
+            className={`${inputCls} resize-none`}
           />
         </div>
       </div>

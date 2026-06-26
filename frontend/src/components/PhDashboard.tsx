@@ -82,11 +82,14 @@ export function PhDashboard({ onSignInClick }: Props) {
     }
   }
 
+  const inputCls = 'w-full border border-gray-200 dark:border-slate-600 rounded-md px-3 py-1.5 text-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-400'
+  const codeCls = 'bg-gray-100 dark:bg-slate-700 dark:text-slate-300 px-1 rounded text-[11px]'
+
   return (
     <div className="flex-1 overflow-y-auto p-6 max-w-5xl mx-auto w-full">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-1">Ocean pH Dashboard</h2>
-        <p className="text-sm text-gray-500">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Ocean pH Dashboard</h2>
+        <p className="text-sm text-gray-500 dark:text-slate-400">
           Aggregated ocean acidification data from multiple sources. Hawaiian waters have declined from
           ~8.18 (pre-industrial) toward current levels. Toggle sources and modes to explore.
         </p>
@@ -95,11 +98,13 @@ export function PhDashboard({ onSignInClick }: Props) {
       {/* Controls row */}
       <div className="flex flex-wrap items-center gap-4 mb-5">
         {/* Mode toggle */}
-        <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm">
+        <div className="flex rounded-lg border border-gray-200 dark:border-slate-700 overflow-hidden text-sm">
           <button
             onClick={() => setMode('raw')}
             className={`px-4 py-2 font-medium transition-colors ${
-              mode === 'raw' ? 'bg-ocean-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+              mode === 'raw'
+                ? 'bg-ocean-700 text-white'
+                : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700'
             }`}
           >
             Raw Data
@@ -107,7 +112,9 @@ export function PhDashboard({ onSignInClick }: Props) {
           <button
             onClick={() => setMode('prediction')}
             className={`px-4 py-2 font-medium transition-colors ${
-              mode === 'prediction' ? 'bg-ocean-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+              mode === 'prediction'
+                ? 'bg-ocean-700 text-white'
+                : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700'
             }`}
           >
             Model + Prediction
@@ -116,14 +123,16 @@ export function PhDashboard({ onSignInClick }: Props) {
 
         {/* Year range selector */}
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-gray-500 font-medium">Range:</span>
-          <div className="flex rounded-lg border border-gray-200 overflow-hidden">
+          <span className="text-gray-500 dark:text-slate-400 font-medium">Range:</span>
+          <div className="flex rounded-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
             {YEAR_OPTIONS.map(y => (
               <button
                 key={y}
                 onClick={() => setYears(y)}
                 className={`px-3 py-2 font-medium transition-colors ${
-                  years === y ? 'bg-ocean-700 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+                  years === y
+                    ? 'bg-ocean-700 text-white'
+                    : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700'
                 }`}
               >
                 {y}yr
@@ -149,17 +158,17 @@ export function PhDashboard({ onSignInClick }: Props) {
                     active && hasData
                       ? 'text-white border-transparent'
                       : active && !hasData
-                      ? 'border-dashed text-gray-500 bg-gray-50'
-                      : 'bg-white text-gray-400 border-gray-200'
+                      ? 'border-dashed text-gray-500 dark:text-slate-400 bg-gray-50 dark:bg-slate-700'
+                      : 'bg-white dark:bg-slate-800 text-gray-400 dark:text-slate-500 border-gray-200 dark:border-slate-600'
                   }`}
                   style={active && hasData ? { background: meta.color, borderColor: meta.color } : {}}
                 >
-                  <span
-                    className="w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ background: meta.color }}
-                  />
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: meta.color }} />
                   {meta.label}
-                  {info ? <span className="opacity-70">({info.count.toLocaleString()})</span> : <span className="opacity-40">(no data)</span>}
+                  {info
+                    ? <span className="opacity-70">({info.count.toLocaleString()})</span>
+                    : <span className="opacity-40">(no data)</span>
+                  }
                 </button>
               )
             })}
@@ -168,17 +177,17 @@ export function PhDashboard({ onSignInClick }: Props) {
       </div>
 
       {/* Main chart card */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mb-4">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-5 mb-4">
         {mode === 'raw' ? (
           <>
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h3 className="font-semibold text-gray-700 text-sm">pH Over Time — Raw Data</h3>
-                <p className="text-xs text-gray-400">Monthly averages per source · last {years} years</p>
+                <h3 className="font-semibold text-gray-700 dark:text-slate-200 text-sm">pH Over Time — Raw Data</h3>
+                <p className="text-xs text-gray-400 dark:text-slate-500">Monthly averages per source · last {years} years</p>
               </div>
             </div>
             {loadingTrend ? (
-              <div className="h-64 flex items-center justify-center text-gray-400 text-sm">Loading pH data…</div>
+              <div className="h-64 flex items-center justify-center text-gray-400 dark:text-slate-500 text-sm">Loading pH data…</div>
             ) : trendError ? (
               <div className="h-64 flex items-center justify-center text-red-400 text-sm">{trendError}</div>
             ) : (
@@ -189,19 +198,19 @@ export function PhDashboard({ onSignInClick }: Props) {
           <>
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h3 className="font-semibold text-gray-700 text-sm">pH Trend + Forecast</h3>
-                <p className="text-xs text-gray-400">
+                <h3 className="font-semibold text-gray-700 dark:text-slate-200 text-sm">pH Trend + Forecast</h3>
+                <p className="text-xs text-gray-400 dark:text-slate-500">
                   Based on HOT Station ALOHA observed data · Linear + seasonal model · 24-month outlook
                 </p>
               </div>
             </div>
             {loadingPrediction ? (
-              <div className="h-64 flex items-center justify-center text-gray-400 text-sm">Running model…</div>
+              <div className="h-64 flex items-center justify-center text-gray-400 dark:text-slate-500 text-sm">Running model…</div>
             ) : predictionError ? (
               <div className="h-64 flex items-center justify-center text-center text-sm">
                 <div>
                   <p className="text-red-500 font-medium mb-1">Prediction unavailable</p>
-                  <p className="text-gray-400 text-xs">{predictionError}</p>
+                  <p className="text-gray-400 dark:text-slate-500 text-xs">{predictionError}</p>
                 </div>
               </div>
             ) : prediction ? (
@@ -217,19 +226,19 @@ export function PhDashboard({ onSignInClick }: Props) {
           const meta = SOURCE_META[src]
           const info = sourceCountMap[src]
           return (
-            <div key={src} className="bg-white rounded-lg border border-gray-200 p-3">
+            <div key={src} className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-3">
               <div className="flex items-center gap-1.5 mb-1">
                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: meta.color }} />
-                <p className="text-xs font-semibold text-gray-700 truncate">{meta.label}</p>
+                <p className="text-xs font-semibold text-gray-700 dark:text-slate-200 truncate">{meta.label}</p>
               </div>
-              <p className="text-xs text-gray-400 mb-2">{meta.desc}</p>
+              <p className="text-xs text-gray-400 dark:text-slate-500 mb-2">{meta.desc}</p>
               {info ? (
-                <p className="text-xs text-gray-600">
+                <p className="text-xs text-gray-600 dark:text-slate-300">
                   <strong>{info.count.toLocaleString()}</strong> records<br />
                   {info.earliest} → {info.latest}
                 </p>
               ) : (
-                <p className="text-xs text-gray-400 italic">No data yet</p>
+                <p className="text-xs text-gray-400 dark:text-slate-500 italic">No data yet</p>
               )}
             </div>
           )
@@ -237,20 +246,20 @@ export function PhDashboard({ onSignInClick }: Props) {
       </div>
 
       {/* Admin data tools */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
         <button
           onClick={() => setUploadTab(v => !v)}
-          className="w-full flex items-center justify-between px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-between px-5 py-3 text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors"
         >
           <span>Data Tools (Admin)</span>
-          <span className="text-gray-400">{uploadTab ? '▲' : '▼'}</span>
+          <span className="text-gray-400 dark:text-slate-500">{uploadTab ? '▲' : '▼'}</span>
         </button>
 
         {uploadTab && (
-          <div className="border-t border-gray-200 p-5 space-y-6">
+          <div className="border-t border-gray-200 dark:border-slate-700 p-5 space-y-6">
             {!user ? (
               <div className="text-center py-4">
-                <p className="text-sm text-gray-500 mb-3">Sign in with an admin account to manage pH data.</p>
+                <p className="text-sm text-gray-500 dark:text-slate-400 mb-3">Sign in with an admin account to manage pH data.</p>
                 <button
                   onClick={onSignInClick}
                   className="text-sm bg-ocean-700 text-white px-4 py-2 rounded-md hover:bg-ocean-800 transition-colors"
@@ -259,16 +268,16 @@ export function PhDashboard({ onSignInClick }: Props) {
                 </button>
               </div>
             ) : !user.is_admin ? (
-              <p className="text-sm text-gray-400 text-center py-4">Admin access required to use data tools.</p>
+              <p className="text-sm text-gray-400 dark:text-slate-500 text-center py-4">Admin access required to use data tools.</p>
             ) : (
               <>
                 {/* CMEMS satellite pull */}
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Pull CMEMS Satellite Data</h4>
-                  <p className="text-xs text-gray-400 mb-3">
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-1">Pull CMEMS Satellite Data</h4>
+                  <p className="text-xs text-gray-400 dark:text-slate-500 mb-3">
                     Fetches modeled pH from Copernicus Marine Service for the Hawaiian region (2015–present).
-                    Requires <code className="bg-gray-100 px-1 rounded">CMEMS_USER</code> and{' '}
-                    <code className="bg-gray-100 px-1 rounded">CMEMS_PASSWORD</code> env vars on the server.
+                    Requires <code className={codeCls}>CMEMS_USER</code> and{' '}
+                    <code className={codeCls}>CMEMS_PASSWORD</code> env vars on the server.
                     This may take 1–3 minutes.
                   </p>
                   <button
@@ -279,38 +288,34 @@ export function PhDashboard({ onSignInClick }: Props) {
                     {cmemsFetching ? 'Fetching… (this may take a minute)' : 'Fetch CMEMS Data'}
                   </button>
                   {cmemsFetchResult && (
-                    <div className="mt-2 bg-green-50 border border-green-200 rounded-md px-4 py-2 text-sm text-green-700">
+                    <div className="mt-2 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-md px-4 py-2 text-sm text-green-700 dark:text-green-400">
                       Imported <strong>{cmemsFetchResult.inserted}</strong> records
                       {cmemsFetchResult.skipped > 0 && `, skipped ${cmemsFetchResult.skipped} duplicates`}
                     </div>
                   )}
                   {cmemsFetchError && (
-                    <div className="mt-2 bg-red-50 border border-red-200 rounded-md px-4 py-2 text-sm text-red-600">
+                    <div className="mt-2 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-md px-4 py-2 text-sm text-red-600 dark:text-red-400">
                       {cmemsFetchError}
                     </div>
                   )}
                 </div>
 
-                <hr className="border-gray-100" />
+                <hr className="border-gray-100 dark:border-slate-700" />
 
                 {/* CSV upload */}
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Upload CSV Data</h4>
-                  <p className="text-xs text-gray-500 mb-4">
-                    CSV must have columns: <code className="bg-gray-100 px-1 rounded">measured_at</code> (ISO date) and{' '}
-                    <code className="bg-gray-100 px-1 rounded">ph</code>. Optional:{' '}
-                    <code className="bg-gray-100 px-1 rounded">pco2</code>,{' '}
-                    <code className="bg-gray-100 px-1 rounded">aragonite_sat</code>. Max 10 MB.
+                  <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200 mb-1">Upload CSV Data</h4>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mb-4">
+                    CSV must have columns: <code className={codeCls}>measured_at</code> (ISO date) and{' '}
+                    <code className={codeCls}>ph</code>. Optional:{' '}
+                    <code className={codeCls}>pco2</code>,{' '}
+                    <code className={codeCls}>aragonite_sat</code>. Max 10 MB.
                   </p>
                   <form onSubmit={handleUpload} className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1">Source</label>
-                        <select
-                          value={uploadSource}
-                          onChange={e => setUploadSource(e.target.value)}
-                          className="w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm"
-                        >
+                        <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Source</label>
+                        <select value={uploadSource} onChange={e => setUploadSource(e.target.value)} className={inputCls}>
                           <option value="hot">HOT / Station ALOHA</option>
                           <option value="cmems">CMEMS</option>
                           <option value="ipacoa">IPACOA</option>
@@ -318,12 +323,8 @@ export function PhDashboard({ onSignInClick }: Props) {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1">Data type</label>
-                        <select
-                          value={uploadDataType}
-                          onChange={e => setUploadDataType(e.target.value)}
-                          className="w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm"
-                        >
+                        <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Data type</label>
+                        <select value={uploadDataType} onChange={e => setUploadDataType(e.target.value)} className={inputCls}>
                           <option value="observed">Observed</option>
                           <option value="modeled">Modeled</option>
                         </select>
@@ -331,49 +332,49 @@ export function PhDashboard({ onSignInClick }: Props) {
                     </div>
 
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Location name</label>
+                      <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Location name</label>
                       <input
                         type="text"
                         value={uploadLocation}
                         onChange={e => setUploadLocation(e.target.value)}
                         placeholder="e.g. Station ALOHA"
-                        className="w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm"
+                        className={inputCls}
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1">Latitude (optional)</label>
+                        <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Latitude (optional)</label>
                         <input
                           type="number"
                           step="0.0001"
                           value={uploadLat}
                           onChange={e => setUploadLat(e.target.value)}
                           placeholder="22.75"
-                          className="w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm"
+                          className={inputCls}
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1">Longitude (optional)</label>
+                        <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">Longitude (optional)</label>
                         <input
                           type="number"
                           step="0.0001"
                           value={uploadLng}
                           onChange={e => setUploadLng(e.target.value)}
                           placeholder="-158.0"
-                          className="w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm"
+                          className={inputCls}
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">CSV file</label>
+                      <label className="block text-xs text-gray-500 dark:text-slate-400 mb-1">CSV file</label>
                       <input
                         ref={fileRef}
                         type="file"
                         accept=".csv,.txt"
                         required
-                        className="w-full text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-ocean-50 file:text-ocean-700 hover:file:bg-ocean-100"
+                        className="w-full text-sm text-gray-600 dark:text-slate-300 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-ocean-50 file:text-ocean-700 hover:file:bg-ocean-100 dark:file:bg-slate-700 dark:file:text-slate-300"
                       />
                     </div>
 
@@ -386,13 +387,13 @@ export function PhDashboard({ onSignInClick }: Props) {
                     </button>
 
                     {uploadResult && (
-                      <div className="bg-green-50 border border-green-200 rounded-md px-4 py-2 text-sm text-green-700">
+                      <div className="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-md px-4 py-2 text-sm text-green-700 dark:text-green-400">
                         Imported <strong>{uploadResult.inserted}</strong> records
                         {uploadResult.skipped > 0 && `, skipped ${uploadResult.skipped}`}
                       </div>
                     )}
                     {uploadError && (
-                      <div className="bg-red-50 border border-red-200 rounded-md px-4 py-2 text-sm text-red-600">
+                      <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-md px-4 py-2 text-sm text-red-600 dark:text-red-400">
                         {uploadError}
                       </div>
                     )}
@@ -404,7 +405,7 @@ export function PhDashboard({ onSignInClick }: Props) {
         )}
       </div>
 
-      <p className="text-xs text-gray-400 mt-4 text-center">
+      <p className="text-xs text-gray-400 dark:text-slate-500 mt-4 text-center">
         Data sources: SOEST/HOT Station ALOHA · Copernicus Marine Service (CMEMS) · IPACOA · Hawaii DAR/Reef Check
       </p>
     </div>

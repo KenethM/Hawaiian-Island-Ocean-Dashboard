@@ -10,13 +10,13 @@ const LEGEND = [
 
 export function HealthLegend() {
   return (
-    <div className="bg-white/90 backdrop-blur rounded-lg shadow-lg p-3 text-xs">
-      <p className="font-semibold text-gray-700 mb-1">Bleaching Risk</p>
-      <p className="text-gray-400 mb-2" style={{ fontSize: '10px' }}>Source: NOAA Coral Reef Watch</p>
+    <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-lg shadow-lg p-3 text-xs">
+      <p className="font-semibold text-gray-700 dark:text-slate-200 mb-1">Bleaching Risk</p>
+      <p className="text-gray-400 dark:text-slate-500 mb-2" style={{ fontSize: '10px' }}>Source: NOAA Coral Reef Watch</p>
       {LEGEND.map(({ color, label }) => (
         <div key={label} className="flex items-center gap-2 mb-1">
           <span className="inline-block w-3 h-3 rounded-full flex-shrink-0" style={{ background: color }} />
-          <span className="text-gray-600">{label}</span>
+          <span className="text-gray-600 dark:text-slate-300">{label}</span>
         </div>
       ))}
     </div>

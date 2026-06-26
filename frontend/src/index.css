@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Apply dark background immediately to avoid flash of white */
-:root { color-scheme: light dark; }
+/* Scope color-scheme so browser renders native form controls to match our theme, not the OS */
+:root { color-scheme: light; }
+html.dark { color-scheme: dark; }
 html.dark body { background-color: #0f172a; }
 
 /* Leaflet markers inherit position correctly */

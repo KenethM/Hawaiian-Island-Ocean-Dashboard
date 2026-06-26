@@ -68,7 +68,7 @@ export function ChlorophyllLegend({ visible }: LegendProps) {
     { label: '> 10', color: 'rgb(253,231,37)' },
   ]
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow text-[10px] text-gray-700">
+    <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg p-2 shadow text-[10px] text-gray-700 dark:text-slate-300">
       <p className="font-semibold mb-1">Chlorophyll-a (mg/m³)</p>
       <div className="flex gap-1 items-end">
         {stops.map(s => (
@@ -78,7 +78,7 @@ export function ChlorophyllLegend({ visible }: LegendProps) {
           </span>
         ))}
       </div>
-      <p className="text-gray-400 mt-1">NASA GIBS · VIIRS · {targetDate()}</p>
+      <p className="text-gray-400 dark:text-slate-500 mt-1">NASA GIBS · VIIRS · {targetDate()}</p>
     </div>
   )
 }

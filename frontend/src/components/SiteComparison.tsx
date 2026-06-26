@@ -34,26 +34,21 @@ function useSiteSnapshot(siteId: string | null): SiteSnapshot {
   return snap
 }
 
-function MetricRow({ label, a, b }: { label: string; a: string; b: string }) {
-  return (
-    <tr className="border-t border-gray-100">
-      <td className="py-2 px-3 text-xs text-gray-500 font-medium">{label}</td>
-      <td className="py-2 px-3 text-sm text-center font-semibold text-gray-800">{a}</td>
-      <td className="py-2 px-3 text-sm text-center font-semibold text-gray-800">{b}</td>
-    </tr>
-  )
-}
-
 function SiteColumn({ site, snap }: { site: ReefSite; snap: SiteSnapshot }) {
-  const latestSst = snap.sst?.readings.slice(-1)[0]?.sst_c
   const minSst = snap.sst ? Math.min(...snap.sst.readings.map(r => r.sst_c)) : null
   const maxSst = snap.sst ? Math.max(...snap.sst.readings.map(r => r.sst_c)) : null
 
+  const cardCls = 'bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3'
+  const subLabel = 'text-xs text-gray-500 dark:text-slate-400'
+  const value = 'font-semibold text-gray-800 dark:text-slate-100'
+  const sectionTitle = 'text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2'
+  const noData = 'text-xs text-gray-400 dark:text-slate-500'
+
   return (
     <div className="flex-1 min-w-0">
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="font-bold text-gray-900">{site.name}</h3>
-        <p className="text-xs text-gray-500">{site.island} · {site.depth_m}m depth</p>
+      <div className="p-4 border-b border-gray-200 dark:border-slate-700">
+        <h3 className="font-bold text-gray-900 dark:text-white">{site.name}</h3>
+        <p className={`text-xs ${subLabel}`}>{site.island} · {site.depth_m}m depth</p>
         <span
           className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white"
           style={{ background: site.alert.color }}
@@ -64,54 +59,91 @@ function SiteColumn({ site, snap }: { site: ReefSite; snap: SiteSnapshot }) {
       {snap.loading ? (
         <div className="p-4 space-y-2 animate-pulse">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-6 bg-gray-100 rounded" />
+            <div key={i} className="h-6 bg-gray-100 dark:bg-slate-700 rounded" />
           ))}
         </div>
       ) : (
         <div className="p-4 space-y-3 text-sm">
-          <div className="bg-gray-50 rounded-lg p-3">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Temperature</p>
+          <div className={cardCls}>
+            <p className={sectionTitle}>Temperature</p>
             <div className="space-y-1.5">
-              <div className="flex justify-between"><span className="text-xs text-gray-500">Current SST</span><span className="font-semibold">{site.sst_c != null ? `${site.sst_c.toFixed(1)}°C` : '—'}</span></div>
-              <div className="flex justify-between"><span className="text-xs text-gray-500">30-day min/max</span><span className="font-semibold">{minSst != null && maxSst != null ? `${minSst.toFixed(1)}–${maxSst.toFixed(1)}°C` : '—'}</span></div>
-              <div className="flex justify-between"><span className="text-xs text-gray-500">MMM</span><span className="font-semibold">{site.mmm_c}°C</span></div>
-              <div className="flex justify-between"><span className="text-xs text-gray-500">DHW</span><span className={`font-semibold ${(site.dhw ?? 0) >= 4 ? 'text-orange-500' : 'text-gray-800'}`}>{site.dhw != null ? `${site.dhw.toFixed(1)} °C-wks` : '—'}</span></div>
+              <div className="flex justify-between">
+                <span className={subLabel}>Current SST</span>
+                <span className={value}>{site.sst_c != null ? `${site.sst_c.toFixed(1)}°C` : '—'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className={subLabel}>30-day min/max</span>
+                <span className={value}>{minSst != null && maxSst != null ? `${minSst.toFixed(1)}–${maxSst.toFixed(1)}°C` : '—'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className={subLabel}>MMM</span>
+                <span className={value}>{site.mmm_c}°C</span>
+              </div>
+              <div className="flex justify-between">
+                <span className={subLabel}>DHW</span>
+                <span className={`font-semibold ${(site.dhw ?? 0) >= 4 ? 'text-orange-500' : 'text-gray-800 dark:text-slate-100'}`}>
+                  {site.dhw != null ? `${site.dhw.toFixed(1)} °C-wks` : '—'}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-3">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Waves</p>
+          <div className={cardCls}>
+            <p className={sectionTitle}>Waves</p>
             {snap.waves?.data ? (
               <div className="space-y-1.5">
-                <div className="flex justify-between"><span className="text-xs text-gray-500">Height</span><span className="font-semibold">{snap.waves.data.wave_height_m.toFixed(1)} m</span></div>
-                <div className="flex justify-between"><span className="text-xs text-gray-500">Conditions</span>
-                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full text-white" style={{ background: snap.waves.data.conditions_color }}>{snap.waves.data.conditions_label}</span>
+                <div className="flex justify-between">
+                  <span className={subLabel}>Height</span>
+                  <span className={value}>{snap.waves.data.wave_height_m.toFixed(1)} m</span>
                 </div>
-                {snap.waves.data.dominant_period_s && <div className="flex justify-between"><span className="text-xs text-gray-500">Period</span><span className="font-semibold">{snap.waves.data.dominant_period_s}s</span></div>}
+                <div className="flex justify-between">
+                  <span className={subLabel}>Conditions</span>
+                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full text-white" style={{ background: snap.waves.data.conditions_color }}>
+                    {snap.waves.data.conditions_label}
+                  </span>
+                </div>
+                {snap.waves.data.dominant_period_s && (
+                  <div className="flex justify-between">
+                    <span className={subLabel}>Period</span>
+                    <span className={value}>{snap.waves.data.dominant_period_s}s</span>
+                  </div>
+                )}
               </div>
-            ) : <p className="text-xs text-gray-400">No buoy data</p>}
+            ) : <p className={noData}>No buoy data</p>}
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-3">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Water Clarity</p>
+          <div className={cardCls}>
+            <p className={sectionTitle}>Water Clarity</p>
             {snap.turbidity?.latest ? (
               <div className="space-y-1.5">
-                <div className="flex justify-between"><span className="text-xs text-gray-500">Visibility</span><span className="font-semibold">~{snap.turbidity.latest.estimated_visibility_m} m</span></div>
-                <div className="flex justify-between"><span className="text-xs text-gray-500">Clarity</span>
-                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full text-white" style={{ background: snap.turbidity.latest.color }}>{snap.turbidity.latest.label}</span>
+                <div className="flex justify-between">
+                  <span className={subLabel}>Visibility</span>
+                  <span className={value}>~{snap.turbidity.latest.estimated_visibility_m} m</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className={subLabel}>Clarity</span>
+                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full text-white" style={{ background: snap.turbidity.latest.color }}>
+                    {snap.turbidity.latest.label}
+                  </span>
                 </div>
               </div>
-            ) : <p className="text-xs text-gray-400">No satellite data</p>}
+            ) : <p className={noData}>No satellite data</p>}
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-3">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Tides</p>
+          <div className={cardCls}>
+            <p className={sectionTitle}>Tides</p>
             {snap.tides?.current ? (
               <div className="space-y-1.5">
-                <div className="flex justify-between"><span className="text-xs text-gray-500">Current</span><span className="font-semibold">{snap.tides.current.height_m.toFixed(2)} m</span></div>
-                <div className="flex justify-between"><span className="text-xs text-gray-500">State</span><span className="font-semibold capitalize">{snap.tides.tide_state ?? '—'}</span></div>
+                <div className="flex justify-between">
+                  <span className={subLabel}>Current</span>
+                  <span className={value}>{snap.tides.current.height_m.toFixed(2)} m</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className={subLabel}>State</span>
+                  <span className={`${value} capitalize`}>{snap.tides.tide_state ?? '—'}</span>
+                </div>
               </div>
-            ) : <p className="text-xs text-gray-400">No tide data</p>}
+            ) : <p className={noData}>No tide data</p>}
           </div>
         </div>
       )}
@@ -128,34 +160,28 @@ export function SiteComparison({ sites, onClose }: Props) {
   const snapA = useSiteSnapshot(siteAId || null)
   const snapB = useSiteSnapshot(siteBId || null)
 
+  const selectCls = 'w-full border border-gray-300 dark:border-slate-600 rounded-md px-2 py-1.5 text-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white'
+
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-bold text-gray-900">Site Comparison</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-slate-700">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Site Comparison</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 text-2xl leading-none">×</button>
         </div>
 
         {/* Site selectors */}
-        <div className="flex gap-4 px-5 py-3 border-b border-gray-100 bg-gray-50">
+        <div className="flex gap-4 px-5 py-3 border-b border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-700/50">
           <div className="flex-1">
-            <label className="block text-xs font-medium text-gray-600 mb-1">Site A</label>
-            <select
-              value={siteAId}
-              onChange={e => setSiteAId(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-2 py-1.5 text-sm"
-            >
+            <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Site A</label>
+            <select value={siteAId} onChange={e => setSiteAId(e.target.value)} className={selectCls}>
               {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
           <div className="flex-1">
-            <label className="block text-xs font-medium text-gray-600 mb-1">Site B</label>
-            <select
-              value={siteBId}
-              onChange={e => setSiteBId(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-2 py-1.5 text-sm"
-            >
+            <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Site B</label>
+            <select value={siteBId} onChange={e => setSiteBId(e.target.value)} className={selectCls}>
               {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
@@ -163,7 +189,7 @@ export function SiteComparison({ sites, onClose }: Props) {
 
         {/* Comparison columns */}
         <div className="flex-1 overflow-y-auto">
-          <div className="flex divide-x divide-gray-200">
+          <div className="flex divide-x divide-gray-200 dark:divide-slate-700">
             {siteA && <SiteColumn site={siteA} snap={snapA} />}
             {siteB && <SiteColumn site={siteB} snap={snapB} />}
           </div>

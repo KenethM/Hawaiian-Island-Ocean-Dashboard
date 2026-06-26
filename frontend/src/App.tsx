@@ -12,9 +12,11 @@ import { AuthModal } from './components/Auth/AuthModal'
 import { PhDashboard } from './components/PhDashboard'
 import { SiteComparison } from './components/SiteComparison'
 import { AdminPanel } from './components/AdminPanel'
+import { HelpModal } from './components/HelpModal'
 import { useCurrentConditions } from './hooks/useCurrentConditions'
 import { useDiverLogs } from './hooks/useDiverLogs'
 import { useAuth } from './context/AuthContext'
+import { useTheme } from './context/ThemeContext'
 import { api } from './services/api'
 import type { SiteStat, DiverStatOverTime } from './types'
 
@@ -24,7 +26,10 @@ export default function App() {
   const [view, setView] = useState<View>('dashboard')
   const [showAuth, setShowAuth] = useState(false)
   const [showComparison, setShowComparison] = useState(false)
+  const [showHelp, setShowHelp] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null)
   const [logRefresh, setLogRefresh] = useState(0)
   const [stats, setStats] = useState<SiteStat[]>([])
@@ -42,7 +47,6 @@ export default function App() {
     api.getDiverStatsOverTime().then(setStatsOverTime).catch(() => {})
   }, [logRefresh])
 
-  // Track data freshness label
   const [freshnessLabel, setFreshnessLabel] = useState('')
   useEffect(() => {
     if (!fetchedAt) return
@@ -78,7 +82,7 @@ export default function App() {
   )
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100 font-sans">
+    <div className="flex flex-col h-screen bg-gray-100 dark:bg-slate-900 font-sans">
       {/* Nav */}
       <header className="bg-ocean-900 px-4 py-3 flex items-center gap-2 flex-shrink-0">
         <div className="mr-2 flex-shrink-0">
@@ -102,11 +106,29 @@ export default function App() {
           </button>
         )}
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1.5">
           {fetchedAt && (
-            <span className="text-[10px] text-white/40 hidden lg:block">{freshnessLabel}</span>
+            <span className="text-[10px] text-white/40 hidden lg:block mr-1">{freshnessLabel}</span>
           )}
-          <span className="text-xs text-white/50 hidden xl:block">NOAA/JPL · CRW · HOT · CMEMS</span>
+          <span className="text-xs text-white/50 hidden xl:block mr-1">NOAA/JPL · CRW · HOT · CMEMS</span>
+
+          {/* Help button */}
+          <button
+            onClick={() => setShowHelp(true)}
+            className="flex items-center justify-center w-6 h-6 rounded-full border border-white/30 text-white/70 hover:text-white hover:border-white/60 hover:bg-white/10 transition-colors text-xs font-bold"
+            title="Guide & cheat sheet"
+          >
+            ?
+          </button>
+
+          {/* Dark mode toggle */}
+          <button
+            onClick={toggleTheme}
+            className="text-white/70 hover:text-white p-1.5 rounded hover:bg-white/10 transition-colors text-base leading-none"
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? '☀' : '☽'}
+          </button>
 
           {user ? (
             <div className="flex items-center gap-2">
@@ -154,6 +176,7 @@ export default function App() {
       )}
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
       {showComparison && sites.length >= 2 && (
         <SiteComparison sites={sites} onClose={() => setShowComparison(false)} />
       )}
@@ -167,8 +190,8 @@ export default function App() {
           {/* Map */}
           <div className="flex-1 relative min-h-[50vh] md:min-h-0">
             {loading && (
-              <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-50">
-                <span className="text-gray-500 text-sm">Loading reef data from NOAA…</span>
+              <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/60 flex items-center justify-center z-50">
+                <span className="text-gray-500 dark:text-slate-400 text-sm">Loading reef data from NOAA…</span>
               </div>
             )}
             {error && (
@@ -182,25 +205,39 @@ export default function App() {
               onSelectSite={id => setSelectedSiteId(id === selectedSiteId ? null : id)}
               diverLogs={diverLogs}
             />
+
+            {/* Sidebar toggle — floats at right edge of map (desktop only) */}
+            <button
+              onClick={() => setSidebarOpen(o => !o)}
+              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-[1001] flex-col items-center justify-center w-5 h-16 bg-white dark:bg-slate-700 border border-r-0 border-gray-200 dark:border-slate-600 rounded-l-lg shadow text-gray-400 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+              title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
+                  d={sidebarOpen ? 'M9 5l7 7-7 7' : 'M15 19l-7-7 7-7'} />
+              </svg>
+            </button>
           </div>
 
           {/* Side panel */}
-          {selectedSite ? (
-            <div className="w-full md:w-80 xl:w-96 flex-shrink-0 overflow-hidden border-t md:border-t-0 md:border-l border-gray-200">
-              <SitePanel
-                key={selectedSite.id}
-                site={selectedSite}
-                allSites={sites}
-                onClose={() => setSelectedSiteId(null)}
-                onSignInClick={() => setShowAuth(true)}
+          {sidebarOpen && (
+            selectedSite ? (
+              <div className="w-full md:w-80 xl:w-96 flex-shrink-0 overflow-hidden border-t md:border-t-0 md:border-l border-gray-200 dark:border-slate-700">
+                <SitePanel
+                  key={selectedSite.id}
+                  site={selectedSite}
+                  allSites={sites}
+                  onClose={() => setSelectedSiteId(null)}
+                  onSignInClick={() => setShowAuth(true)}
+                />
+              </div>
+            ) : (
+              <RecentSightingsFeed
+                logs={diverLogs}
+                loading={diverLogsLoading}
+                onSelectSite={id => setSelectedSiteId(id)}
               />
-            </div>
-          ) : (
-            <RecentSightingsFeed
-              logs={diverLogs}
-              loading={diverLogsLoading}
-              onSelectSite={id => setSelectedSiteId(id)}
-            />
+            )
           )}
         </div>
       )}
@@ -209,8 +246,8 @@ export default function App() {
         <div className="flex-1 overflow-y-auto p-4 md:p-6 max-w-4xl mx-auto w-full">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-1">Community Reports</h2>
-              <p className="text-sm text-gray-500">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Community Reports</h2>
+              <p className="text-sm text-gray-500 dark:text-slate-400">
                 Diver observations across all Hawaiian reef sites. Bar colors reflect avg bleaching severity.
               </p>
             </div>
@@ -224,25 +261,25 @@ export default function App() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-              <h3 className="font-semibold text-gray-700 text-sm mb-0.5">Bleaching & Coral Cover Over Time</h3>
-              <p className="text-xs text-gray-400 mb-3">Avg % from diver reports · last 6 months</p>
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+              <h3 className="font-semibold text-gray-700 dark:text-slate-200 text-sm mb-0.5">Bleaching & Coral Cover Over Time</h3>
+              <p className="text-xs text-gray-400 dark:text-slate-500 mb-3">Avg % from diver reports · last 6 months</p>
               <BleachingHistoryChart data={statsOverTime} />
             </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-              <h3 className="font-semibold text-gray-700 text-sm mb-0.5">Dive Reports Over Time</h3>
-              <p className="text-xs text-gray-400 mb-3">Reports per day · color = avg bleaching severity</p>
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+              <h3 className="font-semibold text-gray-700 dark:text-slate-200 text-sm mb-0.5">Dive Reports Over Time</h3>
+              <p className="text-xs text-gray-400 dark:text-slate-500 mb-3">Reports per day · color = avg bleaching severity</p>
               <ReportsOverTimeChart data={statsOverTime} />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-4">
-            <h3 className="font-semibold text-gray-700 mb-3 text-sm">Reports by Site</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 mb-4">
+            <h3 className="font-semibold text-gray-700 dark:text-slate-200 mb-3 text-sm">Reports by Site</h3>
             <CommunityChart stats={stats} siteNames={siteNames} />
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <h3 className="font-semibold text-gray-700 mb-3 text-sm">Recent Observations (All Sites)</h3>
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4">
+            <h3 className="font-semibold text-gray-700 dark:text-slate-200 mb-3 text-sm">Recent Observations (All Sites)</h3>
             <DiverLogList sites={sites} refresh={logRefresh} />
           </div>
         </div>
@@ -255,11 +292,11 @@ export default function App() {
       {view === 'log-dive' && (
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
           <div className="max-w-lg mx-auto">
-            <h2 className="text-xl font-bold text-gray-900 mb-1">Log a Dive Observation</h2>
-            <p className="text-sm text-gray-500 mb-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Log a Dive Observation</h2>
+            <p className="text-sm text-gray-500 dark:text-slate-400 mb-6">
               Help track coral health across Hawaii. Your data is shared with the community.
             </p>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-5">
               <DiverLogForm
                 sites={sites}
                 onSubmitted={() => { setLogRefresh(n => n + 1); setView('community') }}

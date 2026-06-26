@@ -5,7 +5,7 @@ const LEGEND = [
   { color: '#dc2626', label: 'Alert Level 1' },
   { color: '#7f1d1d', label: 'Alert Level 2' },
   { color: '#3b82f6', label: 'Below MMM (cool)' },
-  { color: '#6b7280', label: 'No data' },
+  { color: '#60a5fa', label: 'SST Unavailable' },
 ]
 
 export function HealthLegend() {

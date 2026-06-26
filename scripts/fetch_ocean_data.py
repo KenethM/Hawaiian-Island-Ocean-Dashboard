@@ -209,7 +209,7 @@ def compute_alert(baa, sst, mmm_c):
         if diff >= 0:
             return 0, "#22c55e", "No Stress"
         return -1, "#3b82f6", "Below MMM"
-    return -99, "#6b7280", "No Data"
+    return -2, "#60a5fa", "SST Unavailable"
 
 
 # ---------------------------------------------------------------------------

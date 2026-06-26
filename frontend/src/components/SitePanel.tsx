@@ -33,7 +33,7 @@ function FreshnessTag({ fetchedAt }: { fetchedAt: Date | null }) {
     return () => clearInterval(id)
   }, [fetchedAt])
   if (!fetchedAt) return null
-  return <span className="text-[10px] text-gray-400">· updated {label}</span>
+  return <span className="text-[10px] text-gray-400 dark:text-slate-500">· updated {label}</span>
 }
 
 export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
@@ -77,15 +77,15 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
   ]
 
   return (
-    <div className="h-full flex flex-col bg-white shadow-xl border-l border-gray-200">
+    <div className="h-full flex flex-col bg-white dark:bg-slate-800 shadow-xl border-l border-gray-200 dark:border-slate-700">
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-gray-200">
+      <div className="px-4 pt-4 pb-3 border-b border-gray-200 dark:border-slate-700">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">{site.name}</h2>
-            <p className="text-sm text-gray-500">{site.island} · {site.depth_m}m depth</p>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{site.name}</h2>
+            <p className="text-sm text-gray-500 dark:text-slate-400">{site.island} · {site.depth_m}m depth</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 text-xl leading-none">×</button>
         </div>
 
         <div className="mt-2 flex items-center gap-2 flex-wrap">
@@ -97,7 +97,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
             {site.alert.label}
           </span>
           {site.sst_c !== null && (
-            <span className="text-sm text-gray-600">SST: <strong>{site.sst_c.toFixed(1)}°C</strong> · MMM: {site.mmm_c}°C</span>
+            <span className="text-sm text-gray-600 dark:text-slate-300">SST: <strong>{site.sst_c.toFixed(1)}°C</strong> · MMM: {site.mmm_c}°C</span>
           )}
           <button
             onClick={toggleSubscription}
@@ -106,7 +106,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
             className={`ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors disabled:opacity-50 ${
               subscribed
                 ? 'bg-ocean-700 border-ocean-700 text-white hover:bg-ocean-800'
-                : 'bg-white border-gray-300 text-gray-600 hover:border-ocean-500 hover:text-ocean-700'
+                : 'bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-600 dark:text-slate-300 hover:border-ocean-500 hover:text-ocean-700'
             }`}
           >
             <span>{subscribed ? '🔔' : '🔕'}</span>
@@ -116,7 +116,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
       </div>
 
       {/* Tab bar */}
-      <div className="flex border-b border-gray-200 overflow-x-auto">
+      <div className="flex border-b border-gray-200 dark:border-slate-700 overflow-x-auto">
         {tabs.map(t => (
           <button
             key={t.id}
@@ -124,7 +124,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
             className={`flex-1 py-2 text-xs font-medium whitespace-nowrap transition-colors ${
               tab === t.id
                 ? 'border-b-2 border-ocean-700 text-ocean-700'
-                : 'text-gray-500 hover:text-gray-700'
+                : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
             }`}
           >
             {t.label}
@@ -136,7 +136,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
       <div className="flex-1 overflow-y-auto p-4">
         {tab === 'overview' && (
           <div className="space-y-4">
-            <p className="text-sm text-gray-600">{site.description}</p>
+            <p className="text-sm text-gray-600 dark:text-slate-300">{site.description}</p>
             <div className="grid grid-cols-2 gap-3">
               {([
                 ['Island', site.island, ''],
@@ -144,48 +144,48 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                 ['MMM Temp', `${site.mmm_c}°C`, 'Maximum Monthly Mean — the warmest average month at this site over the historical baseline. Bleaching stress is measured above this value.'],
                 ['Current SST', site.sst_c !== null ? `${site.sst_c.toFixed(1)}°C` : 'No data', 'Sea Surface Temperature from NASA/NOAA MUR satellite, updated daily. Temperatures above MMM+1°C indicate heat stress.'],
               ] as [string, string, string][]).map(([label, value, tip]) => (
-                <div key={label} className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-400 mb-0.5 flex items-center">
+                <div key={label} className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
+                  <p className="text-xs text-gray-400 dark:text-slate-500 mb-0.5 flex items-center">
                     {label}
                     {tip && <InfoTooltip text={tip} />}
                   </p>
-                  <p className="font-semibold text-gray-800">{value}</p>
+                  <p className="font-semibold text-gray-800 dark:text-slate-100">{value}</p>
                 </div>
               ))}
             </div>
 
             {/* CRW thermal stress */}
             {(site.dhw !== null || site.hotspot !== null) && (
-              <div className="mt-3 bg-gray-50 rounded-lg p-3">
-                <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide flex items-center">
+              <div className="mt-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
+                <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 mb-2 uppercase tracking-wide flex items-center">
                   Thermal Stress (NOAA CRW)
                   <InfoTooltip text="NOAA Coral Reef Watch satellite data measuring cumulative heat stress. Updated daily at 5 km resolution." />
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   {site.dhw !== null && (
                     <div>
-                      <p className="text-xs text-gray-400 flex items-center">
+                      <p className="text-xs text-gray-400 dark:text-slate-500 flex items-center">
                         Degree Heating Weeks
                         <InfoTooltip text="DHW measures accumulated heat stress over the past 12 weeks. 4+ °C-weeks = bleaching likely. 8+ = mass bleaching expected." />
                       </p>
-                      <p className={`font-bold text-lg ${site.dhw >= 8 ? 'text-red-600' : site.dhw >= 4 ? 'text-orange-500' : 'text-gray-800'}`}>
-                        {site.dhw.toFixed(1)} <span className="text-xs font-normal text-gray-500">°C-weeks</span>
+                      <p className={`font-bold text-lg ${site.dhw >= 8 ? 'text-red-600' : site.dhw >= 4 ? 'text-orange-500' : 'text-gray-800 dark:text-slate-100'}`}>
+                        {site.dhw.toFixed(1)} <span className="text-xs font-normal text-gray-500 dark:text-slate-400">°C-weeks</span>
                       </p>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
                         {site.dhw >= 8 ? 'Significant bleaching likely' : site.dhw >= 4 ? 'Bleaching likely' : site.dhw >= 1 ? 'Watch threshold' : 'No accumulated stress'}
                       </p>
                     </div>
                   )}
                   {site.hotspot !== null && (
                     <div>
-                      <p className="text-xs text-gray-400 flex items-center">
+                      <p className="text-xs text-gray-400 dark:text-slate-500 flex items-center">
                         Hotspot
                         <InfoTooltip text="Temperature above the bleaching threshold (MMM+1°C). A positive hotspot means the ocean is currently warm enough to cause bleaching stress." />
                       </p>
-                      <p className="font-bold text-lg text-gray-800">
-                        +{site.hotspot.toFixed(2)} <span className="text-xs font-normal text-gray-500">°C</span>
+                      <p className="font-bold text-lg text-gray-800 dark:text-slate-100">
+                        +{site.hotspot.toFixed(2)} <span className="text-xs font-normal text-gray-500 dark:text-slate-400">°C</span>
                       </p>
-                      <p className="text-xs text-gray-400 mt-0.5">Above bleaching threshold</p>
+                      <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Above bleaching threshold</p>
                     </div>
                   )}
                 </div>
@@ -194,23 +194,23 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
 
             {/* Live Conditions */}
             <div className="flex items-center gap-2">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Live Conditions</p>
+              <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">Live Conditions</p>
               <FreshnessTag fetchedAt={conditions.fetchedAt} />
             </div>
 
             {conditions.loading && (
               <div className="space-y-2 animate-pulse">
-                <div className="h-16 bg-gray-100 rounded-lg" />
-                <div className="h-24 bg-gray-100 rounded-lg" />
-                <div className="h-14 bg-gray-100 rounded-lg" />
+                <div className="h-16 bg-gray-100 dark:bg-slate-700 rounded-lg" />
+                <div className="h-24 bg-gray-100 dark:bg-slate-700 rounded-lg" />
+                <div className="h-14 bg-gray-100 dark:bg-slate-700 rounded-lg" />
               </div>
             )}
 
             {!conditions.loading && (
               <div className="space-y-3">
                 {/* Waves */}
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
+                <div className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2 flex items-center">
                     Wave Conditions
                     <InfoTooltip text="Live data from the nearest NOAA NDBC buoy. Wave height is significant wave height (average of the tallest third of waves)." />
                     {conditions.waves?.buoy_name && (
@@ -220,7 +220,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                   {conditions.waves?.data ? (
                     <>
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-gray-900">
+                        <span className="text-2xl font-bold text-gray-900 dark:text-white">
                           {conditions.waves.data.wave_height_m.toFixed(1)} m
                         </span>
                         <span
@@ -230,7 +230,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                           {conditions.waves.data.conditions_label}
                         </span>
                       </div>
-                      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500">
+                      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500 dark:text-slate-400">
                         {conditions.waves.data.dominant_period_s != null && (
                           <span>Period: {conditions.waves.data.dominant_period_s}s</span>
                         )}
@@ -246,33 +246,33 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                       </div>
                     </>
                   ) : (
-                    <p className="text-xs text-gray-400">No buoy data available</p>
+                    <p className="text-xs text-gray-400 dark:text-slate-500">No buoy data available</p>
                   )}
                 </div>
 
                 {/* Salinity */}
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
+                <div className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2 flex items-center">
                     Salinity
                     <InfoTooltip text="Measured in Practical Salinity Units (PSU). Normal Hawaiian nearshore seawater is 34–35 PSU. Lower values may indicate freshwater runoff after rain." />
                   </p>
                   {conditions.salinity?.salinity_psu != null ? (
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold text-gray-900">{conditions.salinity.salinity_psu} PSU</span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-2xl font-bold text-gray-900 dark:text-white">{conditions.salinity.salinity_psu} PSU</span>
+                      <span className="text-xs text-gray-400 dark:text-slate-500">
                         · station {conditions.salinity.station_id}
                         {conditions.salinity.observed_at && ` · ${conditions.salinity.observed_at.slice(0, 16)}`}
                       </span>
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-400">{conditions.salinity?.note ?? 'No salinity data available'}</p>
+                    <p className="text-xs text-gray-400 dark:text-slate-500">{conditions.salinity?.note ?? 'No salinity data available'}</p>
                   )}
                 </div>
 
                 {/* Tides */}
                 {conditions.tides?.station_id && (
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  <div className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
+                    <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2">
                       Tides
                       {conditions.tides.station_name && (
                         <span className="normal-case font-normal ml-1">· {conditions.tides.station_name}</span>
@@ -280,11 +280,11 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                     </p>
                     {conditions.tides.current && (
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xl font-bold text-gray-900">
+                        <span className="text-xl font-bold text-gray-900 dark:text-white">
                           {conditions.tides.current.height_m.toFixed(2)} m
                         </span>
                         {conditions.tides.tide_state && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-slate-400">
                             {conditions.tides.tide_state === 'rising' ? '↑ Rising' : '↓ Falling'}
                           </span>
                         )}
@@ -298,10 +298,10 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                       />
                     )}
                     {conditions.tides.high_lows.length > 0 && (
-                      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500">
+                      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-gray-500 dark:text-slate-400">
                         {conditions.tides.high_lows.slice(0, 4).map((hl, i) => (
                           <span key={i}>
-                            <span className={hl.type === 'H' ? 'text-blue-600 font-medium' : 'text-gray-500'}>
+                            <span className={hl.type === 'H' ? 'text-blue-600 font-medium' : 'text-gray-500 dark:text-slate-400'}>
                               {hl.type === 'H' ? 'High' : 'Low'}
                             </span>{' '}
                             {hl.time.slice(11, 16)} · {hl.height_m.toFixed(2)} m
@@ -313,17 +313,17 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                 )}
 
                 {/* Water Clarity */}
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center">
+                <div className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-3">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2 flex items-center">
                     Water Clarity
                     <InfoTooltip text="Derived from NASA MODIS satellite Kd490 (light diffuse attenuation at 490 nm). Lower Kd490 = clearer water. Only available on cloud-free days." />
-                    <span className="normal-case font-normal ml-1 text-gray-400">· MODIS · 14 days</span>
+                    <span className="normal-case font-normal ml-1 text-gray-400 dark:text-slate-500">· MODIS · 14 days</span>
                   </p>
                   {conditions.turbidity?.history.length ? (
                     <>
                       {conditions.turbidity.latest ? (
                         <div className="flex items-center gap-2 mb-3">
-                          <span className="text-lg font-bold text-gray-900">
+                          <span className="text-lg font-bold text-gray-900 dark:text-white">
                             ~{conditions.turbidity.latest.estimated_visibility_m} m visibility
                           </span>
                           <span
@@ -334,7 +334,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                           </span>
                         </div>
                       ) : (
-                        <p className="text-xs text-gray-400 mb-3">No clear-sky reading this week</p>
+                        <p className="text-xs text-gray-400 dark:text-slate-500 mb-3">No clear-sky reading this week</p>
                       )}
                       <div className="flex gap-1 overflow-x-auto pb-1">
                         {conditions.turbidity.history.map((day, i) => (
@@ -349,13 +349,13 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                               className="w-full rounded"
                               style={{ height: '20px', background: day.color, opacity: day.kd490 != null ? 1 : 0.35 }}
                             />
-                            <span className="text-[9px] text-gray-400 leading-none">
+                            <span className="text-[9px] text-gray-400 dark:text-slate-500 leading-none">
                               {day.date.slice(5).replace('-', '/')}
                             </span>
                           </div>
                         ))}
                       </div>
-                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] text-gray-400">
+                      <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] text-gray-400 dark:text-slate-500">
                         <span><span className="inline-block w-2 h-2 rounded-sm mr-0.5" style={{ background: '#22c55e' }} />Very Clear</span>
                         <span><span className="inline-block w-2 h-2 rounded-sm mr-0.5" style={{ background: '#84cc16' }} />Clear</span>
                         <span><span className="inline-block w-2 h-2 rounded-sm mr-0.5" style={{ background: '#eab308' }} />Moderate</span>
@@ -365,7 +365,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
                       </div>
                     </>
                   ) : (
-                    <p className="text-xs text-gray-400">No satellite data available</p>
+                    <p className="text-xs text-gray-400 dark:text-slate-500">No satellite data available</p>
                   )}
                 </div>
               </div>
@@ -376,20 +376,20 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
         {tab === 'temperature' && (
           <div className="space-y-6">
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">60-Day SST History</p>
-              <p className="text-xs text-gray-500 mb-3">Daily SST vs bleaching thresholds · NOAA/JPL MUR SST</p>
+              <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-1">60-Day SST History</p>
+              <p className="text-xs text-gray-500 dark:text-slate-400 mb-3">Daily SST vs bleaching thresholds · NOAA/JPL MUR SST</p>
               <TempTrendChart siteId={site.id} mmm={site.mmm_c} />
             </div>
 
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Year-over-Year Comparison</p>
-              <p className="text-xs text-gray-500 mb-3">This year vs last year, same 180-day window</p>
+              <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-1">Year-over-Year Comparison</p>
+              <p className="text-xs text-gray-500 dark:text-slate-400 mb-3">This year vs last year, same 180-day window</p>
               <SstYoYChart siteId={site.id} mmm={site.mmm_c} />
             </div>
 
             <div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">DHW Forecast (28 days)</p>
-              <p className="text-xs text-gray-500 mb-3">Projected heat stress if current SST trend continues</p>
+              <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-1">DHW Forecast (28 days)</p>
+              <p className="text-xs text-gray-500 dark:text-slate-400 mb-3">Projected heat stress if current SST trend continues</p>
               <DhwForecastChart siteId={site.id} mmm={site.mmm_c} />
             </div>
           </div>
@@ -406,7 +406,7 @@ export function SitePanel({ site, allSites, onClose, onSignInClick }: Props) {
 
         {tab === 'reports' && (
           <div>
-            <p className="text-xs text-gray-500 mb-3">Community diver observations for this site.</p>
+            <p className="text-xs text-gray-500 dark:text-slate-400 mb-3">Community diver observations for this site.</p>
             <DiverLogList siteId={site.id} sites={allSites} refresh={logRefresh} />
           </div>
         )}

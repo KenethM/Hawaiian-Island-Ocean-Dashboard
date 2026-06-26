@@ -187,8 +187,8 @@ export default function App() {
       {/* Main content */}
       {view === 'dashboard' && (
         <div className="flex flex-1 overflow-hidden flex-col md:flex-row">
-          {/* Map */}
-          <div className="flex-1 relative min-h-[50vh] md:min-h-0">
+          {/* Map — isolate keeps map z-indexes from bleeding above the header */}
+          <div className="flex-1 relative isolate min-h-[50vh] md:min-h-0">
             {loading && (
               <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/60 flex items-center justify-center z-50">
                 <span className="text-gray-500 dark:text-slate-400 text-sm">Loading reef data from NOAA…</span>

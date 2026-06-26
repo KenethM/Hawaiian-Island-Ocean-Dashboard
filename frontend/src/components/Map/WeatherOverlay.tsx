@@ -456,7 +456,7 @@ export function WeatherControlPanel({ state, histDays, loading, error, onChange,
     : `Day ${(mode as { dayIdx: number }).dayIdx + 1}`
 
   return (
-    <div className="absolute top-4 right-4 z-[1000] select-none" style={{ minWidth: 220 }}>
+    <div className="absolute top-3 right-3 z-[1000] select-none" style={{ minWidth: 220 }}>
       <div className="flex items-center gap-1.5">
         <button
           onClick={() => onChange({ enabled: !enabled })}
@@ -470,9 +470,6 @@ export function WeatherControlPanel({ state, histDays, loading, error, onChange,
           <span>Weather{enabled ? ' On' : ' Off'}</span>
           {loading && <span className="ml-1 animate-spin text-xs">⟳</span>}
         </button>
-        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-500/20 border border-amber-500/40 text-amber-400 leading-none">
-          Experimental
-        </span>
       </div>
 
       {enabled && (

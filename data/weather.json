@@ -217,49 +217,49 @@
         },
         {
           "date": "2026-06-27",
-          "precip_mm": 9.1,
+          "precip_mm": 9.5,
           "rain_prob": 94,
           "weather_code": 55,
           "is_forecast": false
         },
         {
           "date": "2026-06-28",
-          "precip_mm": 8.2,
+          "precip_mm": 11.1,
           "rain_prob": 93,
-          "weather_code": 53,
+          "weather_code": 55,
           "is_forecast": false
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 16.6,
+          "precip_mm": 19.8,
           "rain_prob": 100,
           "weather_code": 95,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 7.5,
+          "precip_mm": 7.8,
           "rain_prob": 100,
           "weather_code": 53,
           "is_forecast": true
         },
         {
           "date": "2026-07-01",
-          "precip_mm": 16.7,
+          "precip_mm": 22.0,
           "rain_prob": 99,
-          "weather_code": 80,
+          "weather_code": 81,
           "is_forecast": true
         },
         {
           "date": "2026-07-02",
-          "precip_mm": 16.2,
+          "precip_mm": 15.9,
           "rain_prob": 87,
-          "weather_code": 55,
+          "weather_code": 80,
           "is_forecast": true
         },
         {
           "date": "2026-07-03",
-          "precip_mm": 9.3,
+          "precip_mm": 8.1,
           "rain_prob": 79,
           "weather_code": 53,
           "is_forecast": true
@@ -270,273 +270,273 @@
       "name": "Kauai-S",
       "lat": 21.9,
       "lon": -159.45,
-      "daily": [
-        {
-          "date": "2026-05-28",
-          "precip_mm": 0.8,
-          "rain_prob": 82,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-29",
-          "precip_mm": 2.1,
-          "rain_prob": 77,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-30",
-          "precip_mm": 1.2,
-          "rain_prob": 90,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-31",
-          "precip_mm": 0.5,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-01",
-          "precip_mm": 0.4,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-02",
-          "precip_mm": 2.9,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-03",
-          "precip_mm": 4.0,
-          "rain_prob": 100,
-          "weather_code": 55,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-04",
-          "precip_mm": 4.7,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-05",
-          "precip_mm": 0.5,
-          "rain_prob": 94,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-06",
-          "precip_mm": 0.1,
-          "rain_prob": 90,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-07",
-          "precip_mm": 4.2,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-08",
-          "precip_mm": 4.2,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-09",
-          "precip_mm": 4.2,
-          "rain_prob": 98,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-10",
-          "precip_mm": 0.8,
-          "rain_prob": 80,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-11",
-          "precip_mm": 1.7,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-12",
-          "precip_mm": 0.0,
-          "rain_prob": 100,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-13",
-          "precip_mm": 0.0,
-          "rain_prob": 90,
-          "weather_code": 2,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-14",
-          "precip_mm": 0.4,
-          "rain_prob": 56,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-15",
-          "precip_mm": 0.5,
-          "rain_prob": 37,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-16",
-          "precip_mm": 0.9,
-          "rain_prob": 90,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-17",
-          "precip_mm": 0.3,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-18",
-          "precip_mm": 1.7,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-19",
-          "precip_mm": 2.0,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-20",
-          "precip_mm": 3.8,
-          "rain_prob": 100,
-          "weather_code": 55,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-21",
-          "precip_mm": 0.4,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-22",
-          "precip_mm": 1.7,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-23",
-          "precip_mm": 1.0,
-          "rain_prob": 86,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-24",
-          "precip_mm": 7.3,
-          "rain_prob": 100,
-          "weather_code": 61,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-25",
-          "precip_mm": 4.2,
-          "rain_prob": 100,
-          "weather_code": 55,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-26",
-          "precip_mm": 2.2,
-          "rain_prob": 94,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-27",
-          "precip_mm": 3.7,
-          "rain_prob": 100,
-          "weather_code": 55,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-28",
-          "precip_mm": 1.9,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-29",
-          "precip_mm": 6.0,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-06-30",
-          "precip_mm": 0.3,
-          "rain_prob": 78,
-          "weather_code": 51,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-01",
-          "precip_mm": 8.7,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-02",
-          "precip_mm": 3.6,
-          "rain_prob": 86,
-          "weather_code": 51,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-03",
-          "precip_mm": 7.5,
-          "rain_prob": 97,
-          "weather_code": 53,
-          "is_forecast": true
-        }
-      ]
+      "daily": []
     },
     {
       "name": "Niihau",
       "lat": 21.9,
       "lon": -160.2,
-      "daily": []
+      "daily": [
+        {
+          "date": "2026-05-28",
+          "precip_mm": 0.0,
+          "rain_prob": 43,
+          "weather_code": 3,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-29",
+          "precip_mm": 0.9,
+          "rain_prob": 82,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-30",
+          "precip_mm": 0.7,
+          "rain_prob": 46,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-31",
+          "precip_mm": 2.7,
+          "rain_prob": 23,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-01",
+          "precip_mm": 1.6,
+          "rain_prob": 75,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-02",
+          "precip_mm": 2.3,
+          "rain_prob": 80,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-03",
+          "precip_mm": 5.4,
+          "rain_prob": 96,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-04",
+          "precip_mm": 2.4,
+          "rain_prob": 78,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-05",
+          "precip_mm": 0.0,
+          "rain_prob": 7,
+          "weather_code": 3,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-06",
+          "precip_mm": 2.2,
+          "rain_prob": 18,
+          "weather_code": 55,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-07",
+          "precip_mm": 0.4,
+          "rain_prob": 29,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-08",
+          "precip_mm": 0.7,
+          "rain_prob": 25,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-09",
+          "precip_mm": 3.4,
+          "rain_prob": 45,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-10",
+          "precip_mm": 1.7,
+          "rain_prob": 57,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-11",
+          "precip_mm": 0.3,
+          "rain_prob": 12,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-12",
+          "precip_mm": 0.1,
+          "rain_prob": 0,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-13",
+          "precip_mm": 0.0,
+          "rain_prob": 0,
+          "weather_code": 3,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-14",
+          "precip_mm": 0.2,
+          "rain_prob": 4,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-15",
+          "precip_mm": 0.7,
+          "rain_prob": 16,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-16",
+          "precip_mm": 2.8,
+          "rain_prob": 84,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-17",
+          "precip_mm": 0.1,
+          "rain_prob": 16,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-18",
+          "precip_mm": 0.6,
+          "rain_prob": 69,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-19",
+          "precip_mm": 2.6,
+          "rain_prob": 12,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-20",
+          "precip_mm": 2.4,
+          "rain_prob": 27,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-21",
+          "precip_mm": 2.0,
+          "rain_prob": 43,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-22",
+          "precip_mm": 3.2,
+          "rain_prob": 54,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-23",
+          "precip_mm": 0.3,
+          "rain_prob": 27,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-24",
+          "precip_mm": 3.9,
+          "rain_prob": 62,
+          "weather_code": 55,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-25",
+          "precip_mm": 0.7,
+          "rain_prob": 82,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-26",
+          "precip_mm": 0.0,
+          "rain_prob": 39,
+          "weather_code": 3,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-27",
+          "precip_mm": 1.1,
+          "rain_prob": 20,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-28",
+          "precip_mm": 3.3,
+          "rain_prob": 74,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-29",
+          "precip_mm": 8.6,
+          "rain_prob": 94,
+          "weather_code": 95,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-06-30",
+          "precip_mm": 0.0,
+          "rain_prob": 10,
+          "weather_code": 3,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-01",
+          "precip_mm": 4.8,
+          "rain_prob": 69,
+          "weather_code": 55,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-02",
+          "precip_mm": 0.3,
+          "rain_prob": 25,
+          "weather_code": 51,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-03",
+          "precip_mm": 2.4,
+          "rain_prob": 29,
+          "weather_code": 53,
+          "is_forecast": true
+        }
+      ]
     },
     {
       "name": "Oahu-N",
@@ -768,44 +768,44 @@
         },
         {
           "date": "2026-06-28",
-          "precip_mm": 0.6,
+          "precip_mm": 0.0,
           "rain_prob": 20,
-          "weather_code": 51,
+          "weather_code": 3,
           "is_forecast": false
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 2.0,
+          "precip_mm": 4.6,
           "rain_prob": 92,
-          "weather_code": 53,
+          "weather_code": 80,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 0.0,
+          "precip_mm": 0.8,
           "rain_prob": 52,
-          "weather_code": 3,
+          "weather_code": 51,
           "is_forecast": true
         },
         {
           "date": "2026-07-01",
-          "precip_mm": 1.8,
+          "precip_mm": 3.3,
           "rain_prob": 63,
-          "weather_code": 51,
+          "weather_code": 53,
           "is_forecast": true
         },
         {
           "date": "2026-07-02",
-          "precip_mm": 1.2,
+          "precip_mm": 0.0,
           "rain_prob": 22,
-          "weather_code": 51,
+          "weather_code": 3,
           "is_forecast": true
         },
         {
           "date": "2026-07-03",
-          "precip_mm": 4.2,
+          "precip_mm": 5.7,
           "rain_prob": 29,
-          "weather_code": 53,
+          "weather_code": 55,
           "is_forecast": true
         }
       ]
@@ -814,273 +814,273 @@
       "name": "Oahu-C",
       "lat": 21.35,
       "lon": -158.0,
-      "daily": [
-        {
-          "date": "2026-05-28",
-          "precip_mm": 0.0,
-          "rain_prob": 96,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-29",
-          "precip_mm": 0.1,
-          "rain_prob": 80,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-30",
-          "precip_mm": 2.3,
-          "rain_prob": 97,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-31",
-          "precip_mm": 1.9,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-01",
-          "precip_mm": 1.7,
-          "rain_prob": 78,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-02",
-          "precip_mm": 2.0,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-03",
-          "precip_mm": 0.1,
-          "rain_prob": 85,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-04",
-          "precip_mm": 2.6,
-          "rain_prob": 100,
-          "weather_code": 55,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-05",
-          "precip_mm": 0.2,
-          "rain_prob": 99,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-06",
-          "precip_mm": 0.0,
-          "rain_prob": 94,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-07",
-          "precip_mm": 0.3,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-08",
-          "precip_mm": 0.1,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-09",
-          "precip_mm": 1.4,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-10",
-          "precip_mm": 6.2,
-          "rain_prob": 98,
-          "weather_code": 80,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-11",
-          "precip_mm": 7.1,
-          "rain_prob": 92,
-          "weather_code": 81,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-12",
-          "precip_mm": 0.0,
-          "rain_prob": 43,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-13",
-          "precip_mm": 0.0,
-          "rain_prob": 10,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-14",
-          "precip_mm": 12.2,
-          "rain_prob": 99,
-          "weather_code": 80,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-15",
-          "precip_mm": 0.1,
-          "rain_prob": 71,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-16",
-          "precip_mm": 0.0,
-          "rain_prob": 17,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-17",
-          "precip_mm": 2.8,
-          "rain_prob": 100,
-          "weather_code": 55,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-18",
-          "precip_mm": 0.4,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-19",
-          "precip_mm": 5.2,
-          "rain_prob": 84,
-          "weather_code": 95,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-20",
-          "precip_mm": 5.3,
-          "rain_prob": 74,
-          "weather_code": 95,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-21",
-          "precip_mm": 4.5,
-          "rain_prob": 39,
-          "weather_code": 80,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-22",
-          "precip_mm": 0.1,
-          "rain_prob": 65,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-23",
-          "precip_mm": 4.9,
-          "rain_prob": 100,
-          "weather_code": 80,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-24",
-          "precip_mm": 0.2,
-          "rain_prob": 99,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-25",
-          "precip_mm": 0.1,
-          "rain_prob": 99,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-26",
-          "precip_mm": 0.0,
-          "rain_prob": 98,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-27",
-          "precip_mm": 0.0,
-          "rain_prob": 100,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-28",
-          "precip_mm": 0.2,
-          "rain_prob": 67,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-29",
-          "precip_mm": 2.8,
-          "rain_prob": 98,
-          "weather_code": 53,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-06-30",
-          "precip_mm": 0.0,
-          "rain_prob": 90,
-          "weather_code": 3,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-01",
-          "precip_mm": 1.8,
-          "rain_prob": 100,
-          "weather_code": 51,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-02",
-          "precip_mm": 0.3,
-          "rain_prob": 85,
-          "weather_code": 51,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-03",
-          "precip_mm": 1.8,
-          "rain_prob": 76,
-          "weather_code": 51,
-          "is_forecast": true
-        }
-      ]
+      "daily": []
     },
     {
       "name": "Oahu-E",
       "lat": 21.38,
       "lon": -157.72,
-      "daily": []
+      "daily": [
+        {
+          "date": "2026-05-28",
+          "precip_mm": 4.2,
+          "rain_prob": 59,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-29",
+          "precip_mm": 2.5,
+          "rain_prob": 69,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-30",
+          "precip_mm": 4.1,
+          "rain_prob": 94,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-31",
+          "precip_mm": 4.8,
+          "rain_prob": 94,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-01",
+          "precip_mm": 7.7,
+          "rain_prob": 100,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-02",
+          "precip_mm": 3.3,
+          "rain_prob": 100,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-03",
+          "precip_mm": 0.6,
+          "rain_prob": 92,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-04",
+          "precip_mm": 5.1,
+          "rain_prob": 98,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-05",
+          "precip_mm": 2.2,
+          "rain_prob": 94,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-06",
+          "precip_mm": 0.4,
+          "rain_prob": 53,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-07",
+          "precip_mm": 4.7,
+          "rain_prob": 96,
+          "weather_code": 55,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-08",
+          "precip_mm": 7.9,
+          "rain_prob": 100,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-09",
+          "precip_mm": 4.0,
+          "rain_prob": 55,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-10",
+          "precip_mm": 2.5,
+          "rain_prob": 96,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-11",
+          "precip_mm": 3.6,
+          "rain_prob": 55,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-12",
+          "precip_mm": 0.0,
+          "rain_prob": 12,
+          "weather_code": 3,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-13",
+          "precip_mm": 0.2,
+          "rain_prob": 13,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-14",
+          "precip_mm": 8.8,
+          "rain_prob": 100,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-15",
+          "precip_mm": 3.3,
+          "rain_prob": 96,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-16",
+          "precip_mm": 1.3,
+          "rain_prob": 93,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-17",
+          "precip_mm": 0.6,
+          "rain_prob": 83,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-18",
+          "precip_mm": 4.0,
+          "rain_prob": 98,
+          "weather_code": 55,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-19",
+          "precip_mm": 4.3,
+          "rain_prob": 86,
+          "weather_code": 95,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-20",
+          "precip_mm": 1.4,
+          "rain_prob": 76,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-21",
+          "precip_mm": 0.4,
+          "rain_prob": 73,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-22",
+          "precip_mm": 1.4,
+          "rain_prob": 65,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-23",
+          "precip_mm": 4.5,
+          "rain_prob": 100,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-24",
+          "precip_mm": 4.6,
+          "rain_prob": 99,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-25",
+          "precip_mm": 1.2,
+          "rain_prob": 89,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-26",
+          "precip_mm": 0.5,
+          "rain_prob": 96,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-27",
+          "precip_mm": 1.8,
+          "rain_prob": 100,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-28",
+          "precip_mm": 0.1,
+          "rain_prob": 84,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-29",
+          "precip_mm": 3.0,
+          "rain_prob": 99,
+          "weather_code": 53,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-06-30",
+          "precip_mm": 9.3,
+          "rain_prob": 88,
+          "weather_code": 95,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-01",
+          "precip_mm": 6.0,
+          "rain_prob": 99,
+          "weather_code": 53,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-02",
+          "precip_mm": 4.8,
+          "rain_prob": 82,
+          "weather_code": 53,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-03",
+          "precip_mm": 6.3,
+          "rain_prob": 82,
+          "weather_code": 53,
+          "is_forecast": true
+        }
+      ]
     },
     {
       "name": "Oahu-S",
@@ -1299,49 +1299,49 @@
         },
         {
           "date": "2026-06-27",
-          "precip_mm": 1.3,
+          "precip_mm": 1.7,
           "rain_prob": 39,
           "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-06-28",
-          "precip_mm": 0.8,
+          "precip_mm": 0.6,
           "rain_prob": 14,
           "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 2.8,
+          "precip_mm": 3.7,
           "rain_prob": 37,
           "weather_code": 53,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 0.9,
+          "precip_mm": 5.5,
           "rain_prob": 23,
-          "weather_code": 51,
+          "weather_code": 53,
           "is_forecast": true
         },
         {
           "date": "2026-07-01",
-          "precip_mm": 3.6,
+          "precip_mm": 5.3,
           "rain_prob": 24,
           "weather_code": 53,
           "is_forecast": true
         },
         {
           "date": "2026-07-02",
-          "precip_mm": 2.4,
+          "precip_mm": 3.0,
           "rain_prob": 29,
           "weather_code": 51,
           "is_forecast": true
         },
         {
           "date": "2026-07-03",
-          "precip_mm": 5.1,
+          "precip_mm": 4.5,
           "rain_prob": 18,
           "weather_code": 53,
           "is_forecast": true
@@ -1352,7 +1352,267 @@
       "name": "Molokai-W",
       "lat": 21.18,
       "lon": -157.1,
-      "daily": []
+      "daily": [
+        {
+          "date": "2026-05-28",
+          "precip_mm": 0.2,
+          "rain_prob": 23,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-29",
+          "precip_mm": 0.3,
+          "rain_prob": 29,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-30",
+          "precip_mm": 0.0,
+          "rain_prob": 6,
+          "weather_code": 3,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-31",
+          "precip_mm": 4.0,
+          "rain_prob": 8,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-01",
+          "precip_mm": 2.3,
+          "rain_prob": 63,
+          "weather_code": 95,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-02",
+          "precip_mm": 0.4,
+          "rain_prob": 96,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-03",
+          "precip_mm": 0.0,
+          "rain_prob": 37,
+          "weather_code": 3,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-04",
+          "precip_mm": 0.2,
+          "rain_prob": 37,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-05",
+          "precip_mm": 0.0,
+          "rain_prob": 16,
+          "weather_code": 1,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-06",
+          "precip_mm": 0.0,
+          "rain_prob": 25,
+          "weather_code": 1,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-07",
+          "precip_mm": 0.4,
+          "rain_prob": 61,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-08",
+          "precip_mm": 0.1,
+          "rain_prob": 63,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-09",
+          "precip_mm": 0.0,
+          "rain_prob": 75,
+          "weather_code": 1,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-10",
+          "precip_mm": 0.2,
+          "rain_prob": 31,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-11",
+          "precip_mm": 1.2,
+          "rain_prob": 12,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-12",
+          "precip_mm": 0.1,
+          "rain_prob": 8,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-13",
+          "precip_mm": 0.8,
+          "rain_prob": 55,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-14",
+          "precip_mm": 6.4,
+          "rain_prob": 100,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-15",
+          "precip_mm": 0.9,
+          "rain_prob": 72,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-16",
+          "precip_mm": 0.8,
+          "rain_prob": 12,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-17",
+          "precip_mm": 4.1,
+          "rain_prob": 53,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-18",
+          "precip_mm": 4.3,
+          "rain_prob": 56,
+          "weather_code": 95,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-19",
+          "precip_mm": 2.4,
+          "rain_prob": 12,
+          "weather_code": 95,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-20",
+          "precip_mm": 1.0,
+          "rain_prob": 9,
+          "weather_code": 95,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-21",
+          "precip_mm": 0.6,
+          "rain_prob": 8,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-22",
+          "precip_mm": 0.0,
+          "rain_prob": 16,
+          "weather_code": 1,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-23",
+          "precip_mm": 1.6,
+          "rain_prob": 96,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-24",
+          "precip_mm": 0.0,
+          "rain_prob": 58,
+          "weather_code": 3,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-25",
+          "precip_mm": 0.0,
+          "rain_prob": 24,
+          "weather_code": 3,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-26",
+          "precip_mm": 0.2,
+          "rain_prob": 75,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-27",
+          "precip_mm": 0.5,
+          "rain_prob": 65,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-28",
+          "precip_mm": 0.0,
+          "rain_prob": 27,
+          "weather_code": 3,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-29",
+          "precip_mm": 0.8,
+          "rain_prob": 70,
+          "weather_code": 53,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-06-30",
+          "precip_mm": 0.0,
+          "rain_prob": 14,
+          "weather_code": 3,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-01",
+          "precip_mm": 0.0,
+          "rain_prob": 32,
+          "weather_code": 3,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-02",
+          "precip_mm": 0.0,
+          "rain_prob": 18,
+          "weather_code": 3,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-03",
+          "precip_mm": 0.3,
+          "rain_prob": 12,
+          "weather_code": 51,
+          "is_forecast": true
+        }
+      ]
     },
     {
       "name": "Molokai-E",
@@ -1364,267 +1624,7 @@
       "name": "Lanai",
       "lat": 20.85,
       "lon": -156.92,
-      "daily": [
-        {
-          "date": "2026-05-28",
-          "precip_mm": 0.1,
-          "rain_prob": 89,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-29",
-          "precip_mm": 0.2,
-          "rain_prob": 84,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-30",
-          "precip_mm": 2.5,
-          "rain_prob": 76,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-31",
-          "precip_mm": 3.7,
-          "rain_prob": 83,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-01",
-          "precip_mm": 2.7,
-          "rain_prob": 62,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-02",
-          "precip_mm": 2.2,
-          "rain_prob": 75,
-          "weather_code": 95,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-03",
-          "precip_mm": 0.0,
-          "rain_prob": 5,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-04",
-          "precip_mm": 4.9,
-          "rain_prob": 100,
-          "weather_code": 80,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-05",
-          "precip_mm": 0.0,
-          "rain_prob": 32,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-06",
-          "precip_mm": 0.0,
-          "rain_prob": 13,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-07",
-          "precip_mm": 0.6,
-          "rain_prob": 6,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-08",
-          "precip_mm": 0.1,
-          "rain_prob": 78,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-09",
-          "precip_mm": 4.1,
-          "rain_prob": 70,
-          "weather_code": 80,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-10",
-          "precip_mm": 6.8,
-          "rain_prob": 100,
-          "weather_code": 81,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-11",
-          "precip_mm": 0.4,
-          "rain_prob": 97,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-12",
-          "precip_mm": 1.4,
-          "rain_prob": 78,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-13",
-          "precip_mm": 0.5,
-          "rain_prob": 83,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-14",
-          "precip_mm": 3.3,
-          "rain_prob": 100,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-15",
-          "precip_mm": 0.1,
-          "rain_prob": 20,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-16",
-          "precip_mm": 2.2,
-          "rain_prob": 44,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-17",
-          "precip_mm": 1.0,
-          "rain_prob": 75,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-18",
-          "precip_mm": 1.7,
-          "rain_prob": 98,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-19",
-          "precip_mm": 0.8,
-          "rain_prob": 76,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-20",
-          "precip_mm": 0.8,
-          "rain_prob": 16,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-21",
-          "precip_mm": 0.3,
-          "rain_prob": 47,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-22",
-          "precip_mm": 0.0,
-          "rain_prob": 58,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-23",
-          "precip_mm": 6.3,
-          "rain_prob": 94,
-          "weather_code": 95,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-24",
-          "precip_mm": 0.0,
-          "rain_prob": 83,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-25",
-          "precip_mm": 0.4,
-          "rain_prob": 55,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-26",
-          "precip_mm": 0.5,
-          "rain_prob": 65,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-27",
-          "precip_mm": 0.7,
-          "rain_prob": 31,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-28",
-          "precip_mm": 0.6,
-          "rain_prob": 24,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-29",
-          "precip_mm": 2.7,
-          "rain_prob": 92,
-          "weather_code": 53,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-06-30",
-          "precip_mm": 0.5,
-          "rain_prob": 64,
-          "weather_code": 51,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-01",
-          "precip_mm": 7.8,
-          "rain_prob": 86,
-          "weather_code": 80,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-02",
-          "precip_mm": 0.0,
-          "rain_prob": 42,
-          "weather_code": 2,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-03",
-          "precip_mm": 3.6,
-          "rain_prob": 57,
-          "weather_code": 51,
-          "is_forecast": true
-        }
-      ]
+      "daily": []
     },
     {
       "name": "Maui-N",
@@ -1852,21 +1852,21 @@
           "date": "2026-06-28",
           "precip_mm": 0.0,
           "rain_prob": 67,
-          "weather_code": 1,
+          "weather_code": 3,
           "is_forecast": false
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 0.7,
+          "precip_mm": 0.2,
           "rain_prob": 70,
           "weather_code": 51,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 0.0,
+          "precip_mm": 0.1,
           "rain_prob": 54,
-          "weather_code": 3,
+          "weather_code": 51,
           "is_forecast": true
         },
         {
@@ -1887,7 +1887,7 @@
           "date": "2026-07-03",
           "precip_mm": 0.0,
           "rain_prob": 47,
-          "weather_code": 3,
+          "weather_code": 1,
           "is_forecast": true
         }
       ]
@@ -2115,51 +2115,51 @@
         },
         {
           "date": "2026-06-27",
-          "precip_mm": 3.3,
+          "precip_mm": 2.8,
           "rain_prob": 0,
           "weather_code": 53,
           "is_forecast": false
         },
         {
           "date": "2026-06-28",
-          "precip_mm": 8.2,
+          "precip_mm": 11.1,
           "rain_prob": 0,
           "weather_code": 80,
           "is_forecast": false
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 75.6,
+          "precip_mm": 66.3,
           "rain_prob": 79,
           "weather_code": 96,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 90.7,
+          "precip_mm": 151.0,
           "rain_prob": 63,
-          "weather_code": 96,
+          "weather_code": 99,
           "is_forecast": true
         },
         {
           "date": "2026-07-01",
-          "precip_mm": 71.7,
+          "precip_mm": 73.5,
           "rain_prob": 57,
           "weather_code": 96,
           "is_forecast": true
         },
         {
           "date": "2026-07-02",
-          "precip_mm": 86.1,
+          "precip_mm": 113.7,
           "rain_prob": 32,
-          "weather_code": 95,
+          "weather_code": 96,
           "is_forecast": true
         },
         {
           "date": "2026-07-03",
-          "precip_mm": 64.5,
+          "precip_mm": 94.5,
           "rain_prob": 14,
-          "weather_code": 81,
+          "weather_code": 96,
           "is_forecast": true
         }
       ]
@@ -2381,49 +2381,49 @@
         },
         {
           "date": "2026-06-27",
-          "precip_mm": 15.8,
+          "precip_mm": 14.7,
           "rain_prob": 94,
           "weather_code": 80,
           "is_forecast": false
         },
         {
           "date": "2026-06-28",
-          "precip_mm": 13.1,
+          "precip_mm": 9.8,
           "rain_prob": 100,
-          "weather_code": 55,
+          "weather_code": 80,
           "is_forecast": false
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 38.4,
+          "precip_mm": 33.2,
           "rain_prob": 100,
-          "weather_code": 95,
+          "weather_code": 81,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 8.9,
+          "precip_mm": 19.1,
           "rain_prob": 98,
-          "weather_code": 55,
+          "weather_code": 80,
           "is_forecast": true
         },
         {
           "date": "2026-07-01",
-          "precip_mm": 21.9,
+          "precip_mm": 29.7,
+          "rain_prob": 100,
+          "weather_code": 81,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-02",
+          "precip_mm": 28.8,
           "rain_prob": 100,
           "weather_code": 80,
           "is_forecast": true
         },
         {
-          "date": "2026-07-02",
-          "precip_mm": 17.1,
-          "rain_prob": 100,
-          "weather_code": 55,
-          "is_forecast": true
-        },
-        {
           "date": "2026-07-03",
-          "precip_mm": 12.3,
+          "precip_mm": 17.1,
           "rain_prob": 100,
           "weather_code": 55,
           "is_forecast": true
@@ -2661,7 +2661,7 @@
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 0.3,
+          "precip_mm": 0.4,
           "rain_prob": 67,
           "weather_code": 51,
           "is_forecast": true
@@ -2700,273 +2700,273 @@
       "name": "BigIsland-NW",
       "lat": 20.02,
       "lon": -155.7,
-      "daily": [
-        {
-          "date": "2026-05-28",
-          "precip_mm": 0.9,
-          "rain_prob": 4,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-29",
-          "precip_mm": 0.3,
-          "rain_prob": 29,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-30",
-          "precip_mm": 1.9,
-          "rain_prob": 75,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-05-31",
-          "precip_mm": 0.8,
-          "rain_prob": 33,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-01",
-          "precip_mm": 3.0,
-          "rain_prob": 88,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-02",
-          "precip_mm": 19.3,
-          "rain_prob": 100,
-          "weather_code": 96,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-03",
-          "precip_mm": 0.1,
-          "rain_prob": 5,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-04",
-          "precip_mm": 4.3,
-          "rain_prob": 79,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-05",
-          "precip_mm": 2.3,
-          "rain_prob": 65,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-06",
-          "precip_mm": 2.0,
-          "rain_prob": 53,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-07",
-          "precip_mm": 1.0,
-          "rain_prob": 2,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-08",
-          "precip_mm": 1.9,
-          "rain_prob": 10,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-09",
-          "precip_mm": 1.7,
-          "rain_prob": 37,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-10",
-          "precip_mm": 0.7,
-          "rain_prob": 16,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-11",
-          "precip_mm": 1.8,
-          "rain_prob": 49,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-12",
-          "precip_mm": 0.0,
-          "rain_prob": 22,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-13",
-          "precip_mm": 1.2,
-          "rain_prob": 4,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-14",
-          "precip_mm": 2.7,
-          "rain_prob": 47,
-          "weather_code": 55,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-15",
-          "precip_mm": 0.0,
-          "rain_prob": 2,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-16",
-          "precip_mm": 0.0,
-          "rain_prob": 6,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-17",
-          "precip_mm": 0.7,
-          "rain_prob": 27,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-18",
-          "precip_mm": 0.2,
-          "rain_prob": 30,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-19",
-          "precip_mm": 0.6,
-          "rain_prob": 20,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-20",
-          "precip_mm": 0.0,
-          "rain_prob": 8,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-21",
-          "precip_mm": 0.0,
-          "rain_prob": 22,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-22",
-          "precip_mm": 0.7,
-          "rain_prob": 4,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-23",
-          "precip_mm": 5.8,
-          "rain_prob": 93,
-          "weather_code": 80,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-24",
-          "precip_mm": 0.8,
-          "rain_prob": 16,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-25",
-          "precip_mm": 0.0,
-          "rain_prob": 0,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-26",
-          "precip_mm": 1.2,
-          "rain_prob": 4,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-27",
-          "precip_mm": 2.1,
-          "rain_prob": 20,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-28",
-          "precip_mm": 0.9,
-          "rain_prob": 25,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-29",
-          "precip_mm": 1.2,
-          "rain_prob": 39,
-          "weather_code": 51,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-06-30",
-          "precip_mm": 0.8,
-          "rain_prob": 25,
-          "weather_code": 51,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-01",
-          "precip_mm": 0.9,
-          "rain_prob": 20,
-          "weather_code": 51,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-02",
-          "precip_mm": 0.6,
-          "rain_prob": 27,
-          "weather_code": 51,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-03",
-          "precip_mm": 1.2,
-          "rain_prob": 8,
-          "weather_code": 51,
-          "is_forecast": true
-        }
-      ]
+      "daily": []
     },
     {
       "name": "BigIsland-N",
       "lat": 20.18,
       "lon": -155.5,
-      "daily": []
+      "daily": [
+        {
+          "date": "2026-05-28",
+          "precip_mm": 3.2,
+          "rain_prob": 65,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-29",
+          "precip_mm": 4.6,
+          "rain_prob": 73,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-30",
+          "precip_mm": 5.6,
+          "rain_prob": 100,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-05-31",
+          "precip_mm": 6.6,
+          "rain_prob": 100,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-01",
+          "precip_mm": 18.7,
+          "rain_prob": 100,
+          "weather_code": 81,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-02",
+          "precip_mm": 3.3,
+          "rain_prob": 89,
+          "weather_code": 55,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-03",
+          "precip_mm": 0.7,
+          "rain_prob": 18,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-04",
+          "precip_mm": 1.8,
+          "rain_prob": 65,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-05",
+          "precip_mm": 6.2,
+          "rain_prob": 82,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-06",
+          "precip_mm": 4.4,
+          "rain_prob": 57,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-07",
+          "precip_mm": 0.6,
+          "rain_prob": 49,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-08",
+          "precip_mm": 1.6,
+          "rain_prob": 76,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-09",
+          "precip_mm": 2.6,
+          "rain_prob": 82,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-10",
+          "precip_mm": 2.9,
+          "rain_prob": 100,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-11",
+          "precip_mm": 8.8,
+          "rain_prob": 100,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-12",
+          "precip_mm": 0.2,
+          "rain_prob": 12,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-13",
+          "precip_mm": 0.3,
+          "rain_prob": 59,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-14",
+          "precip_mm": 2.9,
+          "rain_prob": 100,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-15",
+          "precip_mm": 0.1,
+          "rain_prob": 47,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-16",
+          "precip_mm": 1.8,
+          "rain_prob": 65,
+          "weather_code": 55,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-17",
+          "precip_mm": 3.5,
+          "rain_prob": 92,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-18",
+          "precip_mm": 0.0,
+          "rain_prob": 16,
+          "weather_code": 2,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-19",
+          "precip_mm": 0.4,
+          "rain_prob": 25,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-20",
+          "precip_mm": 1.3,
+          "rain_prob": 35,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-21",
+          "precip_mm": 2.2,
+          "rain_prob": 90,
+          "weather_code": 55,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-22",
+          "precip_mm": 2.3,
+          "rain_prob": 89,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-23",
+          "precip_mm": 3.4,
+          "rain_prob": 90,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-24",
+          "precip_mm": 3.8,
+          "rain_prob": 57,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-25",
+          "precip_mm": 3.0,
+          "rain_prob": 51,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-26",
+          "precip_mm": 3.2,
+          "rain_prob": 88,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-27",
+          "precip_mm": 3.8,
+          "rain_prob": 61,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-28",
+          "precip_mm": 2.1,
+          "rain_prob": 73,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-29",
+          "precip_mm": 0.6,
+          "rain_prob": 71,
+          "weather_code": 51,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-06-30",
+          "precip_mm": 2.4,
+          "rain_prob": 47,
+          "weather_code": 51,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-01",
+          "precip_mm": 3.6,
+          "rain_prob": 73,
+          "weather_code": 53,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-02",
+          "precip_mm": 3.6,
+          "rain_prob": 82,
+          "weather_code": 51,
+          "is_forecast": true
+        },
+        {
+          "date": "2026-07-03",
+          "precip_mm": 3.0,
+          "rain_prob": 69,
+          "weather_code": 51,
+          "is_forecast": true
+        }
+      ]
     },
     {
       "name": "BigIsland-NE",
@@ -3191,49 +3191,49 @@
         },
         {
           "date": "2026-06-27",
-          "precip_mm": 6.4,
+          "precip_mm": 5.9,
           "rain_prob": 100,
           "weather_code": 55,
           "is_forecast": false
         },
         {
           "date": "2026-06-28",
-          "precip_mm": 4.9,
+          "precip_mm": 1.2,
           "rain_prob": 91,
-          "weather_code": 53,
+          "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 5.6,
+          "precip_mm": 6.8,
           "rain_prob": 98,
           "weather_code": 53,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 3.1,
+          "precip_mm": 4.0,
           "rain_prob": 78,
-          "weather_code": 51,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-01",
-          "precip_mm": 6.2,
-          "rain_prob": 100,
           "weather_code": 53,
           "is_forecast": true
         },
         {
+          "date": "2026-07-01",
+          "precip_mm": 7.7,
+          "rain_prob": 100,
+          "weather_code": 55,
+          "is_forecast": true
+        },
+        {
           "date": "2026-07-02",
-          "precip_mm": 5.4,
+          "precip_mm": 6.0,
           "rain_prob": 94,
           "weather_code": 53,
           "is_forecast": true
         },
         {
           "date": "2026-07-03",
-          "precip_mm": 3.9,
+          "precip_mm": 5.1,
           "rain_prob": 100,
           "weather_code": 51,
           "is_forecast": true
@@ -3244,74 +3244,80 @@
       "name": "BigIsland-SE",
       "lat": 19.1,
       "lon": -155.48,
+      "daily": []
+    },
+    {
+      "name": "BigIsland-S",
+      "lat": 18.98,
+      "lon": -155.78,
       "daily": [
         {
           "date": "2026-05-28",
-          "precip_mm": 0.1,
-          "rain_prob": 0,
+          "precip_mm": 0.3,
+          "rain_prob": 48,
           "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-05-29",
-          "precip_mm": 0.0,
-          "rain_prob": 2,
-          "weather_code": 2,
+          "precip_mm": 0.1,
+          "rain_prob": 10,
+          "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-05-30",
           "precip_mm": 0.0,
-          "rain_prob": 4,
+          "rain_prob": 16,
           "weather_code": 3,
           "is_forecast": false
         },
         {
           "date": "2026-05-31",
-          "precip_mm": 0.9,
+          "precip_mm": 4.5,
+          "rain_prob": 100,
+          "weather_code": 80,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-01",
+          "precip_mm": 5.6,
+          "rain_prob": 90,
+          "weather_code": 61,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-02",
+          "precip_mm": 17.0,
+          "rain_prob": 100,
+          "weather_code": 81,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-03",
+          "precip_mm": 0.1,
           "rain_prob": 33,
           "weather_code": 51,
           "is_forecast": false
         },
         {
-          "date": "2026-06-01",
-          "precip_mm": 28.6,
-          "rain_prob": 100,
-          "weather_code": 95,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-02",
-          "precip_mm": 27.3,
-          "rain_prob": 100,
-          "weather_code": 95,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-03",
-          "precip_mm": 0.3,
-          "rain_prob": 72,
+          "date": "2026-06-04",
+          "precip_mm": 0.9,
+          "rain_prob": 86,
           "weather_code": 51,
           "is_forecast": false
         },
         {
-          "date": "2026-06-04",
-          "precip_mm": 1.6,
-          "rain_prob": 10,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
           "date": "2026-06-05",
-          "precip_mm": 0.5,
-          "rain_prob": 7,
+          "precip_mm": 1.1,
+          "rain_prob": 69,
           "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-06-06",
-          "precip_mm": 0.4,
-          "rain_prob": 20,
+          "precip_mm": 0.3,
+          "rain_prob": 0,
           "weather_code": 51,
           "is_forecast": false
         },
@@ -3325,192 +3331,186 @@
         {
           "date": "2026-06-08",
           "precip_mm": 0.0,
-          "rain_prob": 0,
+          "rain_prob": 53,
           "weather_code": 2,
           "is_forecast": false
         },
         {
           "date": "2026-06-09",
-          "precip_mm": 1.5,
-          "rain_prob": 25,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-10",
-          "precip_mm": 2.3,
-          "rain_prob": 63,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-11",
-          "precip_mm": 4.2,
-          "rain_prob": 94,
-          "weather_code": 80,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-12",
-          "precip_mm": 0.1,
-          "rain_prob": 45,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-13",
-          "precip_mm": 0.0,
-          "rain_prob": 24,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-14",
-          "precip_mm": 1.7,
-          "rain_prob": 16,
-          "weather_code": 53,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-15",
-          "precip_mm": 0.0,
-          "rain_prob": 2,
-          "weather_code": 3,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-16",
-          "precip_mm": 0.3,
-          "rain_prob": 20,
-          "weather_code": 51,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-17",
-          "precip_mm": 8.0,
-          "rain_prob": 100,
-          "weather_code": 61,
-          "is_forecast": false
-        },
-        {
-          "date": "2026-06-18",
-          "precip_mm": 0.5,
+          "precip_mm": 1.2,
           "rain_prob": 69,
           "weather_code": 51,
           "is_forecast": false
         },
         {
-          "date": "2026-06-19",
-          "precip_mm": 0.2,
-          "rain_prob": 4,
+          "date": "2026-06-10",
+          "precip_mm": 1.9,
+          "rain_prob": 79,
           "weather_code": 51,
           "is_forecast": false
         },
         {
-          "date": "2026-06-20",
+          "date": "2026-06-11",
+          "precip_mm": 2.1,
+          "rain_prob": 69,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-12",
+          "precip_mm": 3.1,
+          "rain_prob": 98,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-13",
+          "precip_mm": 0.1,
+          "rain_prob": 64,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-14",
+          "precip_mm": 2.2,
+          "rain_prob": 100,
+          "weather_code": 55,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-15",
+          "precip_mm": 0.1,
+          "rain_prob": 11,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-16",
+          "precip_mm": 0.3,
+          "rain_prob": 6,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-17",
+          "precip_mm": 4.4,
+          "rain_prob": 88,
+          "weather_code": 53,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-18",
+          "precip_mm": 0.2,
+          "rain_prob": 6,
+          "weather_code": 51,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-19",
           "precip_mm": 0.0,
-          "rain_prob": 2,
-          "weather_code": 3,
+          "rain_prob": 0,
+          "weather_code": 1,
+          "is_forecast": false
+        },
+        {
+          "date": "2026-06-20",
+          "precip_mm": 0.1,
+          "rain_prob": 18,
+          "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-06-21",
-          "precip_mm": 0.8,
-          "rain_prob": 37,
+          "precip_mm": 0.4,
+          "rain_prob": 86,
           "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-06-22",
           "precip_mm": 0.0,
-          "rain_prob": 0,
-          "weather_code": 1,
+          "rain_prob": 7,
+          "weather_code": 3,
           "is_forecast": false
         },
         {
           "date": "2026-06-23",
-          "precip_mm": 7.8,
+          "precip_mm": 3.8,
           "rain_prob": 100,
-          "weather_code": 80,
+          "weather_code": 53,
           "is_forecast": false
         },
         {
           "date": "2026-06-24",
-          "precip_mm": 0.5,
-          "rain_prob": 90,
+          "precip_mm": 0.4,
+          "rain_prob": 29,
           "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-06-25",
           "precip_mm": 0.0,
-          "rain_prob": 0,
+          "rain_prob": 2,
           "weather_code": 3,
           "is_forecast": false
         },
         {
           "date": "2026-06-26",
-          "precip_mm": 0.3,
+          "precip_mm": 0.8,
           "rain_prob": 10,
           "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-06-27",
-          "precip_mm": 0.8,
-          "rain_prob": 18,
+          "precip_mm": 0.3,
+          "rain_prob": 2,
           "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-06-28",
           "precip_mm": 0.0,
-          "rain_prob": 6,
+          "rain_prob": 22,
           "weather_code": 1,
           "is_forecast": false
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 3.7,
-          "rain_prob": 44,
-          "weather_code": 53,
+          "precip_mm": 1.4,
+          "rain_prob": 91,
+          "weather_code": 51,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 2.3,
-          "rain_prob": 2,
+          "precip_mm": 2.7,
+          "rain_prob": 50,
           "weather_code": 53,
           "is_forecast": true
         },
         {
           "date": "2026-07-01",
-          "precip_mm": 1.8,
-          "rain_prob": 22,
-          "weather_code": 51,
+          "precip_mm": 2.7,
+          "rain_prob": 84,
+          "weather_code": 53,
           "is_forecast": true
         },
         {
           "date": "2026-07-02",
-          "precip_mm": 6.0,
-          "rain_prob": 14,
-          "weather_code": 55,
+          "precip_mm": 2.1,
+          "rain_prob": 93,
+          "weather_code": 51,
           "is_forecast": true
         },
         {
           "date": "2026-07-03",
-          "precip_mm": 3.6,
-          "rain_prob": 2,
-          "weather_code": 51,
+          "precip_mm": 9.0,
+          "rain_prob": 64,
+          "weather_code": 80,
           "is_forecast": true
         }
       ]
-    },
-    {
-      "name": "BigIsland-S",
-      "lat": 18.98,
-      "lon": -155.78,
-      "daily": []
     },
     {
       "name": "BigIsland-SW",
@@ -3743,16 +3743,16 @@
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 0.0,
+          "precip_mm": 0.2,
           "rain_prob": 2,
-          "weather_code": 3,
+          "weather_code": 51,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 0.2,
+          "precip_mm": 2.0,
           "rain_prob": 4,
-          "weather_code": 51,
+          "weather_code": 53,
           "is_forecast": true
         },
         {
@@ -3764,14 +3764,14 @@
         },
         {
           "date": "2026-07-02",
-          "precip_mm": 4.2,
+          "precip_mm": 4.8,
           "rain_prob": 36,
-          "weather_code": 53,
+          "weather_code": 80,
           "is_forecast": true
         },
         {
           "date": "2026-07-03",
-          "precip_mm": 2.4,
+          "precip_mm": 1.5,
           "rain_prob": 43,
           "weather_code": 53,
           "is_forecast": true
@@ -3995,51 +3995,51 @@
         },
         {
           "date": "2026-06-27",
-          "precip_mm": 2.4,
+          "precip_mm": 2.1,
           "rain_prob": 100,
           "weather_code": 53,
           "is_forecast": false
         },
         {
           "date": "2026-06-28",
-          "precip_mm": 6.3,
+          "precip_mm": 4.4,
           "rain_prob": 100,
-          "weather_code": 55,
+          "weather_code": 53,
           "is_forecast": false
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 5.6,
+          "precip_mm": 6.4,
           "rain_prob": 100,
           "weather_code": 55,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 14.2,
-          "rain_prob": 100,
-          "weather_code": 81,
-          "is_forecast": true
-        },
-        {
-          "date": "2026-07-01",
-          "precip_mm": 13.4,
+          "precip_mm": 9.5,
           "rain_prob": 100,
           "weather_code": 80,
           "is_forecast": true
         },
         {
+          "date": "2026-07-01",
+          "precip_mm": 24.2,
+          "rain_prob": 100,
+          "weather_code": 81,
+          "is_forecast": true
+        },
+        {
           "date": "2026-07-02",
-          "precip_mm": 13.5,
+          "precip_mm": 15.3,
           "rain_prob": 99,
           "weather_code": 80,
           "is_forecast": true
         },
         {
           "date": "2026-07-03",
-          "precip_mm": 15.9,
+          "precip_mm": 13.2,
           "rain_prob": 100,
-          "weather_code": 80,
+          "weather_code": 55,
           "is_forecast": true
         }
       ]
@@ -4261,51 +4261,51 @@
         },
         {
           "date": "2026-06-27",
-          "precip_mm": 0.7,
+          "precip_mm": 0.6,
           "rain_prob": 48,
           "weather_code": 51,
           "is_forecast": false
         },
         {
           "date": "2026-06-28",
-          "precip_mm": 2.4,
+          "precip_mm": 2.5,
           "rain_prob": 100,
           "weather_code": 53,
           "is_forecast": false
         },
         {
           "date": "2026-06-29",
-          "precip_mm": 16.8,
+          "precip_mm": 11.5,
           "rain_prob": 100,
-          "weather_code": 95,
+          "weather_code": 81,
           "is_forecast": true
         },
         {
           "date": "2026-06-30",
-          "precip_mm": 9.6,
+          "precip_mm": 6.5,
           "rain_prob": 97,
-          "weather_code": 80,
+          "weather_code": 55,
           "is_forecast": true
         },
         {
           "date": "2026-07-01",
-          "precip_mm": 1.2,
+          "precip_mm": 1.5,
           "rain_prob": 96,
           "weather_code": 51,
           "is_forecast": true
         },
         {
           "date": "2026-07-02",
-          "precip_mm": 1.2,
+          "precip_mm": 3.6,
           "rain_prob": 99,
-          "weather_code": 51,
+          "weather_code": 53,
           "is_forecast": true
         },
         {
           "date": "2026-07-03",
-          "precip_mm": 3.6,
+          "precip_mm": 5.1,
           "rain_prob": 98,
-          "weather_code": 51,
+          "weather_code": 53,
           "is_forecast": true
         }
       ]

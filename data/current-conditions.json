@@ -8,13 +8,13 @@
     "depth_m": 9,
     "mmm_c": 27.9,
     "description": "Marine life conservation district and protected bay, one of Oahu's premier snorkel sites.",
-    "sst_c": 26.3,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -98,13 +98,13 @@
     "depth_m": 10,
     "mmm_c": 27.5,
     "description": "State marine life conservation district; known for spinner dolphins and pristine coral.",
-    "sst_c": 28.1,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": 0,
-      "color": "#22c55e",
-      "label": "No Stress"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -152,13 +152,13 @@
     "depth_m": 6,
     "mmm_c": 27.3,
     "description": "Shallow fringing reef popular with beginner snorkelers; frequent Hawaiian monk seal sightings.",
-    "sst_c": 26.1,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -170,13 +170,13 @@
     "depth_m": 12,
     "mmm_c": 28.3,
     "description": "Remote atoll in Papah\u0101naumoku\u0101kea Marine National Monument. Critical habitat for endangered species.",
-    "sst_c": null,
+    "sst_c": 27.1,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   },
   {

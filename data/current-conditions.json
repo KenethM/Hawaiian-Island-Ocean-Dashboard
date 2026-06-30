@@ -8,13 +8,13 @@
     "depth_m": 9,
     "mmm_c": 27.9,
     "description": "Marine life conservation district and protected bay, one of Oahu's premier snorkel sites.",
-    "sst_c": null,
+    "sst_c": 26.5,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   },
   {
@@ -188,13 +188,13 @@
     "depth_m": 20,
     "mmm_c": 26.5,
     "description": "Coral reefs within a National Wildlife Refuge; among the most remote reefs in the Hawaiian chain.",
-    "sst_c": 25.7,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   }
 ]

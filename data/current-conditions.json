@@ -80,13 +80,13 @@
     "depth_m": 12,
     "mmm_c": 27.8,
     "description": "Marine life conservation district on Maui's northwest coast with thriving coral gardens.",
-    "sst_c": 26.7,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -116,13 +116,13 @@
     "depth_m": 15,
     "mmm_c": 27.7,
     "description": "Sheltered leeward coast with diverse coral ecosystems and frequent manta ray sightings.",
-    "sst_c": null,
+    "sst_c": 28.4,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": 0,
+      "color": "#22c55e",
+      "label": "No Stress"
     }
   },
   {
@@ -134,13 +134,13 @@
     "depth_m": 18,
     "mmm_c": 27.2,
     "description": "Named for its lava tube network. Rich in reef fish and seasonal hammerhead sharks.",
-    "sst_c": 25.6,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -170,13 +170,13 @@
     "depth_m": 12,
     "mmm_c": 28.3,
     "description": "Remote atoll in Papah\u0101naumoku\u0101kea Marine National Monument. Critical habitat for endangered species.",
-    "sst_c": 27.1,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -188,13 +188,13 @@
     "depth_m": 20,
     "mmm_c": 26.5,
     "description": "Coral reefs within a National Wildlife Refuge; among the most remote reefs in the Hawaiian chain.",
-    "sst_c": 25.7,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   }
 ]

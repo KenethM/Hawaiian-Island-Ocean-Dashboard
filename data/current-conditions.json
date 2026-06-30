@@ -8,13 +8,13 @@
     "depth_m": 9,
     "mmm_c": 27.9,
     "description": "Marine life conservation district and protected bay, one of Oahu's premier snorkel sites.",
-    "sst_c": 26.4,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -26,7 +26,7 @@
     "depth_m": 8,
     "mmm_c": 27.6,
     "description": "Largest sheltered body of water in Hawaii; home to the only barrier reef in the continental US.",
-    "sst_c": 26.0,
+    "sst_c": 26.1,
     "dhw": null,
     "hotspot": null,
     "alert": {
@@ -44,7 +44,7 @@
     "depth_m": 12,
     "mmm_c": 27.4,
     "description": "Popular North Shore dive site with lava tubes, caves, and abundant marine life.",
-    "sst_c": 25.8,
+    "sst_c": 25.9,
     "dhw": null,
     "hotspot": null,
     "alert": {
@@ -80,13 +80,13 @@
     "depth_m": 12,
     "mmm_c": 27.8,
     "description": "Marine life conservation district on Maui's northwest coast with thriving coral gardens.",
-    "sst_c": null,
+    "sst_c": 26.7,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   },
   {
@@ -98,7 +98,7 @@
     "depth_m": 10,
     "mmm_c": 27.5,
     "description": "State marine life conservation district; known for spinner dolphins and pristine coral.",
-    "sst_c": 28.1,
+    "sst_c": 28.4,
     "dhw": null,
     "hotspot": null,
     "alert": {
@@ -134,13 +134,13 @@
     "depth_m": 18,
     "mmm_c": 27.2,
     "description": "Named for its lava tube network. Rich in reef fish and seasonal hammerhead sharks.",
-    "sst_c": null,
+    "sst_c": 25.7,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   },
   {
@@ -188,13 +188,13 @@
     "depth_m": 20,
     "mmm_c": 26.5,
     "description": "Coral reefs within a National Wildlife Refuge; among the most remote reefs in the Hawaiian chain.",
-    "sst_c": null,
+    "sst_c": 25.7,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   }
 ]

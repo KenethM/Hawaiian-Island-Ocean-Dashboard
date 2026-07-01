@@ -80,13 +80,13 @@
     "depth_m": 12,
     "mmm_c": 27.8,
     "description": "Marine life conservation district on Maui's northwest coast with thriving coral gardens.",
-    "sst_c": null,
+    "sst_c": 26.7,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   },
   {
@@ -116,13 +116,13 @@
     "depth_m": 15,
     "mmm_c": 27.7,
     "description": "Sheltered leeward coast with diverse coral ecosystems and frequent manta ray sightings.",
-    "sst_c": null,
+    "sst_c": 28.5,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": 0,
+      "color": "#22c55e",
+      "label": "No Stress"
     }
   },
   {

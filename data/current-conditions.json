@@ -8,7 +8,7 @@
     "depth_m": 9,
     "mmm_c": 27.9,
     "description": "Marine life conservation district and protected bay, one of Oahu's premier snorkel sites.",
-    "sst_c": 26.6,
+    "sst_c": 26.7,
     "dhw": null,
     "hotspot": null,
     "alert": {
@@ -44,13 +44,13 @@
     "depth_m": 12,
     "mmm_c": 27.4,
     "description": "Popular North Shore dive site with lava tubes, caves, and abundant marine life.",
-    "sst_c": 25.9,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -62,7 +62,7 @@
     "depth_m": 40,
     "mmm_c": 28.1,
     "description": "Partially submerged volcanic crater; visibility up to 45 m. One of Hawaii's top dive destinations.",
-    "sst_c": 26.8,
+    "sst_c": 27.0,
     "dhw": null,
     "hotspot": null,
     "alert": {
@@ -98,13 +98,13 @@
     "depth_m": 10,
     "mmm_c": 27.5,
     "description": "State marine life conservation district; known for spinner dolphins and pristine coral.",
-    "sst_c": 28.3,
+    "sst_c": 28.5,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": 0,
-      "color": "#22c55e",
-      "label": "No Stress"
+      "level": 1,
+      "color": "#f97316",
+      "label": "Watch"
     }
   },
   {
@@ -134,7 +134,7 @@
     "depth_m": 18,
     "mmm_c": 27.2,
     "description": "Named for its lava tube network. Rich in reef fish and seasonal hammerhead sharks.",
-    "sst_c": 25.9,
+    "sst_c": 25.8,
     "dhw": null,
     "hotspot": null,
     "alert": {
@@ -152,7 +152,7 @@
     "depth_m": 6,
     "mmm_c": 27.3,
     "description": "Shallow fringing reef popular with beginner snorkelers; frequent Hawaiian monk seal sightings.",
-    "sst_c": 26.5,
+    "sst_c": 26.3,
     "dhw": null,
     "hotspot": null,
     "alert": {

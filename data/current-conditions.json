@@ -62,13 +62,13 @@
     "depth_m": 40,
     "mmm_c": 28.1,
     "description": "Partially submerged volcanic crater; visibility up to 45 m. One of Hawaii's top dive destinations.",
-    "sst_c": 26.8,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -98,13 +98,13 @@
     "depth_m": 10,
     "mmm_c": 27.5,
     "description": "State marine life conservation district; known for spinner dolphins and pristine coral.",
-    "sst_c": 28.3,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": 0,
-      "color": "#22c55e",
-      "label": "No Stress"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {

@@ -26,13 +26,13 @@
     "depth_m": 8,
     "mmm_c": 27.6,
     "description": "Largest sheltered body of water in Hawaii; home to the only barrier reef in the continental US.",
-    "sst_c": null,
+    "sst_c": 26.5,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   },
   {
@@ -80,13 +80,13 @@
     "depth_m": 12,
     "mmm_c": 27.8,
     "description": "Marine life conservation district on Maui's northwest coast with thriving coral gardens.",
-    "sst_c": null,
+    "sst_c": 26.9,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   },
   {
@@ -134,13 +134,13 @@
     "depth_m": 18,
     "mmm_c": 27.2,
     "description": "Named for its lava tube network. Rich in reef fish and seasonal hammerhead sharks.",
-    "sst_c": null,
+    "sst_c": 26.8,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   },
   {
@@ -152,13 +152,13 @@
     "depth_m": 6,
     "mmm_c": 27.3,
     "description": "Shallow fringing reef popular with beginner snorkelers; frequent Hawaiian monk seal sightings.",
-    "sst_c": null,
+    "sst_c": 27.0,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   },
   {

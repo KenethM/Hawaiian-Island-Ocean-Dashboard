@@ -15,14 +15,17 @@ import { AdminPanel } from './components/AdminPanel'
 import { HelpModal } from './components/HelpModal'
 import { useCurrentConditions } from './hooks/useCurrentConditions'
 import { useDiverLogs } from './hooks/useDiverLogs'
+import { useIsMobile } from './hooks/useIsMobile'
 import { useAuth } from './context/AuthContext'
 import { useTheme } from './context/ThemeContext'
 import { api } from './services/api'
+import { MobileApp } from './mobile/MobileApp'
 import type { SiteStat, DiverStatOverTime } from './types'
 
 type View = 'dashboard' | 'community' | 'log-dive' | 'ph' | 'admin'
 
 export default function App() {
+  const isMobile = useIsMobile()
   const [view, setView] = useState<View>('dashboard')
   const [showAuth, setShowAuth] = useState(false)
   const [showComparison, setShowComparison] = useState(false)
@@ -58,6 +61,8 @@ export default function App() {
     const id = setInterval(update, 30_000)
     return () => clearInterval(id)
   }, [fetchedAt])
+
+  if (isMobile) return <MobileApp />
 
   const navItems: { id: View; label: string; adminOnly?: boolean }[] = [
     { id: 'dashboard', label: 'Dashboard' },

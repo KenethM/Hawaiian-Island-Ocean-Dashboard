@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap');
+
+/* Kilo Tracker mobile design tokens — scoped under .kilo so the desktop dashboard is unaffected */
+.kilo {
+  --k-page: #eef1f0; --k-bg: #FAFAF9; --k-card: #ffffff; --k-sheet: rgba(255,255,255,0.9); --k-panel: #1e293b;
+  --k-border: #E7E5E4; --k-hair: #eceae4; --k-line: #cfd6d3; --k-track2: #eef1f0;
+  --k-ink: #1f2937; --k-ink2: #374151; --k-sub: #6b7280; --k-faint: #94a3b8;
+  background: var(--k-page);
+  transition: background 0.3s;
+}
+html.dark .kilo {
+  --k-page: #0a0f16; --k-bg: #10161e; --k-card: #19212c; --k-sheet: rgba(20,27,37,0.86); --k-panel: #223143;
+  --k-border: #2b3542; --k-hair: #263041; --k-line: #38434f; --k-track2: #263041;
+  --k-ink: #f1f5f9; --k-ink2: #cbd5e1; --k-sub: #94a3b8; --k-faint: #8a97a8;
+}
+.kilo .serif { font-family: 'Newsreader', Georgia, serif; }
+
 /* Scope color-scheme so browser renders native form controls to match our theme, not the OS */
 :root { color-scheme: light; }
 html.dark { color-scheme: dark; }

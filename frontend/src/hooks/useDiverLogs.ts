@@ -8,7 +8,7 @@ export interface DiverLogWithCoords extends DiverLog {
   siteName: string
 }
 
-export function useDiverLogs(sites: ReefSite[], days = 90) {
+export function useDiverLogs(sites: ReefSite[], days = 90, refreshKey = 0) {
   const [logs, setLogs] = useState<DiverLogWithCoords[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -29,7 +29,7 @@ export function useDiverLogs(sites: ReefSite[], days = 90) {
       })
       .catch(() => setError('Failed to load diver logs'))
       .finally(() => setLoading(false))
-  }, [sites, days])
+  }, [sites, days, refreshKey])
 
   return { logs, loading, error }
 }

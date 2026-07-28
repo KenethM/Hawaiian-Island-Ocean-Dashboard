@@ -101,7 +101,7 @@ export function HomeScreen({
     <div className="relative h-full overflow-hidden">
       <ReefMap
         sites={sites} layer={layer} dark={dark} onSelect={setSelected}
-        zoom={1.15} anchorY={0.36} centerX={584} centerY={330}
+        zoom={1.05} anchorY={0.40} centerX={584} centerY={330}
       />
 
       {/* top scrim + greeting — fades and slides up once the sheet is dragged past default,

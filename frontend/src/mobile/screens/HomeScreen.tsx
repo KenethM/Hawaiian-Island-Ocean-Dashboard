@@ -44,6 +44,14 @@ const SEGMENTS: { value: MapLayer; label: string }[] = [
   { value: 'life', label: 'Life' },
 ]
 
+// Sheet sizing — kept in sync with the numbers passed to <DraggableSheet> below so the
+// greeting/segmented-control animations track the sheet's real height as it's dragged.
+const SHEET_PEEK = 64
+const SHEET_DEFAULT = 340
+const SHEET_EXPANDED_FRACTION = 0.78
+const SEGMENTED_TOP_EXPANDED = 20
+const SEGMENTED_TOP_DEFAULT = 148
+
 export function HomeScreen({
   sites, dark, onOpenSite,
 }: {
@@ -53,6 +61,7 @@ export function HomeScreen({
 }) {
   const [layer, setLayer] = useState<MapLayer>('reef')
   const [selected, setSelected] = useState<SelectedMapSite | null>(null)
+  const [sheetHeight, setSheetHeight] = useState(SHEET_DEFAULT)
   const moon = useMemo(moonPhase, [])
   const { data: weather } = useWeatherData(layer === 'weather')
   const { tide, clearestM } = useReefPulseExtras(sites)
@@ -82,6 +91,12 @@ export function HomeScreen({
     return { days, rain7d: getPrecipForMode(point, '7d') || rain7d }
   }, [weather])
 
+  // As the sheet is dragged past its default height, fade/slide the greeting out of the way —
+  // past that point the user is reading the sheet, not the date/moon/tide chips.
+  const expandedMaxHeight = typeof window !== 'undefined' ? window.innerHeight * SHEET_EXPANDED_FRACTION : SHEET_DEFAULT * 2
+  const collapseProgress = Math.min(1, Math.max(0, (sheetHeight - SHEET_DEFAULT) / (expandedMaxHeight - SHEET_DEFAULT)))
+  const segmentedTop = SEGMENTED_TOP_DEFAULT - (SEGMENTED_TOP_DEFAULT - SEGMENTED_TOP_EXPANDED) * collapseProgress
+
   return (
     <div className="relative h-full overflow-hidden">
       <ReefMap
@@ -89,12 +104,20 @@ export function HomeScreen({
         zoom={1.15} anchorY={0.36} centerX={584} centerY={330}
       />
 
-      {/* top scrim + greeting */}
+      {/* top scrim + greeting — fades and slides up once the sheet is dragged past default,
+          since at that point the user is reading the sheet, not the general greeting */}
       <div
         className="absolute top-0 left-0 right-0 h-[190px] pointer-events-none z-[2]"
-        style={{ background: 'linear-gradient(to bottom, rgba(11,44,55,0.66), rgba(11,44,55,0.3) 55%, rgba(11,44,55,0))' }}
+        style={{
+          background: 'linear-gradient(to bottom, rgba(11,44,55,0.66), rgba(11,44,55,0.3) 55%, rgba(11,44,55,0))',
+          opacity: 1 - collapseProgress,
+          transition: 'opacity 0.18s ease',
+        }}
       />
-      <div className="relative z-[2] px-5 pt-3 pointer-events-none">
+      <div
+        className="relative z-[2] px-5 pt-3 pointer-events-none"
+        style={{ opacity: 1 - collapseProgress, transform: `translateY(${-16 * collapseProgress}px)`, transition: 'opacity 0.18s ease, transform 0.18s ease' }}
+      >
         <div className="text-[12px] font-bold tracking-[0.16em] uppercase" style={{ color: '#c9efd6' }}>
           {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
         </div>
@@ -115,13 +138,19 @@ export function HomeScreen({
         </div>
       </div>
 
-      {/* segmented layer control */}
-      <div className="absolute left-4 right-4 z-[3]" style={{ top: 148 }}>
+      {/* segmented layer control — glides up to reclaim the space the greeting vacates */}
+      <div className="absolute left-4 right-4 z-[3]" style={{ top: segmentedTop, transition: 'top 0.18s ease' }}>
         <SegmentedControl options={SEGMENTS} value={layer} onChange={setLayer} tone="dark" />
       </div>
 
-      {/* frosted bottom sheet — drag the handle to peek/expand */}
-      <DraggableSheet bottomOffset="calc(86px + env(safe-area-inset-bottom))">
+      {/* frosted bottom sheet — drag the handle to peek/expand, or tap it to cycle */}
+      <DraggableSheet
+        bottomOffset="calc(86px + env(safe-area-inset-bottom))"
+        peekHeight={SHEET_PEEK}
+        defaultHeight={SHEET_DEFAULT}
+        expandedFraction={SHEET_EXPANDED_FRACTION}
+        onHeightChange={setSheetHeight}
+      >
         {selected && (
           <button
             onClick={() => onOpenSite(selected.id)}

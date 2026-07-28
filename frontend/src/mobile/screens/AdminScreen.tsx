@@ -50,6 +50,8 @@ export function AdminScreen({ onBack }: { onBack: () => void }) {
       setUploadResult('Upload failed.')
     } finally {
       setUploading(false)
+      // Reset so selecting the same file again (e.g. retrying after a failure) still fires onChange.
+      if (fileRef.current) fileRef.current.value = ''
     }
   }
 
@@ -159,11 +161,19 @@ export function AdminScreen({ onBack }: { onBack: () => void }) {
   )
 }
 
-function AdminRow({ title, subtitle, onClick }: { icon: string; title: string; subtitle: string; onClick: () => void }) {
+const ADMIN_ROW_ICONS: Record<string, JSX.Element> = {
+  sites: <path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z M12 13a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z" />,
+  alerts: <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9z M13.7 21a2 2 0 0 1-3.4 0" />,
+  audit: <path d="M4 5h16M4 12h16M4 19h10" />,
+}
+
+function AdminRow({ icon, title, subtitle, onClick }: { icon: string; title: string; subtitle: string; onClick: () => void }) {
   return (
     <button onClick={onClick} className="flex items-center gap-3.5 rounded-2xl border px-4 py-3.5 text-left" style={{ background: 'var(--k-card)', borderColor: 'var(--k-border)' }}>
       <span className="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0" style={{ background: '#e6f5ec' }}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth="2" strokeLinecap="round"><path d="M4 5h16M4 12h16M4 19h10" /></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth="2" strokeLinecap="round">
+          {ADMIN_ROW_ICONS[icon] ?? ADMIN_ROW_ICONS.audit}
+        </svg>
       </span>
       <div className="flex-1">
         <div className="font-semibold text-[14px]" style={{ color: 'var(--k-ink)' }}>{title}</div>

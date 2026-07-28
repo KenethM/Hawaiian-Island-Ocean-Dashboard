@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { api } from '../../services/api'
 import type { ReefSite } from '../../types'
@@ -31,6 +31,12 @@ export function LogDiveScreen({
   const [error, setError] = useState<string | null>(null)
 
   const site = sites.find(s => s.id === siteId)
+
+  // Sites load asynchronously (empty on first render) — pick a default once they arrive,
+  // without clobbering a site the user already selected.
+  useEffect(() => {
+    if (!siteId && sites.length > 0) setSiteId(sites[0].id)
+  }, [sites, siteId])
 
   async function handleSubmit() {
     if (!user) { onSignInClick(); return }

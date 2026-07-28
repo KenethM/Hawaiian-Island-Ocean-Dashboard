@@ -22,7 +22,7 @@ export function SegmentedControl<T extends string>({
             className="flex-1 text-center py-2 rounded-full font-semibold transition-colors"
             style={
               active
-                ? { background: tone === 'dark' ? 'var(--k-card)' : 'var(--k-card)', color: '#0f766e', boxShadow: '0 1px 4px rgba(8,40,52,0.12)' }
+                ? { background: 'var(--k-card)', color: '#0f766e', boxShadow: '0 1px 4px rgba(8,40,52,0.12)' }
                 : { color: tone === 'dark' ? '#fff' : 'var(--k-sub)', opacity: tone === 'dark' ? 0.85 : 1 }
             }
           >

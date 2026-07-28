@@ -62,9 +62,12 @@ export function DraggableSheet({
 
     const stops = [peekHeight, defaultHeight, expandedMax()]
     if (!drag.moved) {
-      // Plain tap on the handle cycles to the next larger stop, wrapping around.
-      const idx = stops.findIndex(s => s === height)
-      setHeight(stops[(idx + 1 + stops.length) % stops.length] ?? defaultHeight)
+      // Plain tap on the handle cycles to the next larger stop, wrapping around. Found by
+      // nearest match rather than exact equality — expandedMax() depends on window.innerHeight,
+      // which can drift (orientation change, mobile toolbar show/hide) between the last snap
+      // and this tap, so `height` may no longer exactly equal any entry in `stops`.
+      const idx = stops.reduce((closest, s, i) => (Math.abs(s - height) < Math.abs(stops[closest] - height) ? i : closest), 0)
+      setHeight(stops[(idx + 1) % stops.length])
       return
     }
     if (Math.abs(drag.vy) > FLICK_VELOCITY) {
@@ -101,7 +104,7 @@ export function DraggableSheet({
       >
         <div className="w-[38px] h-1 rounded-full mx-auto" style={{ background: 'var(--k-line)' }} />
       </div>
-      <div style={{ opacity: contentOpacity, transition: dragging ? 'none' : 'opacity 0.18s ease' }}>
+      <div style={{ opacity: contentOpacity, pointerEvents: contentOpacity < 0.05 ? 'none' : undefined, transition: dragging ? 'none' : 'opacity 0.18s ease' }}>
         {children}
       </div>
     </div>

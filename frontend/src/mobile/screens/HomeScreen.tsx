@@ -47,7 +47,7 @@ const SEGMENTS: { value: MapLayer; label: string }[] = [
 // Sheet sizing — kept in sync with the numbers passed to <DraggableSheet> below so the
 // greeting/segmented-control animations track the sheet's real height as it's dragged.
 const SHEET_PEEK = 64
-const SHEET_DEFAULT = 340
+const SHEET_DEFAULT = 280
 const SHEET_EXPANDED_FRACTION = 0.78
 const SEGMENTED_TOP_EXPANDED = 20
 const SEGMENTED_TOP_DEFAULT = 148
@@ -101,7 +101,7 @@ export function HomeScreen({
     <div className="relative h-full overflow-hidden">
       <ReefMap
         sites={sites} layer={layer} dark={dark} onSelect={setSelected}
-        zoom={1.05} anchorY={0.40} centerX={584} centerY={330}
+        zoom={1.0} anchorY={0.46} centerX={584} centerY={330}
       />
 
       {/* top scrim + greeting — fades and slides up once the sheet is dragged past default,

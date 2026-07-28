@@ -3,6 +3,7 @@ import { ReefMap, type SelectedMapSite } from '../map/ReefMap'
 import type { MapLayer } from '../map/reefMapEngine'
 import { SegmentedControl } from '../components/SegmentedControl'
 import { SectionDivider } from '../components/SectionDivider'
+import { DraggableSheet } from '../components/DraggableSheet'
 import { useWeatherData, getPrecipForMode } from '../../hooks/useWeatherData'
 import { useReefPulseExtras } from '../hooks/useReefPulseExtras'
 import type { ReefSite } from '../../types'
@@ -119,13 +120,8 @@ export function HomeScreen({
         <SegmentedControl options={SEGMENTS} value={layer} onChange={setLayer} tone="dark" />
       </div>
 
-      {/* frosted bottom sheet */}
-      <div
-        className="absolute left-0 right-0 z-[3] overflow-y-auto px-5 pt-3 pb-6"
-        style={{ bottom: 86, maxHeight: 392, background: 'var(--k-sheet)', backdropFilter: 'blur(20px)', borderRadius: '26px 26px 0 0', boxShadow: '0 -18px 40px -20px rgba(8,40,52,0.35)' }}
-      >
-        <div className="w-[38px] h-1 rounded-full mx-auto mb-3.5" style={{ background: 'var(--k-line)' }} />
-
+      {/* frosted bottom sheet — drag the handle to peek/expand */}
+      <DraggableSheet bottomOffset="calc(86px + env(safe-area-inset-bottom))">
         {selected && (
           <button
             onClick={() => onOpenSite(selected.id)}
@@ -244,7 +240,7 @@ export function HomeScreen({
             </div>
           </div>
         )}
-      </div>
+      </DraggableSheet>
     </div>
   )
 }

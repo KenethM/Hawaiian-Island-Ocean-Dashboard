@@ -1,7 +1,7 @@
 export function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
-      onClick={() => onChange(!checked)}
+      onClick={e => { e.stopPropagation(); onChange(!checked) }}
       className="w-[42px] h-6 rounded-full relative flex-shrink-0 transition-colors duration-200"
       style={{ background: checked ? '#15803D' : 'var(--k-line)' }}
       role="switch"

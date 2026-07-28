@@ -49,7 +49,7 @@ export function TabBar({
 
   return (
     <div
-      className={`flex-shrink-0 h-[86px] flex items-start justify-around pt-[11px] border-t border-[var(--k-border)] ${
+      className={`flex-shrink-0 h-[86px] flex items-start justify-around pt-[11px] pb-[env(safe-area-inset-bottom)] border-t border-[var(--k-border)] box-content ${
         floating ? 'bg-[var(--k-sheet)] backdrop-blur-xl' : 'bg-[var(--k-card)]'
       }`}
     >

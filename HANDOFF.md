@@ -183,6 +183,25 @@ frontend/
 
 ---
 
+## Outage & Fixes — 2026-07-29
+
+Production was fully down (blank NOAA data + login broken) for two independent reasons, diagnosed and fixed in this session:
+
+### 1. Frontend deploy was silently wiping the ocean-data cache
+**Root cause:** `.github/workflows/deploy.yml`'s `peaceiris/actions-gh-pages` step had no `keep_files: true`, so every push to `main` replaced the *entire* `gh-pages` branch — including `data/`, which `fetch-ocean-data.yml` writes to independently on its own 6h cron. Every frontend deploy deleted that data, so the backend's fetch to `GITHUB_DATA_URL/current-conditions.json` 404'd and `/api/noaa/current-conditions` returned 503.
+**Fix:** added `keep_files: true` to `deploy.yml`. Restored the missing `data/` directory by running `scripts/fetch_ocean_data.py` locally and pushing straight to `gh-pages` rather than waiting for the next cron run.
+
+### 2. Render's free Postgres database expired
+**Root cause:** Render's free-tier Postgres auto-expires ~30 days after creation and gets suspended (data deleted 9 days after that). This made the backend die silently at `Waiting for application startup` with no traceback and `Exited with status 3` on *every* deploy — the hang/crash was `_run_migrations()` in `main.py` trying to reach a database that no longer existed. This looked identical to an OOM kill and cost significant time to isolate — removing unused heavy deps (`copernicusmarine`, `xarray`, `netCDF4` — see below) was a red herring that didn't fix it, though it was worth doing anyway.
+**Fix:** provisioned a fresh free Postgres on Render, pointed `DATABASE_URL` at its **internal** connection string with the scheme changed from `postgresql://` to `postgresql+asyncpg://` (the async driver is required — plain `postgresql://` loads sync `psycopg2` and throws `InvalidRequestError` at import time). Migrations re-ran clean against the empty DB.
+**Data lost:** all user accounts, diver logs, and alert subscriptions (nobody had exported these before expiry). **Data recovered:** the 346-record HOT pH dataset, via re-uploading `backend/hot_ready.csv` through `POST /api/ph/admin/upload` (no direct DB access needed — this endpoint was already built for exactly this).
+**Action item:** there is no reminder before this expiry. Either upgrade to a paid Postgres instance, or calendar a reminder to export/rotate before ~30 days from whenever the current DB was created.
+
+### 3. Removed unused heavy deps (`copernicusmarine`, `xarray`, `netCDF4`)
+Not the actual crash cause (see above), but confirmed dead weight: only referenced inside one already-guarded, unused function in `ph.py` (the CMEMS fetch stub, gated behind `CMEMS_USER`/`CMEMS_PASSWORD` that were never set). Their transitive deps (dask, zarr, pyarrow, boto3, h5py, ~30 `pystac-ext-*` packages) took the install from ~90 packages to ~47. Removing them means the CMEMS auto-fetch admin button now fails fast with a clear "not installed" message instead of a 503 — it was never functional in production anyway. Re-add them (or better, a lighter direct-HTTP OPeNDAP approach) if CMEMS integration gets picked up for real.
+
+---
+
 ## Known Notes & Gotchas
 
 - **NOAA_DHW longitude format:** confirmed -180 to 180 (negative for Hawaii). A `NOAA_DHW_Lon0360` variant exists for 0–360 format — do NOT use that one.
@@ -193,9 +212,12 @@ frontend/
 - **Docker + Windows HMR:** Vite file-watch events don't reliably propagate from a Windows host into the container. After editing frontend files, run `docker compose restart frontend` to pick up changes instead of relying on hot reload.
 - **Cache is in-memory** — clears on restart. Fine for single-process dev; would need Redis if running multiple backend instances.
 - **`diver_name`** on DiverLog is still free-text for display; `user_id` FK links to the accounts table.
-- **HOT importer script** (`scripts/import_hot.py`) must run **inside the Docker container** — it uses psycopg2 which is only installed there. Use the UI CSV upload at `POST /api/ph/admin/upload` for new data files instead.
-- **CMEMS** — free account required at https://data.marine.copernicus.eu/ — set `CMEMS_USER` and `CMEMS_PASSWORD` env vars to activate the fetch endpoint.
-- **DB volume** — if rolling back past a migration, run `docker compose down -v` to wipe the volume, then `docker compose up` to rebuild from scratch.
+- **HOT importer script** (`scripts/import_hot.py`) needs `psycopg2` and a `DATABASE_URL` that can actually reach the target DB — prefer the UI CSV upload at `POST /api/ph/admin/upload` (admin-gated) for new data files; it needs no direct DB access at all.
+- **`backend/hot_ready.csv`** (the 346-record HOT dataset, pre-cleaned for upload) is **gitignored** (`*.csv` in `.gitignore`) — it only exists on whichever machine downloaded/prepared it. Not backed up anywhere else; the original source is https://hahana.soest.hawaii.edu/hot/ if it's ever lost.
+- **CMEMS** — the fetch endpoint (`GET /api/ph/fetch/cmems`) needs both `copernicusmarine`/`xarray` installed *and* `CMEMS_USER`/`CMEMS_PASSWORD` set. As of 2026-07-29 those packages were removed from `requirements.txt` (unused dead weight — see "Outage & Fixes" above), so this endpoint now fails fast with a 501 regardless of credentials. Re-add the deps if this gets picked up for real.
+- **Render free Postgres expires ~30 days after creation** and gets suspended (data deleted 9 days after that), with no advance warning. See "Outage & Fixes — 2026-07-29" above. Set a reminder or upgrade to a paid instance to avoid a repeat outage.
+- **`deploy.yml` must keep `keep_files: true`** on the `peaceiris/actions-gh-pages` step — without it, every frontend deploy wipes the `data/` directory that `fetch-ocean-data.yml`'s cron writes to independently.
+- **DB volume (local Docker only)** — if rolling back past a migration, run `docker compose down -v` to wipe the volume, then `docker compose up` to rebuild from scratch.
 
 ---
 
@@ -226,7 +248,7 @@ frontend/
 - Free account required at https://data.marine.copernicus.eu/ — set `CMEMS_USER` and `CMEMS_PASSWORD`
 
 ### Hosting
-- Nothing deployed yet — local Docker only
-- Recommended: Railway ($5/mo) for backend + Postgres, Vercel (free) for frontend
-- Also viable: Render, Fly.io (both support Docker)
-- Pre-deploy checklist: set `JWT_SECRET`, set `CORS_ORIGINS` to prod domain, SSL cert, DB backup strategy
+- **Live as of 2026-07-29**: GitHub Pages (frontend, auto-deploys from `main` via `deploy.yml`) + Render free tier (backend + Postgres). See `README.md` for the full architecture diagram.
+- Backend: https://hawaiian-island-ocean-dashboard.onrender.com (API only — no UI at `/`, see `/docs`)
+- Frontend: https://kenethm.github.io/Hawaiian-Island-Ocean-Dashboard/
+- **Known risk**: Render's free Postgres expires ~30 days after creation with no warning — see "Outage & Fixes — 2026-07-29" above. Worth upgrading to a paid instance (~$6-7/mo) if this project needs to stay reliably up.

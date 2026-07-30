@@ -98,13 +98,13 @@
     "depth_m": 10,
     "mmm_c": 27.5,
     "description": "State marine life conservation district; known for spinner dolphins and pristine coral.",
-    "sst_c": 28.1,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": 0,
-      "color": "#22c55e",
-      "label": "No Stress"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -134,13 +134,13 @@
     "depth_m": 18,
     "mmm_c": 27.2,
     "description": "Named for its lava tube network. Rich in reef fish and seasonal hammerhead sharks.",
-    "sst_c": null,
+    "sst_c": 27.2,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": 0,
+      "color": "#22c55e",
+      "label": "No Stress"
     }
   },
   {
@@ -152,13 +152,13 @@
     "depth_m": 6,
     "mmm_c": 27.3,
     "description": "Shallow fringing reef popular with beginner snorkelers; frequent Hawaiian monk seal sightings.",
-    "sst_c": null,
+    "sst_c": 27.9,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": 0,
+      "color": "#22c55e",
+      "label": "No Stress"
     }
   },
   {

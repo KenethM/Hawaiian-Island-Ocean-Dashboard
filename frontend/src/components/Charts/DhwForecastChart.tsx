@@ -4,14 +4,16 @@ import {
   Tooltip, ReferenceLine, ResponsiveContainer, Legend,
 } from 'recharts'
 import { api } from '../../services/api'
+import { useChartTheme } from '../../hooks/useChartTheme'
 import type { DhwForecast } from '../../types'
 
-interface Props { siteId: string; mmm: number }
+interface Props { siteId: string; mmm: number; height?: number }
 
-export function DhwForecastChart({ siteId, mmm }: Props) {
+export function DhwForecastChart({ siteId, mmm, height = 180 }: Props) {
   const [data, setData] = useState<DhwForecast | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const t = useChartTheme()
 
   useEffect(() => {
     setLoading(true)
@@ -45,19 +47,19 @@ export function DhwForecastChart({ siteId, mmm }: Props) {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs text-gray-500">
-          Current DHW: <strong className={`${data.current_dhw >= 8 ? 'text-red-600' : data.current_dhw >= 4 ? 'text-orange-500' : 'text-gray-800'}`}>
+        <p className="text-xs text-gray-500 dark:text-slate-400">
+          Current DHW: <strong className={`${data.current_dhw >= 8 ? 'text-red-600' : data.current_dhw >= 4 ? 'text-orange-500' : 'text-gray-800 dark:text-slate-100'}`}>
             {data.current_dhw.toFixed(1)} °C-weeks
           </strong>
-          <span className="ml-2 text-gray-400">· SST trend: {trend} ({data.sst_trend_per_day > 0 ? '+' : ''}{(data.sst_trend_per_day * 7).toFixed(2)}°C/wk)</span>
+          <span className="ml-2 text-gray-400 dark:text-slate-500">· SST trend: {trend} ({data.sst_trend_per_day > 0 ? '+' : ''}{(data.sst_trend_per_day * 7).toFixed(2)}°C/wk)</span>
         </p>
       </div>
-      <ResponsiveContainer width="100%" height={180}>
+      <ResponsiveContainer width="100%" height={height}>
         <ComposedChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -16 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis dataKey="label" tick={{ fontSize: 9 }} interval={13} />
-          <YAxis yAxisId="sst" domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
-          <YAxis yAxisId="dhw" orientation="right" tick={{ fontSize: 9 }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={t.grid} />
+          <XAxis dataKey="label" tick={{ fontSize: 9, fill: t.axis }} stroke={t.grid} interval={13} />
+          <YAxis yAxisId="sst" domain={['auto', 'auto']} tick={{ fontSize: 9, fill: t.axis }} stroke={t.grid} />
+          <YAxis yAxisId="dhw" orientation="right" tick={{ fontSize: 9, fill: t.axis }} stroke={t.grid} />
           <Tooltip
             formatter={(val: number, name: string) => {
               if (name === 'SST') return [`${val.toFixed(2)}°C`, 'Observed SST']
@@ -65,7 +67,7 @@ export function DhwForecastChart({ siteId, mmm }: Props) {
               if (name === 'DHW') return [`${val.toFixed(1)} °C-wks`, 'Accumulated DHW']
               return [val, name]
             }}
-            contentStyle={{ fontSize: 11 }}
+            contentStyle={t.tooltip}
           />
           <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
           <ReferenceLine yAxisId="dhw" y={4} stroke="#f97316" strokeDasharray="4 2" label={{ value: 'Bleaching likely', fontSize: 8, fill: '#f97316' }} />
@@ -75,7 +77,7 @@ export function DhwForecastChart({ siteId, mmm }: Props) {
           <Area yAxisId="dhw" type="monotone" dataKey="dhw" name="DHW" fill="#fecaca" stroke="#ef4444" strokeWidth={1.5} fillOpacity={0.5} connectNulls={false} />
         </ComposedChart>
       </ResponsiveContainer>
-      <p className="text-[10px] text-gray-400 mt-1">Shaded area = projected DHW if current trend continues 28 days · dashed line = projected SST</p>
+      <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-1">Shaded area = projected DHW if current trend continues 28 days · dashed line = projected SST</p>
     </div>
   )
 }

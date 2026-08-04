@@ -15,6 +15,12 @@ export interface MapSite {
   sst: number | null
 }
 
+export interface MapView {
+  zoom: number
+  /** True when the view is still at the framing the screen asked for (no pinch/pan applied). */
+  atDefault: boolean
+}
+
 interface EngineOptions {
   layer?: MapLayer
   dark?: boolean
@@ -23,7 +29,18 @@ interface EngineOptions {
   anchorY?: number
   centerX?: number
   centerY?: number
+  onViewChange?: (view: MapView) => void
 }
+
+export const MIN_ZOOM = 0.55
+export const MAX_ZOOM = 4
+
+/**
+ * Pannable extent in design space. Wider than the 1000 x 560 main-chain artboard because the
+ * Northwestern Hawaiian atolls sit off to the upper left; this is what stops a pan from
+ * drifting into empty ocean forever.
+ */
+const WORLD = { x0: -40, y0: -40, x1: 1040, y1: 600 }
 
 const STATUS = {
   green: { c: '#16A34A', label: 'No stress' },
@@ -43,8 +60,23 @@ const ISLANDS = [
   { cx: 884, cy: 456, rx: 76, ry: 68, seed: 1.5 }, // Big Island
 ]
 
+/**
+ * Papahānaumokuākea atolls, drawn as low rings rather than added to ISLANDS so they keep the
+ * main chain's hand-tuned geometry, current field and land masking untouched.
+ *
+ * Their spacing is compressed: Midway sits ~1,300 mi northwest of Kauai, which at the main
+ * chain's scale would put it thousands of design units off-artboard. The dashed connector and
+ * on-map caption tell the reader the gap isn't to scale.
+ */
+const ATOLLS = [
+  { id: 'ffs', cx: 128, cy: 116, rx: 27, ry: 16, seed: 2.1 },
+  { id: 'midway', cx: 22, cy: 44, rx: 23, ry: 14, seed: 3.8 },
+]
+
 // id here is the short "design" id; ReefMap.tsx maps it to/from the app's real site id.
 const BASE_SITES: MapSite[] = [
+  { id: 'midway', name: 'Midway Atoll', x: 22, y: 44, color: STATUS.green.c, label: STATUS.green.label, sst: null },
+  { id: 'ffs', name: 'French Frigate Shoals', x: 128, y: 116, color: STATUS.green.c, label: STATUS.green.label, sst: null },
   { id: 'tunnels', name: 'Tunnels Reef', x: 288, y: 146, color: STATUS.green.c, label: STATUS.green.label, sst: 27.2 },
   { id: 'poipu', name: 'Poipu Beach', x: 316, y: 212, color: STATUS.green.c, label: STATUS.green.label, sst: 27.3 },
   { id: 'sharks', name: "Shark's Cove", x: 446, y: 238, color: STATUS.green.c, label: STATUS.green.label, sst: 27.4 },
@@ -81,10 +113,30 @@ function islandPath(ctx: CanvasRenderingContext2D, isl: typeof ISLANDS[number], 
   ctx.closePath()
 }
 
+// atolls read as a reef ring with a shallow lagoon, not a landmass
+function atollPath(ctx: CanvasRenderingContext2D, at: typeof ATOLLS[number], k: number) {
+  const n = 22
+  ctx.beginPath()
+  for (let i = 0; i <= n; i++) {
+    const a = (i / n) * Math.PI * 2
+    const wob = 1 + 0.16 * Math.sin(at.seed + 2 * a) + 0.09 * Math.cos(at.seed * 1.4 + 4 * a)
+    const x = at.cx + Math.cos(a) * at.rx * wob * k
+    const y = at.cy + Math.sin(a) * at.ry * wob * k
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y)
+  }
+  ctx.closePath()
+}
+
 function insideLand(x: number, y: number, pad?: number) {
   pad = pad || 1
   for (const d of ISLANDS) {
     const dx = (x - d.cx) / (d.rx * pad), dy = (y - d.cy) / (d.ry * pad)
+    if (dx * dx + dy * dy < 1) return true
+  }
+  // Atolls only mask particles — the ported current field (flow()) still reads the main
+  // chain alone, so the NW rings don't disturb its hand-tuned deflections.
+  for (const a of ATOLLS) {
+    const dx = (x - a.cx) / (a.rx * pad), dy = (y - a.cy) / (a.ry * pad)
     if (dx * dx + dy * dy < 1) return true
   }
   return false
@@ -94,11 +146,17 @@ export function createReefMap(canvas: HTMLCanvasElement, opts: EngineOptions = {
   const ctx = canvas.getContext('2d')!
   let layer: MapLayer = opts.layer || 'all'
   const onSelect = opts.onSelect || (() => {})
+  const onViewChange = opts.onViewChange || (() => {})
   let selected: string | null = null
-  const zoom = opts.zoom || 1
   const anchorY = opts.anchorY != null ? opts.anchorY : 0.5
-  const cX = opts.centerX != null ? opts.centerX : 500
-  const cY = opts.centerY != null ? opts.centerY : 280
+  // Framing the screen asked for — `resetView()` returns here.
+  const homeZoom = opts.zoom || 1
+  const homeCX = opts.centerX != null ? opts.centerX : 500
+  const homeCY = opts.centerY != null ? opts.centerY : 280
+  // Live view, moved by pinch/pan.
+  let viewZoom = homeZoom
+  let viewCX = homeCX
+  let viewCY = homeCY
   let themeDark = !!opts.dark
 
   const SITES: MapSite[] = BASE_SITES.map(s => ({ ...s }))
@@ -113,19 +171,79 @@ export function createReefMap(canvas: HTMLCanvasElement, opts: EngineOptions = {
   let raf = 0
   let alive = true
 
+  let seededAtScale = 0
+
+  let lastNotified: MapView | null = null
+
+  /**
+   * applyView() runs on every pinch/pan frame, and this drives React state, so only speak up
+   * when the reported values actually move — a plain drag then costs one render, not sixty.
+   */
+  function notifyView() {
+    const next: MapView = {
+      zoom: viewZoom,
+      atDefault:
+        Math.abs(viewZoom - homeZoom) < 0.01 &&
+        Math.abs(viewCX - homeCX) < 1 &&
+        Math.abs(viewCY - homeCY) < 1,
+    }
+    if (lastNotified && lastNotified.atDefault === next.atDefault && Math.abs(lastNotified.zoom - next.zoom) < 0.005) return
+    lastNotified = next
+    onViewChange(next)
+  }
+
+  /** Recompute scale/offsets from the current view. Cheap — safe to call on every pinch frame. */
+  function applyView() {
+    if (!W || !H) return
+    const base = Math.min(W / 1000, H / 560)
+    scale = base * viewZoom
+    // Loose clamp: keep the view centre inside the world so a pan can't sail off into blank
+    // ocean, but never tighter than that — the screens pass hand-tuned centres and a
+    // viewport-fitting clamp would silently override their framing.
+    viewCX = Math.min(WORLD.x1, Math.max(WORLD.x0, viewCX))
+    viewCY = Math.min(WORLD.y1, Math.max(WORLD.y0, viewCY))
+    ox = W / 2 - viewCX * scale
+    oy = anchorY * H - viewCY * scale
+    bounds.x0 = -ox / scale; bounds.y0 = -oy / scale
+    bounds.x1 = (W - ox) / scale; bounds.y1 = (H - oy) / scale
+    // Particle/cloud density is derived from the visible area, so a big zoom change needs a
+    // reseed — thresholded so a pinch doesn't rebuild them every frame.
+    if (!seededAtScale || Math.abs(scale / seededAtScale - 1) > 0.25) {
+      seedParticles(); seedClouds()
+      seededAtScale = scale
+    }
+    notifyView()
+  }
+
   function resize() {
     dpr = Math.min(2, window.devicePixelRatio || 1)
     W = canvas.clientWidth; H = canvas.clientHeight
     if (!W || !H) return
     canvas.width = Math.round(W * dpr)
     canvas.height = Math.round(H * dpr)
-    const base = Math.min(W / 1000, H / 560)
-    scale = base * zoom
-    ox = W / 2 - cX * scale
-    oy = anchorY * H - cY * scale
-    bounds.x0 = -ox / scale; bounds.y0 = -oy / scale
-    bounds.x1 = (W - ox) / scale; bounds.y1 = (H - oy) / scale
-    seedParticles(); seedClouds()
+    seededAtScale = 0
+    applyView()
+  }
+
+  function screenToWorld(sx: number, sy: number) {
+    return { x: (sx - ox) / scale, y: (sy - oy) / scale }
+  }
+
+  function panByScreen(dx: number, dy: number) {
+    viewCX -= dx / scale
+    viewCY -= dy / scale
+    applyView()
+  }
+
+  /** Zoom to `next` while holding the world point under (sx, sy) in place. */
+  function zoomAround(next: number, sx: number, sy: number) {
+    const before = screenToWorld(sx, sy)
+    viewZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, next))
+    applyView()
+    const after = screenToWorld(sx, sy)
+    viewCX += before.x - after.x
+    viewCY += before.y - after.y
+    applyView()
   }
 
   function flow(x: number, y: number, t: number) {
@@ -304,6 +422,33 @@ export function createReefMap(canvas: HTMLCanvasElement, opts: EngineOptions = {
     }
     drawBuoy(432, 336, Math.sin(t * 3) > 0.55, 0.9)
 
+    // Northwestern chain — dashed connector first so it runs beneath the atoll rings.
+    ctx.save()
+    ctx.setLineDash([7, 7])
+    ctx.strokeStyle = 'rgba(233,248,251,0.34)'
+    ctx.lineWidth = 1.6
+    ctx.beginPath()
+    ctx.moveTo(ATOLLS[1].cx + 18, ATOLLS[1].cy + 12)
+    ctx.lineTo(ATOLLS[0].cx - 20, ATOLLS[0].cy - 10)
+    ctx.moveTo(ATOLLS[0].cx + 22, ATOLLS[0].cy + 12)
+    ctx.lineTo(206, 188) // toward Niihau, the northwest end of the main chain
+    ctx.stroke()
+    ctx.restore()
+
+    for (const at of ATOLLS) {
+      ctx.save()
+      atollPath(ctx, at, 1)
+      ctx.fillStyle = 'rgba(140,207,214,0.34)' // lagoon
+      ctx.fill()
+      ctx.strokeStyle = 'rgba(245,240,226,0.92)' // reef rim
+      ctx.lineWidth = 3
+      ctx.stroke()
+      atollPath(ctx, at, 0.5)
+      ctx.fillStyle = 'rgba(212,206,180,0.8)' // sand islet
+      ctx.fill()
+      ctx.restore()
+    }
+
     // islands
     for (const isl of ISLANDS) {
       ctx.save()
@@ -362,37 +507,142 @@ export function createReefMap(canvas: HTMLCanvasElement, opts: EngineOptions = {
       ctx.fillStyle = col; ctx.beginPath(); ctx.arc(st.x, st.y, baseR, 0, Math.PI * 2); ctx.fill()
       if (isSel) { ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(st.x, st.y, baseR + 4.5, 0, Math.PI * 2); ctx.stroke() }
       if (isSel || L.labels) {
-        ctx.font = '600 13px ui-sans-serif, system-ui, sans-serif'
+        // The context is scaled to design space, so a literal 13px font would render at
+        // 13 * scale — around 5px on a phone. Divide by scale to pin the pill to a constant
+        // on-screen size, now that the map can be zoomed anywhere from 0.55x to 4x.
+        const k = 1 / scale
+        ctx.font = `600 ${13 * k}px ui-sans-serif, system-ui, sans-serif`
         const tw = ctx.measureText(st.name).width
-        const lx = st.x, ly = st.y - baseR - 20
+        const lx = st.x, ly = st.y - baseR - 14 * k
         ctx.globalAlpha = 0.95; ctx.fillStyle = 'rgba(30,41,59,0.92)'
-        roundRect(ctx, lx - tw / 2 - 8, ly - 12, tw + 16, 22, 7); ctx.fill()
+        roundRect(ctx, lx - tw / 2 - 8 * k, ly - 12 * k, tw + 16 * k, 22 * k, 7 * k); ctx.fill()
         ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-        ctx.fillText(st.name, lx, ly - 1); ctx.textAlign = 'start'; ctx.globalAlpha = 1
+        ctx.fillText(st.name, lx, ly); ctx.textAlign = 'start'; ctx.textBaseline = 'alphabetic'; ctx.globalAlpha = 1
       }
     }
 
     ctx.restore()
+
+    // Caption for the compressed northwestern gap. Drawn in screen space (outside the world
+    // transform) so it keeps a readable size and can be clamped inside the canvas — at the
+    // default framing the NW corner is too narrow to hold it, so it waits until that region
+    // is genuinely on screen.
+    if (bounds.x0 < 60) {
+      const sy = oy + 178 * scale
+      if (sy > 16 && sy < H - 16) {
+        const caption = 'Papahānaumokuākea · gap not to scale'
+        ctx.font = '600 11px ui-sans-serif, system-ui, sans-serif'
+        ctx.fillStyle = 'rgba(233,248,251,0.75)'
+        const tw = ctx.measureText(caption).width
+        const sx = Math.min(Math.max(10, ox + 150 * scale - tw / 2), Math.max(10, W - tw - 10))
+        ctx.fillText(caption, sx, sy)
+      }
+    }
+
     raf = requestAnimationFrame(draw)
   }
 
-  function pick(clientX: number, clientY: number) {
-    const rect = canvas.getBoundingClientRect()
-    const dx = (clientX - rect.left - ox) / scale, dy = (clientY - rect.top - oy) / scale
-    let best: MapSite | null = null, bd = 900
+  /** Nearest site within ~30 screen px of the tap, so tapping open water deselects. */
+  function pickAt(sx: number, sy: number) {
+    const w = screenToWorld(sx, sy)
+    const reach = 30 / scale
+    let best: MapSite | null = null, bd = reach * reach
     for (const s of SITES) {
-      const d = (s.x - dx) * (s.x - dx) + (s.y - dy) * (s.y - dy)
+      const d = (s.x - w.x) * (s.x - w.x) + (s.y - w.y) * (s.y - w.y)
       if (d < bd) { bd = d; best = s }
     }
     return best
   }
 
-  function onPointer(e: PointerEvent) {
-    const s = pick(e.clientX, e.clientY)
-    if (s) { selected = selected === s.id ? null : s.id; onSelect(selected ? s : null) }
+  // ── gestures: one finger pans, two pinch, a stationary tap selects ──────────────
+  const TAP_SLOP = 7 // px of travel still counted as a tap rather than a pan
+  const TAP_MS = 500
+  type Pt = { x: number; y: number }
+  const active = new Map<number, Pt>()
+  let gesture: { pinch: boolean; startDist: number; startZoom: number; lastX: number; lastY: number; moved: number; startT: number } | null = null
+
+  function local(e: PointerEvent): Pt {
+    const rect = canvas.getBoundingClientRect()
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top }
   }
 
-  canvas.addEventListener('pointerdown', onPointer)
+  function beginPan(from: Pt, moved: number) {
+    gesture = { pinch: false, startDist: 0, startZoom: viewZoom, lastX: from.x, lastY: from.y, moved, startT: performance.now() }
+  }
+
+  function onDown(e: PointerEvent) {
+    canvas.setPointerCapture(e.pointerId)
+    active.set(e.pointerId, local(e))
+    const pts = [...active.values()]
+    if (pts.length === 1) {
+      beginPan(pts[0], 0)
+    } else if (pts.length === 2) {
+      const [a, b] = pts
+      gesture = {
+        pinch: true,
+        startDist: Math.hypot(a.x - b.x, a.y - b.y) || 1,
+        startZoom: viewZoom,
+        lastX: (a.x + b.x) / 2,
+        lastY: (a.y + b.y) / 2,
+        moved: Infinity, // a pinch is never a tap
+        startT: performance.now(),
+      }
+    }
+  }
+
+  function onMove(e: PointerEvent) {
+    if (!gesture || !active.has(e.pointerId)) return
+    active.set(e.pointerId, local(e))
+    const pts = [...active.values()]
+
+    if (gesture.pinch && pts.length >= 2) {
+      const [a, b] = pts
+      const dist = Math.hypot(a.x - b.x, a.y - b.y) || 1
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2
+      panByScreen(mx - gesture.lastX, my - gesture.lastY)
+      zoomAround(gesture.startZoom * (dist / gesture.startDist), mx, my)
+      gesture.lastX = mx; gesture.lastY = my
+      return
+    }
+
+    const p = active.get(e.pointerId)!
+    const dx = p.x - gesture.lastX, dy = p.y - gesture.lastY
+    gesture.moved += Math.hypot(dx, dy)
+    // Hold still until the drag clears the tap slop, so a slightly smudged tap on a reef
+    // still selects it instead of nudging the map.
+    if (gesture.moved > TAP_SLOP) panByScreen(dx, dy)
+    gesture.lastX = p.x; gesture.lastY = p.y
+  }
+
+  function onUp(e: PointerEvent) {
+    const p = active.get(e.pointerId)
+    const wasTap = !!gesture && !gesture.pinch && active.size === 1 &&
+      gesture.moved <= TAP_SLOP && performance.now() - gesture.startT < TAP_MS
+    active.delete(e.pointerId)
+
+    if (wasTap && p) {
+      const s = pickAt(p.x, p.y)
+      if (s) { selected = selected === s.id ? null : s.id; onSelect(selected ? s : null) }
+      else if (selected) { selected = null; onSelect(null) }
+    }
+
+    const rest = [...active.values()]
+    if (rest.length === 0) gesture = null
+    // Second finger lifted mid-pinch — carry on as a pan from the one still down.
+    else if (rest.length === 1) beginPan(rest[0], Infinity)
+  }
+
+  function onWheel(e: WheelEvent) {
+    e.preventDefault()
+    const rect = canvas.getBoundingClientRect()
+    zoomAround(viewZoom * Math.pow(0.9985, e.deltaY), e.clientX - rect.left, e.clientY - rect.top)
+  }
+
+  canvas.addEventListener('pointerdown', onDown)
+  canvas.addEventListener('pointermove', onMove)
+  canvas.addEventListener('pointerup', onUp)
+  canvas.addEventListener('pointercancel', onUp)
+  canvas.addEventListener('wheel', onWheel, { passive: false })
   const ro = new ResizeObserver(resize); ro.observe(canvas)
   resize(); raf = requestAnimationFrame(draw)
 
@@ -405,6 +655,34 @@ export function createReefMap(canvas: HTMLCanvasElement, opts: EngineOptions = {
       const s = SITES.find(x => x.id === id)
       onSelect(s || null)
     },
+    /** Step the zoom by a factor about the centre of the canvas (for on-screen +/− buttons). */
+    zoomBy(factor: number) {
+      zoomAround(viewZoom * factor, W / 2, anchorY * H)
+    },
+    resetView() {
+      viewZoom = homeZoom; viewCX = homeCX; viewCY = homeCY
+      applyView()
+    },
+    /** Pull back far enough to hold the whole chain, Midway through Hawaiʻi island. */
+    fitAll() {
+      if (!W || !H) return
+      const base = Math.min(W / 1000, H / 560)
+      const needed = (W - 24) / (WORLD.x1 - WORLD.x0) / base // 12px breathing room each side
+      viewZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, needed))
+      viewCX = (WORLD.x0 + WORLD.x1) / 2
+      viewCY = homeCY
+      applyView()
+    },
+    /** Centre and zoom on a site by its short design id, then select it. */
+    focusSite(id: string, zoom = 1.9) {
+      const s = SITES.find(x => x.id === id)
+      if (!s) return
+      viewZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom))
+      viewCX = s.x; viewCY = s.y
+      applyView()
+      selected = s.id
+      onSelect(s)
+    },
     /** Push live site data (color/label/sst) keyed by the design's short site id. */
     update(dataById: Record<string, { color: string; label: string; sst: number | null }>) {
       for (const s of SITES) {
@@ -416,7 +694,11 @@ export function createReefMap(canvas: HTMLCanvasElement, opts: EngineOptions = {
       alive = false
       cancelAnimationFrame(raf)
       ro.disconnect()
-      canvas.removeEventListener('pointerdown', onPointer)
+      canvas.removeEventListener('pointerdown', onDown)
+      canvas.removeEventListener('pointermove', onMove)
+      canvas.removeEventListener('pointerup', onUp)
+      canvas.removeEventListener('pointercancel', onUp)
+      canvas.removeEventListener('wheel', onWheel)
     },
   }
 }

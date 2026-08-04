@@ -4,14 +4,16 @@ import {
   Tooltip, ReferenceLine, ResponsiveContainer, Legend,
 } from 'recharts'
 import { api } from '../../services/api'
+import { useChartTheme } from '../../hooks/useChartTheme'
 import type { SstYoY } from '../../types'
 
-interface Props { siteId: string; mmm: number }
+interface Props { siteId: string; mmm: number; height?: number }
 
-export function SstYoYChart({ siteId, mmm }: Props) {
+export function SstYoYChart({ siteId, mmm, height = 180 }: Props) {
   const [data, setData] = useState<SstYoY | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const t = useChartTheme()
 
   useEffect(() => {
     setLoading(true)
@@ -38,14 +40,14 @@ export function SstYoYChart({ siteId, mmm }: Props) {
 
   return (
     <div>
-      <ResponsiveContainer width="100%" height={180}>
+      <ResponsiveContainer width="100%" height={height}>
         <LineChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -16 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis dataKey="label" tick={{ fontSize: 9 }} interval={29} />
-          <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9 }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={t.grid} />
+          <XAxis dataKey="label" tick={{ fontSize: 9, fill: t.axis }} stroke={t.grid} interval={29} />
+          <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9, fill: t.axis }} stroke={t.grid} />
           <Tooltip
             formatter={(val: number, name: string) => [`${val?.toFixed(2)}°C`, name]}
-            contentStyle={{ fontSize: 11 }}
+            contentStyle={t.tooltip}
           />
           <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
           <ReferenceLine y={mmm} stroke="#f97316" strokeDasharray="3 2" label={{ value: 'MMM', fontSize: 8, fill: '#f97316', position: 'right' }} />
@@ -54,7 +56,7 @@ export function SstYoYChart({ siteId, mmm }: Props) {
           <Line type="monotone" dataKey="lastYear" name={lastYearLabel} dot={false} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 2" connectNulls={false} />
         </LineChart>
       </ResponsiveContainer>
-      <p className="text-[10px] text-gray-400 mt-1">
+      <p className="text-[10px] text-gray-400 dark:text-slate-500 mt-1">
         Solid = {thisYearLabel} · Dashed = {lastYearLabel} · Orange = MMM · Red = Bleaching Watch threshold
       </p>
     </div>

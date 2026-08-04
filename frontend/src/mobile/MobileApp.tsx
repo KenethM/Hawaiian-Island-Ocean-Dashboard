@@ -48,8 +48,10 @@ export function MobileApp() {
         {tab === 'reef' && selectedSite && (
           <ReefDetailScreen
             site={selectedSite}
+            sites={sites}
             diverLogs={diverLogs}
             onBack={() => setSelectedSiteId(null)}
+            onSelectSite={setSelectedSiteId}
             onSignInClick={() => setShowAuth(true)}
           />
         )}

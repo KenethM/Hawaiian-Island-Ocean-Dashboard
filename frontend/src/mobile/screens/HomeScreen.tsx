@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
-import { ReefMap, type SelectedMapSite } from '../map/ReefMap'
-import type { MapLayer } from '../map/reefMapEngine'
+import { useMemo, useRef, useState } from 'react'
+import { ReefMap, type ReefMapHandle, type SelectedMapSite } from '../map/ReefMap'
+import { MIN_ZOOM, MAX_ZOOM, type MapLayer, type MapView } from '../map/reefMapEngine'
 import { SegmentedControl } from '../components/SegmentedControl'
 import { SectionDivider } from '../components/SectionDivider'
 import { DraggableSheet } from '../components/DraggableSheet'
@@ -37,6 +37,27 @@ function weatherLabel(code: number | null): string {
   return 'Fair'
 }
 
+function MapButton({
+  label, onClick, disabled, children,
+}: {
+  label: string
+  onClick: () => void
+  disabled?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      className="w-9 h-9 rounded-full flex items-center justify-center disabled:opacity-35"
+      style={{ background: 'rgba(15,41,52,0.5)', backdropFilter: 'blur(10px)' }}
+    >
+      {children}
+    </button>
+  )
+}
+
 const SEGMENTS: { value: MapLayer; label: string }[] = [
   { value: 'reef', label: 'Reef' },
   { value: 'weather', label: 'Weather' },
@@ -62,6 +83,8 @@ export function HomeScreen({
   const [layer, setLayer] = useState<MapLayer>('reef')
   const [selected, setSelected] = useState<SelectedMapSite | null>(null)
   const [sheetHeight, setSheetHeight] = useState(SHEET_DEFAULT)
+  const mapRef = useRef<ReefMapHandle>(null)
+  const [view, setView] = useState<MapView>({ zoom: 1, atDefault: true })
   const moon = useMemo(moonPhase, [])
   const { data: weather } = useWeatherData(layer === 'weather')
   const { tide, clearestM } = useReefPulseExtras(sites)
@@ -100,7 +123,8 @@ export function HomeScreen({
   return (
     <div className="relative h-full overflow-hidden">
       <ReefMap
-        sites={sites} layer={layer} dark={dark} onSelect={setSelected}
+        ref={mapRef}
+        sites={sites} layer={layer} dark={dark} onSelect={setSelected} onViewChange={setView}
         zoom={1.0} anchorY={0.46} centerX={584} centerY={330}
       />
 
@@ -141,6 +165,28 @@ export function HomeScreen({
       {/* segmented layer control — glides up to reclaim the space the greeting vacates */}
       <div className="absolute left-4 right-4 z-[3]" style={{ top: segmentedTop, transition: 'top 0.18s ease' }}>
         <SegmentedControl options={SEGMENTS} value={layer} onChange={setLayer} tone="dark" />
+      </div>
+
+      {/* Map controls — the map pinches and drags, but reaching Papahānaumokuākea shouldn't
+          depend on the user guessing that, so the framing is one tap away either direction. */}
+      <div
+        className="absolute right-3.5 z-[3] flex flex-col gap-1.5"
+        style={{ top: segmentedTop + 56, transition: 'top 0.18s ease' }}
+      >
+        <MapButton label="Zoom in" onClick={() => mapRef.current?.zoomBy(1.5)} disabled={view.zoom >= MAX_ZOOM - 0.01}>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+        </MapButton>
+        <MapButton label="Zoom out" onClick={() => mapRef.current?.zoomBy(1 / 1.5)} disabled={view.zoom <= MIN_ZOOM + 0.01}>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M5 12h14" /></svg>
+        </MapButton>
+        <MapButton label="Fit the whole island chain" onClick={() => mapRef.current?.fitAll()}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4" /></svg>
+        </MapButton>
+        {!view.atDefault && (
+          <MapButton label="Back to the main islands" onClick={() => mapRef.current?.resetView()}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v4h4" /></svg>
+          </MapButton>
+        )}
       </div>
 
       {/* frosted bottom sheet — drag the handle to peek/expand, or tap it to cycle */}

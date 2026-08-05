@@ -1,6 +1,7 @@
-import { useMemo, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { Toggle } from '../components/Toggle'
 import { SectionDivider } from '../components/SectionDivider'
+import { ShareQrModal } from '../components/ShareQrModal'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import type { DiverLogWithCoords } from '../../hooks/useDiverLogs'
@@ -16,6 +17,7 @@ export function ProfileScreen({
 }) {
   const { user, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
+  const [showQr, setShowQr] = useState(false)
 
   const myLogs = useMemo(
     () => (user?.full_name ? diverLogs.filter(l => l.diver_name === user.full_name) : []),
@@ -87,9 +89,12 @@ export function ProfileScreen({
         <Row label="Dark mode" onClick={toggleTheme}><Toggle checked={theme === 'dark'} onChange={toggleTheme} /></Row>
         <Row label="Push notifications"><Toggle checked onChange={() => {}} /></Row>
         <Row label="Temperature units"><span className="text-[14px]" style={{ color: 'var(--k-sub)' }}>°C</span></Row>
+        <Row label="Share this app" onClick={() => setShowQr(true)} chevron />
         <Row label="Notifications & alerts" onClick={() => onNavigate('alerts')} chevron last={!isAdmin} />
         {isAdmin && <Row label="Admin panel" onClick={() => onNavigate('admin')} chevron last />}
       </div>
+
+      {showQr && <ShareQrModal onClose={() => setShowQr(false)} />}
 
       {user && (
         <button

@@ -17,6 +17,9 @@ frontend/dist/
 # Docker
 .docker/
 
+# Editor — workspace files reference machine-local folder paths
+*.code-workspace
+
 # OS
 .DS_Store
 Thumbs.db

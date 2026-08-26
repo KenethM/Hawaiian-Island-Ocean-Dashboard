@@ -62,13 +62,13 @@
     "depth_m": 40,
     "mmm_c": 28.1,
     "description": "Partially submerged volcanic crater; visibility up to 45 m. One of Hawaii's top dive destinations.",
-    "sst_c": null,
+    "sst_c": 28.2,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": 0,
+      "color": "#22c55e",
+      "label": "No Stress"
     }
   },
   {

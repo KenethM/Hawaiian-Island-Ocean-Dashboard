@@ -44,13 +44,13 @@
     "depth_m": 12,
     "mmm_c": 27.4,
     "description": "Popular North Shore dive site with lava tubes, caves, and abundant marine life.",
-    "sst_c": 26.4,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -62,13 +62,13 @@
     "depth_m": 40,
     "mmm_c": 28.1,
     "description": "Partially submerged volcanic crater; visibility up to 45 m. One of Hawaii's top dive destinations.",
-    "sst_c": 28.1,
+    "sst_c": 28.0,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": 0,
-      "color": "#22c55e",
-      "label": "No Stress"
+      "level": -1,
+      "color": "#3b82f6",
+      "label": "Below MMM"
     }
   },
   {
@@ -116,7 +116,7 @@
     "depth_m": 15,
     "mmm_c": 27.7,
     "description": "Sheltered leeward coast with diverse coral ecosystems and frequent manta ray sightings.",
-    "sst_c": 28.6,
+    "sst_c": 28.5,
     "dhw": null,
     "hotspot": null,
     "alert": {
@@ -188,13 +188,13 @@
     "depth_m": 20,
     "mmm_c": 26.5,
     "description": "Coral reefs within a National Wildlife Refuge; among the most remote reefs in the Hawaiian chain.",
-    "sst_c": null,
+    "sst_c": 27.4,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": 0,
+      "color": "#22c55e",
+      "label": "No Stress"
     }
   }
 ]

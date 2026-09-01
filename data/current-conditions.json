@@ -26,13 +26,13 @@
     "depth_m": 8,
     "mmm_c": 27.6,
     "description": "Largest sheltered body of water in Hawaii; home to the only barrier reef in the continental US.",
-    "sst_c": 26.6,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -116,13 +116,13 @@
     "depth_m": 15,
     "mmm_c": 27.7,
     "description": "Sheltered leeward coast with diverse coral ecosystems and frequent manta ray sightings.",
-    "sst_c": null,
+    "sst_c": 28.6,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": 0,
+      "color": "#22c55e",
+      "label": "No Stress"
     }
   },
   {

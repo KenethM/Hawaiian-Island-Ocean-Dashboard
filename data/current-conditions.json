@@ -26,13 +26,13 @@
     "depth_m": 8,
     "mmm_c": 27.6,
     "description": "Largest sheltered body of water in Hawaii; home to the only barrier reef in the continental US.",
-    "sst_c": 27.0,
+    "sst_c": null,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -1,
-      "color": "#3b82f6",
-      "label": "Below MMM"
+      "level": -2,
+      "color": "#60a5fa",
+      "label": "SST Unavailable"
     }
   },
   {
@@ -80,13 +80,13 @@
     "depth_m": 12,
     "mmm_c": 27.8,
     "description": "Marine life conservation district on Maui's northwest coast with thriving coral gardens.",
-    "sst_c": null,
+    "sst_c": 27.8,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": -2,
-      "color": "#60a5fa",
-      "label": "SST Unavailable"
+      "level": 0,
+      "color": "#22c55e",
+      "label": "No Stress"
     }
   },
   {

@@ -26,7 +26,7 @@
     "depth_m": 8,
     "mmm_c": 27.6,
     "description": "Largest sheltered body of water in Hawaii; home to the only barrier reef in the continental US.",
-    "sst_c": 26.6,
+    "sst_c": 26.5,
     "dhw": null,
     "hotspot": null,
     "alert": {
@@ -44,7 +44,7 @@
     "depth_m": 12,
     "mmm_c": 27.4,
     "description": "Popular North Shore dive site with lava tubes, caves, and abundant marine life.",
-    "sst_c": 27.1,
+    "sst_c": 27.0,
     "dhw": null,
     "hotspot": null,
     "alert": {
@@ -98,13 +98,13 @@
     "depth_m": 10,
     "mmm_c": 27.5,
     "description": "State marine life conservation district; known for spinner dolphins and pristine coral.",
-    "sst_c": 28.3,
+    "sst_c": 28.5,
     "dhw": null,
     "hotspot": null,
     "alert": {
-      "level": 0,
-      "color": "#22c55e",
-      "label": "No Stress"
+      "level": 1,
+      "color": "#f97316",
+      "label": "Watch"
     }
   },
   {
@@ -116,7 +116,7 @@
     "depth_m": 15,
     "mmm_c": 27.7,
     "description": "Sheltered leeward coast with diverse coral ecosystems and frequent manta ray sightings.",
-    "sst_c": 28.4,
+    "sst_c": 28.5,
     "dhw": null,
     "hotspot": null,
     "alert": {

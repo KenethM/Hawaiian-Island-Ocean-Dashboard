@@ -11,14 +11,16 @@ import app.models.ph_reading  # noqa: F401 — registers PhReading table
 config = context.config
 
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    # Keep uvicorn's loggers alive so startup failures still show a traceback
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 
-# Convert async URL to sync (asyncpg → psycopg2) for Alembic
+# Convert async URL to sync (asyncpg → psycopg2) for Alembic. Name psycopg2
+# explicitly: SQLAlchemy 2.1+ defaults bare postgresql:// to psycopg v3.
 _db_url = os.getenv(
     "DATABASE_URL",
     "postgresql+asyncpg://postgres:postgres@localhost:5432/coral_dashboard",
 )
-config.set_main_option("sqlalchemy.url", _db_url.replace("+asyncpg", ""))
+config.set_main_option("sqlalchemy.url", _db_url.replace("+asyncpg", "+psycopg2"))
 
 target_metadata = Base.metadata
 
